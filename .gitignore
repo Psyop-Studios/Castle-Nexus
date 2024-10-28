@@ -70,3 +70,6 @@ compile_commands.json
 # Android
 *apk*
 android.*
+
+# VSCode
+.vscode/**

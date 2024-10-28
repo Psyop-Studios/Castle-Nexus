@@ -1,6 +1,6 @@
 add_executable(raylib_game)
 # @NOTE: add more source files here
-target_sources(raylib_game PRIVATE raylib_game.c)
+target_sources(raylib_game PRIVATE raylib_game.c scene.c scenes/game.c scenes/mainmenu.c scenes/raylogo.c)
 
 target_include_directories(raylib_game PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>")
 target_link_libraries(raylib_game raylib)
