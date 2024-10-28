@@ -12,7 +12,7 @@ scene_t currentScene = RAYLOGO;
 
 void ChangeScene(scene_t scene)
 {
-    static const void (*initSceneFunctions[])(void) = {[RAYLOGO] = InitRaylogoScene, [MAINMENU] = InitMainmenuScene, [GAME] = InitGameScene};
+    static void (*initSceneFunctions[])(void) = {[RAYLOGO] = InitRaylogoScene, [MAINMENU] = InitMainmenuScene, [GAME] = InitGameScene};
 
     switch (scene)
     {
@@ -30,12 +30,12 @@ void ChangeScene(scene_t scene)
 
 void UpdateCurrentScene(void)
 {
-    static const void (*updateSceneFunctions[])(void) = {[RAYLOGO] = UpdateRaylogoScene, [MAINMENU] = UpdateMainmenuScene, [GAME] = UpdateGameScene};
+    static void (*updateSceneFunctions[])(void) = {[RAYLOGO] = UpdateRaylogoScene, [MAINMENU] = UpdateMainmenuScene, [GAME] = UpdateGameScene};
     updateSceneFunctions[currentScene]();
 }
 
 void DrawCurrentScene(void)
 {
-    static const void (*drawSceneFunctions[])(void) = {[RAYLOGO] = DrawRaylogoScene, [MAINMENU] = DrawMainmenuScene, [GAME] = DrawGameScene};
+    static void (*drawSceneFunctions[])(void) = {[RAYLOGO] = DrawRaylogoScene, [MAINMENU] = DrawMainmenuScene, [GAME] = DrawGameScene};
     drawSceneFunctions[currentScene]();
 }
