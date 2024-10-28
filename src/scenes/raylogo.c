@@ -4,6 +4,7 @@
 #include <math.h>
 #include <raymath.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "../helper_functions.h"
 
 // TODO: these should be static const ints
@@ -64,7 +65,7 @@ void DrawRaylogoScene(void)
             if (!is_border_square)
                 continue;
 
-            float delay = 1 * (fabs(column - row) / (float)((RAYLOGO_ROWS + RAYLOGO_COLUMNS) / 2));
+            float delay = 1 * (abs(column - row) / (float)((RAYLOGO_ROWS + RAYLOGO_COLUMNS) / 2));
             float amount = PSY_MIN(1, PSY_MAX(0, elapsedTime - delay) * 2);
             float currentSize = Lerp(0, RAYLOGO_SQUARE_SIZE, amount);
 

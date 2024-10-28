@@ -79,6 +79,7 @@ int main(void)
     //--------------------------------------------------------------------------------------
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "raylib gamejam template");
+    ChangeScene(RAYLOGO);
 
     // TODO: Load resources / Initialize variables at this point
 
