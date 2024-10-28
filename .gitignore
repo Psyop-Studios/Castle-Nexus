@@ -35,6 +35,8 @@
 *.i*86
 *.x86_64
 *.hex
+*.data
+*.dll
 
 # Debug files
 *.dSYM/
@@ -60,18 +62,28 @@ dkms.conf
 *.aps
 .vs
 
+# VS Code
+.vscode/
+
 # Clangd LSP
 .cache
 compile_commands.json
 
 # Build folder
 [Bb]uild
-# Build file
-src/raylib_game
 
 # Android
 *apk*
 android.*
 
-# VSCode
-.vscode/**
+# recordings
+*.gif
+
+# web builds
+src/raylib_game.html
+src/raylib_game.js
+src/raylib_game.wasm
+src/raylib_game.data
+
+# blender backups
+*.blend1

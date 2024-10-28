@@ -19,13 +19,8 @@
 #endif
 
 #include <stdio.h>                          // Required for: printf()
-#include <stdlib.h>                         // Required for:
-#include <string.h>                         // Required for:
-
-#include "scene.h"
-
-
-
+#include <stdlib.h>                         // Required for: 
+#include <string.h>                         // Required for: 
 
 //----------------------------------------------------------------------------------
 // Defines and Macros
@@ -42,22 +37,18 @@
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-typedef enum {
-    SCREEN_LOGO = 0,
-    SCREEN_TITLE,
-    SCREEN_GAMEPLAY,
+typedef enum { 
+    SCREEN_LOGO = 0, 
+    SCREEN_TITLE, 
+    SCREEN_GAMEPLAY, 
     SCREEN_ENDING
 } GameScreen;
-
-// TODO: Define your custom data types here
 
 //----------------------------------------------------------------------------------
 // Global Variables Definition
 //----------------------------------------------------------------------------------
-const int screenWidth = 640;
-const int screenHeight = 480;
-
-static RenderTexture2D target = { 0 };  // Render texture to render our game
+static const int screenWidth = 800;
+static const int screenHeight = 450;
 
 // TODO: Define global variables here, recommended to make them static
 
@@ -77,16 +68,15 @@ int main(void)
 
     // Initialization
     //--------------------------------------------------------------------------------------
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);  // Enable resizable window
     InitWindow(screenWidth, screenHeight, "raylib gamejam template");
-    ChangeScene(RAYLOGO);
-
+    
     // TODO: Load resources / Initialize variables at this point
-
+    
     // Render texture to draw full screen, enables screen scaling
     // NOTE: If screen is scaled, mouse input should be scaled proportionally
-    target = LoadRenderTexture(screenWidth, screenHeight);
-    SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
+    // target = LoadRenderTexture(screenWidth, screenHeight);
+    // SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
@@ -101,10 +91,6 @@ int main(void)
     }
 #endif
 
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    UnloadRenderTexture(target);
-
     // TODO: Unload all loaded resources at this point
 
     CloseWindow();        // Close window and OpenGL context
@@ -113,47 +99,126 @@ int main(void)
     return 0;
 }
 
+#ifdef PLATFORM_DESKTOP
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void (*Game_init)(void**);
+void (*Game_deinit)();
+void (*Game_update)();
+
+static void* contextData = NULL;
+
+void init()
+{
+    if (Game_init)
+    {
+        Game_init(&contextData);
+    }
+}
+
+void deinit()
+{
+    if (Game_deinit)
+    {
+        Game_deinit();
+    }
+}
+
+void update()
+{
+    if (Game_update)
+    {
+        Game_update();
+    }
+}
+
+void unload_game();
+void load_game();
+
+static int is_built = 0;
+static void build_game()
+{
+    is_built = 1;
+    deinit();
+    unload_game();
+    Game_deinit = NULL;
+    Game_init = NULL;
+    Game_update = NULL;
+    char buildCommand[1024] = {0};
+    char cfilelist[2048] = {0};
+    FilePathList files = LoadDirectoryFiles("game");
+    for (int i = 0; i < files.count; i++)
+    {
+        const char *file = files.paths[i];
+        const char *ext = GetFileExtension(file);
+        if (strcmp(ext, ".c") == 0)
+        {
+            strcat(cfilelist, file);
+            strcat(cfilelist, " ");
+        }
+    }
+    UnloadDirectoryFiles(files);
+
+    sprintf(buildCommand, "gcc -I../../raylib/src -L../../raylib/src -o game.dll -shared -fPIC %s -lraylib",
+            cfilelist);
+    printf("Building game: %s\n", buildCommand);
+    system(buildCommand);
+    load_game();
+    init();
+}
+#else
+// simple way to make it build without specifying files
+#include "game/main.c"
+#include "game/actions.c"
+#include "game/util.c"
+int isInitialized = 0;
+void *contextData = NULL;
+void init()
+{
+    Game_init(&contextData);
+}
+
+void deinit()
+{
+    Game_deinit();
+}
+
+void update()
+{
+    if (!isInitialized)
+    {
+        isInitialized = 1;
+        init();
+    }
+    Game_update();
+}
+#endif
+static int run_foreground = 0;
 //--------------------------------------------------------------------------------------------
 // Module functions definition
 //--------------------------------------------------------------------------------------------
 // Update and draw frame
 void UpdateDrawFrame(void)
 {
-    // Update
-    //----------------------------------------------------------------------------------
-    // TODO: Update variables / Implement example logic at this point
-    //----------------------------------------------------------------------------------
+    #ifdef PLATFORM_DESKTOP
+    if (IsKeyPressed(KEY_R) || !is_built)
+    {
+        if (IsKeyDown(KEY_LEFT_CONTROL))
+        {
+            contextData = 0;
+        }
+        build_game();
+    }
 
-    int currentWidth = GetScreenWidth();
-    int currentHeight = GetScreenHeight();
-
-
-    UpdateCurrentScene();
-
-
-
-
-    // Draw
-    //----------------------------------------------------------------------------------
-    // Render game screen to a texture,
-    // it could be useful for scaling or further shader postprocessing
-    BeginTextureMode(target);
-        ClearBackground(RAYWHITE);
-
-        // TODO: Draw your game screen here
-        DrawCurrentScene();
-
-    EndTextureMode();
-
-    // Render to screen (main framebuffer)
-    BeginDrawing();
-        ClearBackground(RAYWHITE);
-
-        // Draw render texture to screen, scaled if required
-        DrawTexturePro(target.texture, (Rectangle){ 0, 0, (float)target.texture.width, -(float)target.texture.height }, (Rectangle){ 0, 0, (float)target.texture.width, (float)target.texture.height }, (Vector2){ 0, 0 }, 0.0f, WHITE);
-
-        // TODO: Draw everything that requires to be drawn at this point, maybe UI?
-
-    EndDrawing();
-    //----------------------------------------------------------------------------------
+    if (IsKeyPressed(KEY_F))
+    {
+        run_foreground = !run_foreground;
+        if (run_foreground) SetWindowState(FLAG_WINDOW_TOPMOST);
+        else ClearWindowState(FLAG_WINDOW_TOPMOST);
+    }
+    #endif
+    
+    update();
 }
