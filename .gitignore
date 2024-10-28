@@ -66,6 +66,8 @@ compile_commands.json
 
 # Build folder
 [Bb]uild
+# Build file
+src/raylib_game
 
 # Android
 *apk*
