@@ -1,4 +1,7 @@
 #ifndef PLATFORM_WEB
+
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "windows.h"
 
 extern void (*Game_init)();
@@ -28,4 +31,11 @@ void load_game()
         Game_update = (void (*)())GetProcAddress(game, "Game_update");
     }
 }
+
+#else
+
+#include <dlfcn.h>
+
+
+#endif
 #endif

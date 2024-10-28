@@ -32,7 +32,13 @@ PLATFORM              ?= PLATFORM_DESKTOP
 PROJECT_NAME          ?= raylib_game
 PROJECT_VERSION       ?= 1.0
 PROJECT_BUILD_PATH    ?= .
-PROJECT_SOURCE_FILES  ?= raylib_game.c libload.c
+PROJECT_SOURCE_FILES  ?= raylib_game.c
+ifeq ($(PLATFORM),PLATFORM_DESKTOP)
+    PROJECT_SOURCE_FILES += libload.c
+endif
+ifeq ($(PLATFORM),PLATFORM_WEB)
+    PROJECT_SOURCE_FILES += game/_scene_editor.c game/_scene_start.c game/dusk-gui.c game/main.c game/scene.c game/scriptactions.c game/scriptsystem.c game/util.c
+endif
 
 # raylib library variables
 RAYLIB_SRC_PATH       ?= C:/raylib/raylib/src

@@ -169,12 +169,13 @@ static void build_game()
     init();
 }
 #else
-// simple way to make it build without specifying files
-#include "game/main.c"
-#include "game/actions.c"
-#include "game/util.c"
 int isInitialized = 0;
 void *contextData = NULL;
+
+void Game_init(void** contextData);
+void Game_deinit();
+void Game_update();
+
 void init()
 {
     Game_init(&contextData);
