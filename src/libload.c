@@ -35,6 +35,7 @@ void load_game()
 #else
 
 #include <dlfcn.h>
+#include <stddef.h>
 
 extern void (*Game_init)();
 extern void (*Game_deinit)();
