@@ -36,6 +36,34 @@ void load_game()
 
 #include <dlfcn.h>
 
+extern void (*Game_init)();
+extern void (*Game_deinit)();
+extern void (*Game_update)();
+
+static void *game;
+
+void unload_game()
+{
+    if (game)
+    {
+        dlclose(game);
+        game = NULL;
+    }
+}
+
+void load_game()
+{
+    unload_game();
+
+    game = dlopen("./game.so", RTLD_LAZY);
+    if (game)
+    {
+        Game_init = (void (*)())dlsym(game, "Game_init");
+        Game_deinit = (void (*)())dlsym(game, "Game_deinit");
+        Game_update = (void (*)())dlsym(game, "Game_update");
+    }
+}
+
 
 #endif
 #endif
