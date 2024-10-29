@@ -222,6 +222,7 @@ void UpdateDrawFrame(void)
     {
         if (IsKeyDown(KEY_LEFT_CONTROL))
         {
+            // trigger complete rebuild and reset context data
             contextData = 0;
         }
         system("reset");

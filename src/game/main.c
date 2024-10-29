@@ -4,6 +4,7 @@
 #include <external/glad.h>
 #include <memory.h>
 #include <raymath.h>
+#include "scriptsystem.h"
 #include "scriptactions.h"
 #include "scene.h"
 #include "_scenes.h"
@@ -130,6 +131,7 @@ void Game_update()
                 prevConfig->deinitFn(_contextData, prevConfig);
             }
 
+            Script_init(_contextData);
             Scene_init();
             _contextData->currentSceneId = _contextData->nextSceneId;
             config->initFn(_contextData, config);
@@ -171,8 +173,10 @@ void Game_update()
     rlEnableColorBlend();
 
     DrawUi();
-    
+    Script_update(_contextData, GetFrameTime());
+    Script_draw(_contextData);
     DuskGui_finalize();
+    
 
     EndDrawing();
 

@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "rlgl.h"
 #include <string.h>
+#include "main.h"
 
 int textLineSpacing = 0;
 void SetTextLineSpacingEx(int spacing)
@@ -53,14 +54,25 @@ static Vector2 MeasureTextRich(Font font, const char *text, float fontSize, floa
             // check for color tag
             if (strncmp(&text[i], "[color=", 7) == 0 && size - i >= 11 && text[i+11] == ']')
             {
-                int r = hexToInt(text[i + 7]);
-                int g = hexToInt(text[i + 8]);
-                int b = hexToInt(text[i + 9]);
-                int a = hexToInt(text[i + 10]);
-                if (r >= 0 && g >= 0 && b >= 0 && a >= 0)
-                {
-                    i+= 12;
-                    continue;
+                char word[5] = {text[i + 7], text[i + 8], text[i + 9], text[i + 10], '\0'};
+                if (strcmp(word, "blac") == 0) {i+=12; continue; }
+                else if (strcmp(word, "whit") == 0) {i+=12; continue; }
+                else if (strcmp(word, "red_") == 0) {i+=12; continue; }
+                else if (strcmp(word, "blue") == 0) {i+=12; continue; }
+                else if (strcmp(word, "gree") == 0) {i+=12; continue; }
+                else if (strcmp(word, "yell") == 0) {i+=12; continue; }
+                else if (strcmp(word, "grey") == 0) {i+=12; continue; }
+                else if (strcmp(word, "purp") == 0) {i+=12; continue; }
+                else {
+                    int r = hexToInt(text[i + 7]);
+                    int g = hexToInt(text[i + 8]);
+                    int b = hexToInt(text[i + 9]);
+                    int a = hexToInt(text[i + 10]);
+                    if (r >= 0 && g >= 0 && b >= 0 && a >= 0)
+                    {
+                        i+= 12;
+                        continue;
+                    }
                 }
             }
             if (strncmp(&text[i], "[/color]", 8) == 0)
@@ -120,7 +132,16 @@ static float CalcNextRichtextWordWidth(Font font, const char *text, float fontSi
                 int g = hexToInt(text[i + 8]);
                 int b = hexToInt(text[i + 9]);
                 int a = hexToInt(text[i + 10]);
-                if (r >= 0 && g >= 0 && b >= 0 && a >= 0)
+                char word[5] = {text[i + 7], text[i + 8], text[i + 9], text[i + 10], '\0'};
+                if (strcmp(word, "blac") == 0) { i+=12; continue; }
+                else if (strcmp(word, "whit") == 0) { i+=12; continue; }
+                else if (strcmp(word, "red_") == 0) { i+=12; continue; }
+                else if (strcmp(word, "blue") == 0) { i+=12; continue; }
+                else if (strcmp(word, "gree") == 0) { i+=12; continue; }
+                else if (strcmp(word, "yell") == 0) { i+=12; continue; }
+                else if (strcmp(word, "grey") == 0) { i+=12; continue; }
+                else if (strcmp(word, "purp") == 0) { i+=12; continue; }
+                else if (r >= 0 && g >= 0 && b >= 0 && a >= 0)
                 {
                     i+= 12;
                     continue;
@@ -174,20 +195,38 @@ void DrawTextRich(Font font, const char *text, Vector2 position, float fontSize,
             // check for color tag
             if (strncmp(&text[i], "[color=", 7) == 0 && size - i >= 11 && text[i+11] == ']')
             {
-                int r = hexToInt(text[i + 7]);
-                int g = hexToInt(text[i + 8]);
-                int b = hexToInt(text[i + 9]);
-                int a = hexToInt(text[i + 10]);
-                if (r >= 0 && g >= 0 && b >= 0 && a >= 0)
+                // select from db8 color palette
+                char word[5] = {text[i + 7], text[i + 8], text[i + 9], text[i + 10], '\0'};
+                Color color = {255,0,255,0};
+                if (strcmp(word, "blac") == 0) color = DB8_BLACK;
+                else if (strcmp(word, "whit") == 0) color = DB8_WHITE;
+                else if (strcmp(word, "red_") == 0) color = DB8_RED;
+                else if (strcmp(word, "blue") == 0) color = DB8_BLUE;
+                else if (strcmp(word, "gree") == 0) color = DB8_GREEN;
+                else if (strcmp(word, "yell") == 0) color = DB8_YELLOW;
+                else if (strcmp(word, "grey") == 0) color = DB8_GREY;
+                else if (strcmp(word, "purp") == 0) color = DB8_DEEPPURPLE;
+                else
                 {
-                    // valid color tag
-                    Color rgba = {r | r << 4, g | g << 4, b | b << 4, 
-                        (a | a << 4) * alpha / 255 };
+                    // parse hex color
+                    int r = hexToInt(text[i + 7]);
+                    int g = hexToInt(text[i + 8]);
+                    int b = hexToInt(text[i + 9]);
+                    int a = hexToInt(text[i + 10]);
+                    if (r >= 0 && g >= 0 && b >= 0 && a >= 0)
+                    {
+                        // valid color tag
+                        color = (Color) {r | r << 4, g | g << 4, b | b << 4, 
+                            (a | a << 4) * alpha / 255 };
+                    }
+                }
+                if (color.a != 0)
+                {
                     i+= 12;
                     if (colorStackIndex < 16)
-                        colorStack[colorStackIndex++] = tint;
+                        colorStack[colorStackIndex++] = color;
                     else TraceLog(LOG_WARNING, "Color stack overflow");
-                    tint = rgba;
+                    tint = color;
                     continue;
                 }
             }

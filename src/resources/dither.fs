@@ -35,9 +35,12 @@ void main() {
     if (drawInnerOutlines == 0.0)
     {
         vec4 color = texture2D(texture0, fragTexCoord);
-        gl_FragColor = vec4(0.0,0.0,0.0, color.g);
+        gl_FragColor = vec4(0.0,0.0,0.0, color.g * fragColor.g);
         float z = -fragPosition.z * 32.0;
         gl_FragColor.rb = encode16bit(z);
+
+        // gl_FragColor = fragColor;
+
         return;
     }
     vec2 screenPos = gl_FragCoord.xy;

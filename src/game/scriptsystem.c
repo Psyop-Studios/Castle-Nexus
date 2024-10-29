@@ -15,17 +15,17 @@ void Script_draw(GameContext *gameCtx)
 
 void Script_update(GameContext *gameCtx, float dt)
 {
-    // _script.nextActionId = _script.currentActionId;
-    // for (int i = 0; i < _script.actionCount; i++) 
-    // {
-    //     ScriptAction *action = &_script.actions[i];
-    //     if (_script.currentActionId >= action->actionIdStart && _script.currentActionId <= action->actionIdEnd)
-    //     {
-    //         action->action(&_script, action);
-    //     }
-    // }
-    // _script.currentActionId = _script.nextActionId;
-    // _contextData->step = _script.currentActionId;
+    _script.nextActionId = _script.currentActionId;
+    for (int i = 0; i < _script.actionCount; i++) 
+    {
+        ScriptAction *action = &_script.actions[i];
+        if (_script.currentActionId >= action->actionIdStart && _script.currentActionId <= action->actionIdEnd)
+        {
+            action->action(&_script, action);
+        }
+    }
+    _script.currentActionId = _script.nextActionId;
+    gameCtx->currentScriptActionId = _script.currentActionId;
 }
 
 void Script_addAction(ScriptAction action)

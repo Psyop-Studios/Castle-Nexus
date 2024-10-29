@@ -6,7 +6,7 @@ if "%1" == "all" (
     del *.a
     make clean
     make PLATFORM=PLATFORM_DESKTOP BUILD_MODE=RELEASE RAYLIB_LIBTYPE=SHARED
-    cd ..\..\rayjam24\src
+    cd ..\..\raylib-NEXT-gamejam\src
 )
 
 make RAYLIB_LIBTYPE=SHARED BUILD_MODE=DEBUG

@@ -15,6 +15,16 @@
 #define DB8_YELLOW (Color){230, 200, 110, 255}
 #define DB8_BLACK (Color){0, 0, 0, 255}
 
+// the dithering shader uses the green value of the DB8 colors in alpha to translate it to a color value
+#define DB8_BG_WHITE (Color){0, 0, 0, 245}
+#define DB8_BG_DEEPPURPLE (Color){0, 0, 0, 65}
+#define DB8_BG_GREY (Color){0, 0, 0, 105}
+#define DB8_BG_RED (Color){0, 0, 0, 115}
+#define DB8_BG_BLUE (Color){0, 0, 0, 140}
+#define DB8_BG_GREEN (Color){0, 0, 0, 185}
+#define DB8_BG_YELLOW (Color){0, 0, 0, 200}
+#define DB8_BG_BLACK (Color){0, 0, 0, 0}
+
 typedef struct Script Script;
 typedef struct ScriptAction ScriptAction;
 
@@ -49,6 +59,8 @@ typedef struct GameContext {
     uint32_t nextSceneId;
     // the current game time in seconds
     float currentGameTime;
+    // the current step in the script; may allow to pause and resume scripts during recompile
+    int currentScriptActionId;
 } GameContext;
 
 extern Script _script;

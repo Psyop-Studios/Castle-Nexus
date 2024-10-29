@@ -22,12 +22,12 @@ void* ScriptAction_DrawTextRectData_new(const char *title, const char *text, Rec
 void ScriptAction_drawTextRect(Script *script, ScriptAction *action)
 {
     ScriptAction_DrawRectData *data = action->actionData;
-    DrawRectangleRec(data->rect, WHITE);
+    DrawRectangleRec(data->rect, DB8_WHITE);
     DrawRectangleLinesEx(data->rect, 1, BLACK);
-    DrawRectangleLinesEx((Rectangle){data->rect.x + 1, data->rect.y + 1, data->rect.width - 2, data->rect.height - 2}, 1, BLACK);
-    DrawTextBoxAligned(_fntMedium, data->title, data->rect.x + 6, data->rect.y + 6, data->rect.width - 12, data->rect.height - 12, 0.5f, 0.0f, WHITE);
-    DrawTextBoxAligned(_fntMedium, data->text, data->rect.x + 6, data->rect.y + 32, data->rect.width - 12, data->rect.height - 36, 0.0f, 0.0f, WHITE);
-    // DrawTextEx(fntMedium, data->text, (Vector2){data->rect.x + 4, data->rect.y + 4}, fntMedium.baseSize * 2.0f, -2.0f, WHITE);
+    DrawRectangleLinesEx((Rectangle){data->rect.x + 1, data->rect.y + 1, data->rect.width - 2, data->rect.height - 2}, 1, DB8_BLACK);
+    DrawTextBoxAligned(_fntMedium, data->title, data->rect.x + 6, data->rect.y + 6, data->rect.width - 12, data->rect.height - 12, 0.5f, 0.0f, DB8_WHITE);
+    DrawTextBoxAligned(_fntMedium, data->text, data->rect.x + 6, data->rect.y + 32, data->rect.width - 12, data->rect.height - 36, 0.0f, 0.0f, DB8_WHITE);
+    // DrawTextEx(fntMedium, data->text, (Vector2){data->rect.x + 4, data->rect.y + 4}, fntMedium.baseSize * 2.0f, -2.0f, DB8_WHITE);
 }
 
 typedef struct ScriptAction_DrawMagnifiedTextureData {
@@ -70,12 +70,12 @@ void ScriptAction_drawMagnifiedTexture(Script *script, ScriptAction *action)
     srcRect.width *= texture.width;
     srcRect.height *= -texture.height;
     // TraceLog(LOG_INFO, "srcRect: %f %f %f %f", srcRect.x, srcRect.y, srcRect.width, srcRect.height);
-    DrawRectangleLinesEx((Rectangle){srcRectScreen.x - 1.0f, srcRectScreen.y - 1.0f, srcRectScreen.width + 2.0f, srcRectScreen.height + 2.0f}, 4.0f, WHITE);
+    DrawRectangleLinesEx((Rectangle){srcRectScreen.x - 1.0f, srcRectScreen.y - 1.0f, srcRectScreen.width + 2.0f, srcRectScreen.height + 2.0f}, 4.0f, DB8_WHITE);
     DrawRectangleLinesEx(srcRectScreen, 2.0f, BLACK);
 
     for (float lw = 4.0f; lw >= 2.0f; lw -= 2.0f)
     {
-        Color color = lw == 2.0f ? BLACK : WHITE;
+        Color color = lw == 2.0f ? BLACK : DB8_WHITE;
         DrawLineEx((Vector2){srcRectScreen.x, srcRectScreen.y}, (Vector2){data->dstRect.x, data->dstRect.y}, lw, color);
         DrawLineEx((Vector2){srcRectScreen.x + srcRectScreen.width, srcRectScreen.y}, (Vector2){data->dstRect.x + data->dstRect.width, data->dstRect.y}, lw, color);
         DrawLineEx((Vector2){srcRectScreen.x, srcRectScreen.y + srcRectScreen.height}, (Vector2){data->dstRect.x, data->dstRect.y + data->dstRect.height}, lw, color);
@@ -85,14 +85,14 @@ void ScriptAction_drawMagnifiedTexture(Script *script, ScriptAction *action)
     rlDrawRenderBatchActive();
     rlDisableColorBlend();
     BeginShaderMode(data->shader);
-    DrawTexturePro(texture, srcRect, data->dstRect, (Vector2){0, 0}, 0.0f, WHITE);
+    DrawTexturePro(texture, srcRect, data->dstRect, (Vector2){0, 0}, 0.0f, DB8_WHITE);
     EndShaderMode();
 
     rlDrawRenderBatchActive();
     rlEnableColorBlend();
 
 
-    DrawRectangleLinesEx((Rectangle){data->dstRect.x-1.0f, data->dstRect.y-1.0f, data->dstRect.width + 2.0f, data->dstRect.height + 2.0f}, 4.0f, WHITE);
+    DrawRectangleLinesEx((Rectangle){data->dstRect.x-1.0f, data->dstRect.y-1.0f, data->dstRect.width + 2.0f, data->dstRect.height + 2.0f}, 4.0f, DB8_WHITE);
     DrawRectangleLinesEx(data->dstRect, 2.0f, BLACK);
 }
 
@@ -122,9 +122,9 @@ void ScriptAction_jumpStep(Script *script, ScriptAction *action)
     int mx = GetMouseX();
     int my = GetMouseY();
 
-    DrawRectangle(x, y, sx, sy, WHITE);
+    DrawRectangle(x, y, sx, sy, DB8_WHITE);
     DrawRectangleLinesEx((Rectangle){x,y,sx,sy},2.0f, BLACK);
-    DrawTextEx(_fntMedium, ">", (Vector2){x+sx / 2 - 4,y+6}, _fntMedium.baseSize * 2.0f, -2.0f, WHITE);
+    DrawTextEx(_fntMedium, ">", (Vector2){x+sx / 2 - 4,y+6}, _fntMedium.baseSize * 2.0f, -2.0f, DB8_WHITE);
     if ((IsMouseButtonReleased(0) && mx >= x && my >= y && mx < x + sx && my < y + sy) || IsKeyReleased(KEY_RIGHT))
     {
         TraceLog(LOG_INFO, "nextStep: %d", data->nextStep);
@@ -140,9 +140,9 @@ void ScriptAction_jumpStep(Script *script, ScriptAction *action)
 
     x-=sx + 4;
     
-    DrawRectangle(x, y, sx, sy, WHITE);
+    DrawRectangle(x, y, sx, sy, DB8_WHITE);
     DrawRectangleLinesEx((Rectangle){x,y,sx,sy},2.0f, BLACK);
-    DrawTextEx(_fntMedium, "<", (Vector2){x+sx / 2 - 4,y+6}, _fntMedium.baseSize * 2.0f, -2.0f, WHITE);
+    DrawTextEx(_fntMedium, "<", (Vector2){x+sx / 2 - 4,y+6}, _fntMedium.baseSize * 2.0f, -2.0f, DB8_WHITE);
     if ((IsMouseButtonReleased(0) && mx >= x && my >= y && mx < x + sx && my < y + sy) || IsKeyReleased(KEY_LEFT))
     {
         TraceLog(LOG_INFO, "prevStep: %d", data->prevStep);
@@ -213,5 +213,5 @@ void* ScriptAction_DrawTextureData_new(Texture2D *texture, Rectangle dstRect, Re
 void ScriptAction_drawTexture(Script *script, ScriptAction *action)
 {
     ScriptAction_DrawTextureData *data = action->actionData;
-    DrawTexturePro(*data->texture, data->srcRect, data->dstRect, (Vector2){0, 0}, 0.0f, WHITE);
+    DrawTexturePro(*data->texture, data->srcRect, data->dstRect, (Vector2){0, 0}, 0.0f, DB8_WHITE);
 }

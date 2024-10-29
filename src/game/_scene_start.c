@@ -2,6 +2,7 @@
 #include "_scenes.h"
 #include "scriptsystem.h"
 #include "scriptactions.h"
+#include "dusk-gui.h"
 
 static Model _model;
 static Camera _camera;
@@ -21,6 +22,26 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
 {
 
+}
+
+static void Step1_UI(Script *script, ScriptAction *action)
+{
+    DuskGuiParamsEntryId panel = DuskGui_beginPanel((DuskGuiParams){
+        .bounds = {10, 300, 200, 50},
+    });
+    DuskGui_label((DuskGuiParams){
+        .text = "Just a small UI example showing clipping support",
+        .bounds = {10, 10, 200, 18},
+    });
+    if (DuskGui_button((DuskGuiParams){
+        .bounds = {10, 30, 300, 18},
+        .rayCastTarget = 1,
+        .text = "Click me!",
+    }))
+    {
+        TraceLog(LOG_INFO, "Button clicked!");
+    }
+    DuskGui_endPanel(panel);
 }
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
@@ -48,10 +69,29 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     TraceLog(LOG_INFO, "SceneInit: %d done", SceneConfig->sceneId);
 
 
+    int step = 0;
     Script_addAction((ScriptAction){
-        .actionIdStart = 0,
+        .actionIdStart = step,
         .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Hello world",  "hi", (Rectangle){10, 10, 100, 100})});
+        .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "It was a [color=red_]dark and stormy night[/color] ...", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_jumpStep,
+        .actionData = ScriptAction_JumpStepData_new(-1, 1, 1)});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = Step1_UI,
+    });
+    step++;
+
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("", "the next step!", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_jumpStep,
+        .actionData = ScriptAction_JumpStepData_new(-1, 1, 1)});
 }
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)
