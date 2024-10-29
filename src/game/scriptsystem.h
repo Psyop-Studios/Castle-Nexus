@@ -6,5 +6,5 @@
 void Script_init(GameContext *gameCtx);
 void Script_draw(GameContext *gameCtx);
 void Script_update(GameContext *gameCtx, float dt);
-
+void Script_addAction(ScriptAction action);
 #endif

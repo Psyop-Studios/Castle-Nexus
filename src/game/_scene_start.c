@@ -1,5 +1,7 @@
 #include "scene.h"
 #include "_scenes.h"
+#include "scriptsystem.h"
+#include "scriptactions.h"
 
 static Model _model;
 static Camera _camera;
@@ -23,6 +25,11 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    if (gameCtx->currentSceneId == SCENE_ID_START)
+    {
+        TraceLog(LOG_INFO, "SceneInit: %d", SceneConfig->sceneId);
+    }
+
     TraceLog(LOG_INFO, "SceneInit: %d", SceneConfig->sceneId);
     _model = LoadModel("resources/level-blocks.glb");
     _model.materials[0].shader = _modelDitherShader;
@@ -39,6 +46,12 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     TraceLog(LOG_INFO, "_modelMeshCount: %d", _model.meshCount);
 
     TraceLog(LOG_INFO, "SceneInit: %d done", SceneConfig->sceneId);
+
+
+    Script_addAction((ScriptAction){
+        .actionIdStart = 0,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("Hello world",  "hi", (Rectangle){10, 10, 100, 100})});
 }
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)
@@ -52,4 +65,11 @@ SceneConfig _scene_start = {
     .initFn = SceneInit,
     .deinitFn = SceneDeinit,
     .sceneId = SCENE_ID_START,
+};
+SceneConfig _scene_start_intro = {
+    .drawLevelFn = SceneDraw,
+    .updateFn = SceneUpdate,
+    .initFn = SceneInit,
+    .deinitFn = SceneDeinit,
+    .sceneId = SCENE_ID_START_INTRO,
 };
