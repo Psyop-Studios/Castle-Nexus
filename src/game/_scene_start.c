@@ -36,6 +36,8 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.fovy = 45.0f;
     _camera.projection = CAMERA_PERSPECTIVE;
 
+    TraceLog(LOG_INFO, "_modelMeshCount: %d", _model.meshCount);
+
     TraceLog(LOG_INFO, "SceneInit: %d done", SceneConfig->sceneId);
 }
 

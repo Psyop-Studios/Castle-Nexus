@@ -35,6 +35,8 @@ void load_game()
 #else
 
 #include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
 
 extern void (*Game_init)();
@@ -57,11 +59,20 @@ void load_game()
     unload_game();
 
     game = dlopen("./game.so", RTLD_LAZY);
+    system("pwd");
+    printf(dlerror());
     if (game)
     {
+        printf("Loaded game.so\n");
         Game_init = (void (*)())dlsym(game, "Game_init");
         Game_deinit = (void (*)())dlsym(game, "Game_deinit");
         Game_update = (void (*)())dlsym(game, "Game_update");
+
+        printf("Loaded functions : %p %p %p", Game_init, Game_deinit, Game_update);
+    }
+    else
+    {
+        printf("Failed to load game.so\n");
     }
 }
 

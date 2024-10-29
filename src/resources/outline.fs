@@ -7,7 +7,7 @@
 // - if the uv.y value is greater than 1.0, no edge detection is run, IF the current pixel is behind it.
 //   This is done to have no outline behind FX objects but still having the outline when in front.
 // The texture is 32bit float, which allows us to store the color in a single float.
-precision highp float;                // Precision required for OpenGL ES2 (WebGL)
+//precision highp float;                // Precision required for OpenGL ES2 (WebGL)
 varying vec2 fragTexCoord;
 varying vec4 fragColor;
 uniform sampler2D texture0;
@@ -48,12 +48,12 @@ void main() {
     vec4 texelColorE = texture2D(texture0, fragTexCoord.xy + vec2(1.0 / resolution.x, 0.0));
     vec4 texelColorS = texture2D(texture0, fragTexCoord.xy - vec2(0.0, 1.0 / resolution.y));
     vec4 texelColorW = texture2D(texture0, fragTexCoord.xy - vec2(1.0 / resolution.x, 0.0));
-    
+
     float zN = decode16bit(texelColorN.rb);
     float zE = decode16bit(texelColorE.rb);
     float zS = decode16bit(texelColorS.rb);
     float zW = decode16bit(texelColorW.rb);
-    
+
     // unpack color from 32bit but potential 16bit red channel
     float f = texelColor.r;
     vec3 color = vec3(0.0);
@@ -79,7 +79,7 @@ void main() {
         color = vec3(1.0);
     }
 
-    if (texelColor.g >= 1.0 
+    if (texelColor.g >= 1.0
         || (texelColorW.g >= 1.0 && z + 0.5 > zW)
         || (texelColorE.g >= 1.0 && z + 0.5 > zE)
         || (texelColorS.g >= 1.0 && z + 0.5 > zS)
@@ -98,18 +98,18 @@ void main() {
     float vW = texelColorW.g;
     z += 0.0001;
     // v is the y coordinate of the UVs. If it differs, we want to draw a line (this is manually
-    // defined when creating the 3d models). We only want a single pixel border. 
+    // defined when creating the 3d models). We only want a single pixel border.
     if (
         // In the first checks here
         // we only use the v-difference to mark the edge, if the current pixel is in front of our neighbor.
         // without the z comparison, we would have 2 pixel wide edges
-        (z < zE && abs(v - vE) > 0.00001 && uvOutlineEnabled > 0.0) || 
-        (z < zW && abs(v - vW) > 0.00001 && uvOutlineEnabled > 0.0) || 
-        (z < zS && abs(v - vS) > 0.00001 && uvOutlineEnabled > 0.0) || 
+        (z < zE && abs(v - vE) > 0.00001 && uvOutlineEnabled > 0.0) ||
+        (z < zW && abs(v - vW) > 0.00001 && uvOutlineEnabled > 0.0) ||
+        (z < zS && abs(v - vS) > 0.00001 && uvOutlineEnabled > 0.0) ||
         (z < zN && abs(v - vN) > 0.00001 && uvOutlineEnabled > 0.0) ||
-        // This 2nd check does z based edge detection; 
+        // This 2nd check does z based edge detection;
         // if the z value is closer than the assumed z value calculated using the
-        // neighboring z values, we want an edge. It "sticks out" of the plane of neighboring pixels 
+        // neighboring z values, we want an edge. It "sticks out" of the plane of neighboring pixels
         // if this test succeeds, it means we found an edge due to a distance difference. Adding
         // a small value to compensate for rounding errors.
         (z + 0.75 < (zE + zW + zN + zS) * 0.25 && depthOutlineEnabled > 0.0)

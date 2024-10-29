@@ -1,26 +1,26 @@
 /*******************************************************************************************
-*
-*   raylib gamejam template
-*
-*   Template originally created with raylib 4.5-dev, last time updated with raylib 5.0
-*
-*   Template licensed under an unmodified zlib/libpng license, which is an OSI-certified,
-*   BSD-like license that allows static linking with closed source software
-*
-*   Copyright (c) 2022-2024 Ramon Santamaria (@raysan5)
-*
-********************************************************************************************/
+ *
+ *   raylib gamejam template
+ *
+ *   Template originally created with raylib 4.5-dev, last time updated with raylib 5.0
+ *
+ *   Template licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+ *   BSD-like license that allows static linking with closed source software
+ *
+ *   Copyright (c) 2022-2024 Ramon Santamaria (@raysan5)
+ *
+ ********************************************************************************************/
 
 #include "raylib.h"
 
 #if defined(PLATFORM_WEB)
-    #define CUSTOM_MODAL_DIALOGS            // Force custom modal dialogs usage
-    #include <emscripten/emscripten.h>      // Emscripten library - LLVM to JavaScript compiler
+#define CUSTOM_MODAL_DIALOGS       // Force custom modal dialogs usage
+#include <emscripten/emscripten.h> // Emscripten library - LLVM to JavaScript compiler
 #endif
 
-#include <stdio.h>                          // Required for: printf()
-#include <stdlib.h>                         // Required for: 
-#include <string.h>                         // Required for: 
+#include <stdio.h>  // Required for: printf()
+#include <stdlib.h> // Required for:
+#include <string.h> // Required for:
 
 //----------------------------------------------------------------------------------
 // Defines and Macros
@@ -29,18 +29,19 @@
 // NOTE: Avoiding those calls, also avoids const strings memory usage
 #define SUPPORT_LOG_INFO
 #if defined(SUPPORT_LOG_INFO)
-    #define LOG(...) printf(__VA_ARGS__)
+#define LOG(...) printf(__VA_ARGS__)
 #else
-    #define LOG(...)
+#define LOG(...)
 #endif
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-typedef enum { 
-    SCREEN_LOGO = 0, 
-    SCREEN_TITLE, 
-    SCREEN_GAMEPLAY, 
+typedef enum
+{
+    SCREEN_LOGO = 0,
+    SCREEN_TITLE,
+    SCREEN_GAMEPLAY,
     SCREEN_ENDING
 } GameScreen;
 
@@ -55,7 +56,7 @@ static const int screenHeight = 450;
 //----------------------------------------------------------------------------------
 // Module Functions Declaration
 //----------------------------------------------------------------------------------
-static void UpdateDrawFrame(void);      // Update and Draw one frame
+static void UpdateDrawFrame(void); // Update and Draw one frame
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -63,16 +64,16 @@ static void UpdateDrawFrame(void);      // Update and Draw one frame
 int main(void)
 {
 #if !defined(_DEBUG)
-    SetTraceLogLevel(LOG_NONE);         // Disable raylib trace log messages
+    SetTraceLogLevel(LOG_NONE); // Disable raylib trace log messages
 #endif
 
     // Initialization
     //--------------------------------------------------------------------------------------
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);  // Enable resizable window
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE); // Enable resizable window
     InitWindow(screenWidth, screenHeight, "raylib gamejam template");
-    
+
     // TODO: Load resources / Initialize variables at this point
-    
+
     // Render texture to draw full screen, enables screen scaling
     // NOTE: If screen is scaled, mouse input should be scaled proportionally
     // target = LoadRenderTexture(screenWidth, screenHeight);
@@ -81,11 +82,11 @@ int main(void)
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
 #else
-    SetTargetFPS(60);     // Set our game frames-per-second
+    SetTargetFPS(60); // Set our game frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!WindowShouldClose())    // Detect window close button
+    while (!WindowShouldClose()) // Detect window close button
     {
         UpdateDrawFrame();
     }
@@ -93,7 +94,7 @@ int main(void)
 
     // TODO: Unload all loaded resources at this point
 
-    CloseWindow();        // Close window and OpenGL context
+    CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
     return 0;
@@ -104,11 +105,11 @@ int main(void)
 #include <stdlib.h>
 #include <string.h>
 
-void (*Game_init)(void**);
+void (*Game_init)(void **);
 void (*Game_deinit)();
 void (*Game_update)();
 
-static void* contextData = NULL;
+static void *contextData = NULL;
 
 void init()
 {
@@ -146,7 +147,7 @@ static void build_game()
     Game_deinit = NULL;
     Game_init = NULL;
     Game_update = NULL;
-    char buildCommand[1024] = {0};
+    char buildCommand[4096] = {0};
     char cfilelist[2048] = {0};
     FilePathList files = LoadDirectoryFiles("game");
     for (int i = 0; i < files.count; i++)
@@ -161,18 +162,31 @@ static void build_game()
     }
     UnloadDirectoryFiles(files);
 
+#if defined(_WIN32) || defined(_WIN64)
     sprintf(buildCommand, "gcc -I../../raylib/src -L../../raylib/src -o game.dll -shared -fPIC %s -lraylib",
             cfilelist);
+
+#else
+    sprintf(buildCommand, "gcc -I../../raylib/src -L../../raylib/src -o game.so -shared -fPIC %s -lraylib",
+            cfilelist);
+#endif
+
     printf("Building game: %s\n", buildCommand);
-    system(buildCommand);
+
+    int result = system(buildCommand);
+
+    printf("result : %d\n", result);
+
     load_game();
     init();
+    printf("Game built and loaded\n");
 }
 #else
+
 int isInitialized = 0;
 void *contextData = NULL;
 
-void Game_init(void** contextData);
+void Game_init(void **contextData);
 void Game_deinit();
 void Game_update();
 
@@ -203,23 +217,26 @@ static int run_foreground = 0;
 // Update and draw frame
 void UpdateDrawFrame(void)
 {
-    #ifdef PLATFORM_DESKTOP
+#ifdef PLATFORM_DESKTOP
     if (IsKeyPressed(KEY_R) || !is_built)
     {
         if (IsKeyDown(KEY_LEFT_CONTROL))
         {
             contextData = 0;
         }
+        system("reset");
         build_game();
     }
 
     if (IsKeyPressed(KEY_F))
     {
         run_foreground = !run_foreground;
-        if (run_foreground) SetWindowState(FLAG_WINDOW_TOPMOST);
-        else ClearWindowState(FLAG_WINDOW_TOPMOST);
+        if (run_foreground)
+            SetWindowState(FLAG_WINDOW_TOPMOST);
+        else
+            ClearWindowState(FLAG_WINDOW_TOPMOST);
     }
-    #endif
-    
+#endif
+
     update();
 }
