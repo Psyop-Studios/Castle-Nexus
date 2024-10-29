@@ -167,7 +167,7 @@ static void build_game()
             cfilelist);
 
 #else
-    sprintf(buildCommand, "gcc -g -I../../raylib/src -L../../raylib/src -o game.so -shared -fPIC %s -lraylib",
+    sprintf(buildCommand, "gcc -g -Wall -I../../raylib/src -L../../raylib/src -o game.so -shared -fPIC %s -lraylib -DCJSON_HIDE_SYMBOLS",
             cfilelist);
 #endif
 

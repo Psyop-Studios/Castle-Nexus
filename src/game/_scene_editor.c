@@ -12,6 +12,7 @@ static Camera _camera;
 
 static Vector3 _worldCursor = {0};
 static int _updateCamera;
+static char _levelFileNameBuffer[256] = {0};
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     // ClearBackground(DB8_BG_DEEPPURPLE);
@@ -65,6 +66,23 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
         .text = TextFormat("Cursor: %.2f %.2f %.2f", _worldCursor.x, _worldCursor.y, _worldCursor.z),
         .bounds = (Rectangle) { 10, 10, 180, 20 },
     });
+
+    {
+        char *resultBuffer = NULL;
+        DuskGui_textInputField((DuskGuiParams) {
+            .text = _levelFileNameBuffer,
+            .isFocusable = 1,
+            .rayCastTarget = 1,
+            .bounds = (Rectangle) { 300, 10, 180, 20 },
+        }, &resultBuffer);
+        
+        if (resultBuffer)
+        {
+            strncpy(_levelFileNameBuffer, resultBuffer, 256);
+        }
+
+
+    }
     // if (DuskGui_button((DuskGuiParams) {
     //     .text = "Editor",
     //     .rayCastTarget = 1,
