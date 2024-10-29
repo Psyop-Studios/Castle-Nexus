@@ -87,3 +87,4 @@ src/raylib_game.data
 
 # blender backups
 *.blend1
+src/raylib_game
