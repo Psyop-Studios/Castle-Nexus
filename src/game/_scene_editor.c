@@ -3,16 +3,24 @@
 #include "dusk-gui.h"
 #include <raymath.h>
 #include <math.h>
+#include "level.h"
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 static Camera _camera;
 
 static Vector3 _worldCursor = {0};
-
+static int _updateCamera;
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
-    ClearBackground(DB8_BG_DEEPPURPLE);
+    // ClearBackground(DB8_BG_DEEPPURPLE);
     // TraceLog(LOG_INFO, "SceneDraw: %d", SceneConfig->sceneId);
     BeginMode3D(_camera);
+
+    Level *level = Game_getLevel();
+    Level_draw(level);
+
     // DrawModel(_model, (Vector3){0.0f, 0.0f, 0.0f}, 1.0f, WHITE);
     BeginShaderMode(_modelTexturedShader);
     // draw a corner grid around a point
@@ -29,11 +37,12 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
         }
     }
     DrawCubeWires((Vector3){_worldCursor.x, _worldCursor.y + .5f, _worldCursor.z}, 1.0f, 1.0f, 1.0f, DB8_RED);
+
     EndShaderMode();
 
     EndMode3D();
 
-    if (IsMouseButtonDown(0))
+    if (_updateCamera)
     {
         UpdateCamera(&_camera, CAMERA_FIRST_PERSON);
     }
@@ -41,9 +50,15 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 
 static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    _updateCamera = DuskGui_dragArea((DuskGuiParams) {
+        .text = "Camera",
+        .bounds = (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() },
+        .rayCastTarget = 1,
+    });
     // DrawRectangle(0, 0, 200, 200, DB8_WHITE);
     DuskGuiParamsEntryId panel = DuskGui_beginPanel((DuskGuiParams) {
         .bounds = (Rectangle) { -5, -5, GetScreenWidth() + 10, 30 },
+        .rayCastTarget = 1,
     });
     
     DuskGui_label((DuskGuiParams) {
@@ -58,6 +73,98 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
     //     TraceLog(LOG_INFO, "Button clicked");
     // }
     DuskGui_endPanel(panel);
+
+    DuskGuiParamsEntryId objectCreatePanel = DuskGui_beginPanel((DuskGuiParams) {
+        .bounds = (Rectangle) { 0, 20, 200, GetScreenHeight() - 20},
+        .rayCastTarget = 1,
+    });
+    Level *level = Game_getLevel();
+    for (int i = 0; i < level->meshCount; i++)
+    {
+        LevelMesh *mesh = &level->meshes[i];
+        char *lastSlash = strrchr(mesh->filename, '/');
+        if (DuskGui_button((DuskGuiParams) {
+            .rayCastTarget = 1,
+            .text = lastSlash ? lastSlash + 1 : mesh->filename,
+            .bounds = (Rectangle) { 10, 10 + i * 20, 180, 20 },
+        }))
+        {
+            Level_addInstance(level, mesh->filename, _worldCursor, (Vector3){0, 0, 0}, (Vector3){1, 1, 1});
+        }
+    }
+    DuskGui_endPanel(objectCreatePanel);
+    DuskGuiParamsEntryId objectEditPanel = DuskGui_beginPanel((DuskGuiParams) {
+        .bounds = (Rectangle) { GetScreenWidth() - 200, 20, 200, GetScreenHeight() - 20},
+        .rayCastTarget = 1,
+    });
+
+    float posY = 10.0f;
+
+    for (int i = 0; i < level->meshCount; i++)
+    {
+        LevelMesh *mesh = &level->meshes[i];
+        for (int j = 0; j < mesh->instanceCount; j++)
+        {
+            LevelMeshInstance *instance = &mesh->instances[j];
+            Vector3 diff = Vector3Subtract(instance->position, _worldCursor);
+            float dx = fabsf(diff.x);
+            float dz = fabsf(diff.z);
+            if (dx <= 1.0f && dz <= 1.0f)
+            {
+                DuskGui_horizontalLine((DuskGuiParams) {
+                    .text = mesh->filename,
+                    .bounds = (Rectangle) { 10, posY, 180, 1 },
+                });
+                posY += 8.0f;
+                char buffer[128];
+                sprintf(buffer, "%.3f##X-%d", instance->position.x, j);
+                if (DuskGui_floatInputField((DuskGuiParams) {
+                    .text = buffer,
+                    .rayCastTarget = 1,
+                    .bounds = (Rectangle) { 10, posY, 60, 20 },
+                }, &instance->position.x, _worldCursor.x - 1.0f, _worldCursor.x + 1.0f))
+                {
+                    Level_updateInstanceTransform(instance);
+                }
+                sprintf(buffer, "%.3f##Y-%d", instance->position.y, j);
+                if (DuskGui_floatInputField((DuskGuiParams) {
+                    .text = buffer,
+                    .rayCastTarget = 1,
+                    .bounds = (Rectangle) { 70, posY, 60, 20 },
+                }, &instance->position.y, _worldCursor.y - 2.0f, _worldCursor.y + 4.0f))
+                {
+                    Level_updateInstanceTransform(instance);
+                }
+                sprintf(buffer, "%.3f##Z-%d", instance->position.z, j);
+                if (DuskGui_floatInputField((DuskGuiParams) {
+                    .text = buffer,
+                    .rayCastTarget = 1,
+                    .bounds = (Rectangle) { 130, posY, 60, 20 },
+                }, &instance->position.z, _worldCursor.z - 1.0f, _worldCursor.z + 1.0f))
+                {
+                    Level_updateInstanceTransform(instance);
+                }
+
+                posY += 20.0f;
+                if (DuskGui_button((DuskGuiParams) {
+                    .text = "Delete",
+                    .rayCastTarget = 1,
+                    .bounds = (Rectangle) { 10, posY, 180, 20 },
+                }))
+                {
+                    for (int k = j; k < mesh->instanceCount - 1; k++)
+                    {
+                        mesh->instances[k] = mesh->instances[k + 1];
+                    }
+                    mesh->instanceCount--;
+                }
+
+                posY += 30.0f;
+            }
+        }
+    }
+
+    DuskGui_endPanel(objectEditPanel);
 }
 
 static float fsign(float x)

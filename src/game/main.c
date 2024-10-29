@@ -9,12 +9,14 @@
 #include "scene.h"
 #include "_scenes.h"
 #include "dusk-gui.h"
+#include "level.h"
 
 
 static GameContext *_contextData;
 
 static Shader _outlineShader;
 static RenderTexture2D _target = {0};
+static Level _level = {0};
 
 Shader _modelDitherShader;
 Shader _modelTexturedShader;
@@ -37,7 +39,10 @@ void UpdateRenderTexture()
 
 void Game_init(void** contextData)
 {
+    printf("Game_init\n");
+
     DuskGui_init();
+
     if (*contextData == NULL)
     {
         *contextData = MemAlloc(sizeof(GameContext));
@@ -72,6 +77,16 @@ void Game_init(void** contextData)
 
     UpdateRenderTexture();
     SetTextLineSpacingEx(-6);
+
+    Level_init(&_level);
+    Level_loadAssets(&_level, "resources/level_assets");
+
+    DuskGui_setDefaultFont(_fntMedium, _fntMedium.baseSize, -1);
+}
+
+Level *Game_getLevel()
+{
+    return &_level;
 }
 
 void Game_deinit()
@@ -89,6 +104,7 @@ void Game_deinit()
     UnloadRenderTexture(_target);
     UnloadFont(_fntMedium);
     UnloadFont(_fntMono);
+    Level_unload(&_level);
 }
 
 void DrawScene()
@@ -98,13 +114,13 @@ void DrawScene()
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "depthOutlineEnabled"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "uvOutlineEnabled"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
 
-
     SceneConfig *config = Scene_getConfig(_contextData->currentSceneId);
     if (config)
     {
         config->updateFn(_contextData, config, GetFrameTime());
         config->drawLevelFn(_contextData, config);
     }
+
 }
 
 void DrawUi()
@@ -153,7 +169,7 @@ void Game_update()
     rlDisableColorBlend();
 
     BeginTextureMode(_target);
-    ClearBackground(BLACK);
+    ClearBackground(DB8_BG_DEEPPURPLE);
     DrawScene();
     
     EndTextureMode();

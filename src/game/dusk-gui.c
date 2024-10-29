@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "main.h"
 
 extern int textLineSpacing;
 
@@ -90,83 +91,6 @@ static Vector2 MeasureTextRich(Font font, const char *text, float fontSize, floa
     textSize.y = textHeight;
 
     return textSize;
-}
-
-// Draw text using Font
-// NOTE: chars spacing is NOT proportional to fontSize
-static void DrawTextRich(Font font, const char *text, Vector2 position, float fontSize, float spacing, Color tint)
-{
-    if (font.texture.id == 0) font = GetFontDefault();  // Security check in case of not valid font
-
-    int size = TextLength(text);    // Total size in bytes of the text, scanned by codepoints in loop
-
-    float textOffsetY = 0;          // Offset between lines (on linebreak '\n')
-    float textOffsetX = 0.0f;       // Offset X to next character to draw
-
-    float scaleFactor = fontSize/font.baseSize;         // Character quad scaling factor
-    int alpha = tint.a;
-    Color colorStack[16];
-    int colorStackIndex = 0;
-
-    for (int i = 0; i < size;)
-    {
-        // Get next codepoint from byte string and glyph index in font
-        int codepointByteCount = 0;
-        int codepoint = GetCodepointNext(&text[i], &codepointByteCount);
-        int index = GetGlyphIndex(font, codepoint);
-
-        if (codepoint == '[')
-        {
-            // check for color tag
-            if (strncmp(&text[i], "[color=", 7) == 0 && size - i >= 11 && text[i+11] == ']')
-            {
-                int r = hexToInt(text[i + 7]);
-                int g = hexToInt(text[i + 8]);
-                int b = hexToInt(text[i + 9]);
-                int a = hexToInt(text[i + 10]);
-                if (r >= 0 && g >= 0 && b >= 0 && a >= 0)
-                {
-                    // valid color tag
-                    Color rgba = {r | r << 4, g | g << 4, b | b << 4, 
-                        (a | a << 4) * alpha / 255 };
-                    i+= 12;
-                    if (colorStackIndex < 16)
-                        colorStack[colorStackIndex++] = tint;
-                    else TraceLog(LOG_WARNING, "Color stack overflow");
-                    tint = rgba;
-                    continue;
-                }
-            }
-            if (strncmp(&text[i], "[/color]", 8) == 0)
-            {
-                if (colorStackIndex > 0)
-                {
-                    tint = colorStack[--colorStackIndex];
-                }
-                i += 8;
-                continue;
-            }
-        }
-
-        if (codepoint == '\n')
-        {
-            // NOTE: Line spacing is a global variable, use SetTextLineSpacing() to setup
-            textOffsetY += (fontSize + textLineSpacing);
-            textOffsetX = 0.0f;
-        }
-        else
-        {
-            if ((codepoint != ' ') && (codepoint != '\t'))
-            {
-                DrawTextCodepoint(font, codepoint, (Vector2){ position.x + textOffsetX, position.y + textOffsetY }, fontSize, tint);
-            }
-
-            if (font.glyphs[index].advanceX == 0) textOffsetX += ((float)font.recs[index].width*scaleFactor + spacing);
-            else textOffsetX += ((float)font.glyphs[index].advanceX*scaleFactor + spacing);
-        }
-
-        i += codepointByteCount;   // Move text bytes counter to next codepoint
-    }
 }
 
 static DuskGuiState _duskGuiState;
@@ -367,7 +291,7 @@ static void DuskGui_defaultDrawStyle(DuskGuiParamsEntry* entry, DuskGuiState* st
 
             int x = (int)(entry->params.bounds.x + lerpedStyle.paddingLeft + (availableSpace.x - box.x) * lerpedStyle.textAlignment.x) + entry->textOffset.x;
             int y = (int)(entry->params.bounds.y + lerpedStyle.paddingTop + (availableSpace.y - box.y) * lerpedStyle.textAlignment.y) + entry->textOffset.y;
-            DrawTextRich(font, text, (Vector2) { x, y }, fontSize, fontSpacing, textColor);
+            DrawTextRich(font, text, (Vector2) { x, y }, fontSize, fontSpacing, 1001, textColor);
 
             entry->textBounds = (Rectangle) { x, y, box.x, box.y };
         }
@@ -520,7 +444,7 @@ void DuskGui_init()
 
     // create default texture procedurally
     int size = 16;
-    Image defaultImage = GenImageColor(size, size, WHITE);
+    Image defaultImage = GenImageColor(size, size, DB8_WHITE);
     Color* pixels = (Color*)defaultImage.data;
     float half = (float)(size - 1) / 2;
     const float a = 0.6f;
@@ -565,8 +489,8 @@ void DuskGui_init()
         .paddingRight = 4,
         .paddingTop = 6,
         .paddingBottom = 4,
-        .backgroundColor = (Color) { 200, 200, 200, 255 },
-        .textColor = BLACK,
+        .backgroundColor = DB8_GREY,
+        .textColor = DB8_WHITE,
         .transitionLingerTime = 0.033f,
     };
 
@@ -585,8 +509,8 @@ void DuskGui_init()
     buttonGroup->hover->backgroundColor = (Color) { 200, 220, 250, 255 };
     buttonGroup->hover->transitionLingerTime = 0.25f;
     buttonGroup->pressed = DuskGui_createGuiStyle(buttonGroup->normal);
-    buttonGroup->pressed->backgroundColor = (Color) { 200, 200, 200, 255 };
-    buttonGroup->pressed->textColor = RED;
+    buttonGroup->pressed->backgroundColor = DB8_GREY;
+    buttonGroup->pressed->textColor = DB8_RED;
     buttonGroup->pressed->transitionActivationTime = -.15f;
 
     DuskGuiStyleGroup* panelGroup = &_defaultStyles.groups[DUSKGUI_STYLE_PANEL];
@@ -596,14 +520,14 @@ void DuskGui_init()
         .paddingRight = 4,
         .paddingTop = 4,
         .paddingBottom = 4,
-        .backgroundColor = (Color) { 220, 220, 220, 255 },
-        .textColor = BLACK,
+        .backgroundColor = DB8_GREY,
+        .textColor = DB8_WHITE,
         .backgroundTexture = defaultTexture,
         .backgroundPatchInfo = GenNPatchInfo(o, o, w, h, n, n, n, n),
         .transitionLingerTime = 0.033f,
     };
 
-    Image menuTexture = GenImageColor(16, 16, (Color) { 255, 255, 255, 255 });
+    Image menuTexture = GenImageColor(16, 16, DB8_WHITE);
     Color* menuPixels = (Color*)menuTexture.data;
     for (int y = 0; y < 15; y++) {
         for (int x = 0; x < 15; x++) {
@@ -628,8 +552,8 @@ void DuskGui_init()
         .paddingRight = 2,
         .paddingTop = 1,
         .paddingBottom = 3,
-        .backgroundColor = (Color) { 220, 220, 220, 255 },
-        .textColor = BLACK,
+        .backgroundColor = DB8_GREY,
+        .textColor = DB8_WHITE,
         .backgroundTexture = menuBackground,
         .backgroundPatchInfo = GenNPatchInfo(0, 0, 16, 16, 3, 3, 3, 3),
     };
@@ -642,39 +566,39 @@ void DuskGui_init()
         .paddingRight = 4,
         .paddingTop = 2,
         .paddingBottom = 2,
-        .backgroundColor = (Color) { 220, 220, 220, 255 },
-        .textColor = BLACK,
+        .backgroundColor = DB8_GREY,
+        .textColor = DB8_WHITE,
     };
     menuItemGroup->normal = &menuItemGroup->fallbackStyle;
     menuItemGroup->hover = DuskGui_createGuiStyle(&menuItemGroup->fallbackStyle);
-    menuItemGroup->hover->backgroundColor = (Color) { 200, 200, 250, 255 };
+    menuItemGroup->hover->backgroundColor = DB8_WHITE;
     menuItemGroup->hover->transitionLingerTime = 0.25f;
     menuItemGroup->pressed = DuskGui_createGuiStyle(&menuItemGroup->fallbackStyle);
-    menuItemGroup->pressed->backgroundColor = (Color) { 200, 200, 200, 255 };
-    menuItemGroup->pressed->textColor = RED;
+    menuItemGroup->pressed->backgroundColor = DB8_GREY;
+    menuItemGroup->pressed->textColor = DB8_RED;
     menuItemGroup->pressed->transitionActivationTime = -.15f;
 
     DuskGuiStyleGroup* labelGroup = &_defaultStyles.groups[DUSKGUI_STYLE_LABEL];
     labelGroup->fallbackStyle = (DuskGuiStyle) {
         .fontStyle = &_defaultFont,
         .textAlignment = (Vector2) { 0.0f, 0.5f },
-        .textColor = BLACK,
+        .textColor = DB8_WHITE,
     };
 
     DuskGuiStyleGroup* labelButtonGroup = &_defaultStyles.groups[DUSKGUI_STYLE_LABELBUTTON];
     labelButtonGroup->fallbackStyle = (DuskGuiStyle) {
         .fontStyle = &_defaultFont,
         .textAlignment = (Vector2) { 0.0f, 0.5f },
-        .textColor = BLACK,
+        .textColor = DB8_WHITE,
         .transitionLingerTime = 0.01f,
     };
     labelButtonGroup->normal = &labelButtonGroup->fallbackStyle;
     labelButtonGroup->hover = DuskGui_createGuiStyle(&labelButtonGroup->fallbackStyle);
-    labelButtonGroup->hover->transitionActivationTime = 0.01f;
-    labelButtonGroup->hover->transitionLingerTime = 0.3f;
-    labelButtonGroup->hover->textColor = (Color) { 80, 80, 128, 255 };
+    // labelButtonGroup->hover->transitionActivationTime = 0.01f;
+    // labelButtonGroup->hover->transitionLingerTime = 0.3f;
+    labelButtonGroup->hover->textColor = DB8_BLUE;
     labelButtonGroup->pressed = DuskGui_createGuiStyle(&labelButtonGroup->fallbackStyle);
-    labelButtonGroup->pressed->textColor = (Color) { 100, 100, 255, 255 };
+    labelButtonGroup->pressed->textColor = DB8_RED;
     labelButtonGroup->pressed->transitionActivationTime = -0.25f;
 
     Image foldoutImage = GenImageColor(16, 16, (Color) { 255, 255, 255, 0 });
@@ -682,7 +606,7 @@ void DuskGui_init()
     for (int y = 0; y < 16; y++) {
         for (int x = 0; x < 16; x++) {
             if (x - y < 0 && x + y < 16 && x > 2)
-                foldoutPixels[y * 16 + x] = (Color) { 255, 255, 255, 255 };
+                foldoutPixels[y * 16 + x] = DB8_WHITE;
         }
     }
     Texture2D foldoutIcon = LoadTextureFromImage(foldoutImage);
@@ -695,9 +619,9 @@ void DuskGui_init()
         .fontStyle = &_defaultFont,
         .textAlignment = (Vector2) { 0.0f, 0.5f },
         .paddingLeft = 10,
-        .textColor = BLACK,
+        .textColor = DB8_WHITE,
         .icon.texture = foldoutIcon,
-        .icon.color = BLACK,
+        .icon.color = DB8_BLACK,
         .icon.dst.x = -2.0f,
         .icon.dst.y = -1.0f,
         .icon.dst.width = 16.0f,
@@ -711,9 +635,9 @@ void DuskGui_init()
     foldoutOpen->normal = &foldoutOpen->fallbackStyle;
     foldoutOpen->hover = DuskGui_createGuiStyle(&foldoutOpen->fallbackStyle);
     foldoutOpen->hover->icon.rotationDegrees = 70.0f;
-    foldoutOpen->hover->textColor = (Color) { 80, 80, 128, 255 };
+    foldoutOpen->hover->textColor = DB8_BLUE;
     foldoutOpen->pressed = DuskGui_createGuiStyle(&foldoutOpen->fallbackStyle);
-    foldoutOpen->pressed->textColor = (Color) { 100, 100, 255, 255 };
+    foldoutOpen->pressed->textColor = DB8_RED;
     foldoutOpen->pressed->icon.rotationDegrees = 45;
 
     DuskGuiStyleGroup* foldoutClosed = &_defaultStyles.groups[DUSKGUI_STYLE_FOLDOUT_CLOSED];
@@ -722,12 +646,12 @@ void DuskGui_init()
     foldoutClosed->normal = &foldoutClosed->fallbackStyle;
     foldoutClosed->hover = DuskGui_createGuiStyle(&foldoutClosed->fallbackStyle);
     foldoutClosed->hover->icon.rotationDegrees = 20.0f;
-    foldoutClosed->hover->textColor = (Color) { 80, 80, 128, 255 };
+    foldoutClosed->hover->textColor = DB8_BLUE;
     foldoutClosed->pressed = DuskGui_createGuiStyle(&foldoutClosed->fallbackStyle);
-    foldoutClosed->pressed->textColor = (Color) { 100, 100, 255, 255 };
+    foldoutClosed->pressed->textColor = DB8_RED;
     foldoutClosed->pressed->icon.rotationDegrees = 45;
 
-    Image textFieldPatch9 = GenImageColor(16, 16, (Color) { 255, 255, 255, 255 });
+    Image textFieldPatch9 = GenImageColor(16, 16, DB8_WHITE);
     Color* textFieldPixels = (Color*)textFieldPatch9.data;
     for (int y = 0; y < 16; y++) {
         for (int x = 0; x < 16; x++) {
@@ -743,7 +667,7 @@ void DuskGui_init()
     UnloadImage(textFieldPatch9);
     SetTextureFilter(textFieldTexture, TEXTURE_FILTER_BILINEAR);
     SetTextureWrap(textFieldTexture, TEXTURE_WRAP_CLAMP);
-    Image textFieldCursor = GenImageColor(2, 16, (Color) { 255, 255, 255, 255 });
+    Image textFieldCursor = GenImageColor(2, 16, DB8_WHITE);
     Texture2D cursorTexture = LoadTextureFromImage(textFieldCursor);
     UnloadImage(textFieldCursor);
 
@@ -755,8 +679,8 @@ void DuskGui_init()
         .paddingRight = 4,
         .paddingTop = 4,
         .paddingBottom = 4,
-        .backgroundColor = (Color) { 255, 255, 255, 255 },
-        .textColor = BLACK,
+        .backgroundColor = DB8_WHITE,
+        .textColor = DB8_WHITE,
         .backgroundTexture = textFieldTexture,
         .backgroundPatchInfo = GenNPatchInfo(0, 0, 16, 16, 4, 4, 4, 4),
         .transitionLingerTime = 0.033f,
@@ -770,10 +694,10 @@ void DuskGui_init()
     textFieldGroup->hover->backgroundColor = (Color) { 240, 240, 240, 255 };
     textFieldGroup->hover->icon.color = BLACK;
     textFieldGroup->pressed = DuskGui_createGuiStyle(&textFieldGroup->fallbackStyle);
-    textFieldGroup->pressed->backgroundColor = (Color) { 220, 220, 220, 255 };
+    textFieldGroup->pressed->backgroundColor = DB8_GREY;
     textFieldGroup->pressed->icon.color = BLACK;
     textFieldGroup->focused = DuskGui_createGuiStyle(&textFieldGroup->fallbackStyle);
-    textFieldGroup->focused->backgroundColor = (Color) { 250, 200, 200, 255 };
+    textFieldGroup->focused->backgroundColor = DB8_YELLOW;
     textFieldGroup->focused->icon.color = BLACK;
 
     Image numberHArrows = GenImageColor(16, 16, (Color) { 255, 255, 255, 0 });
@@ -784,7 +708,7 @@ void DuskGui_init()
             int dx = (x - 8) * 2 + 1;
             int absDist = abs(dx) + abs(dy);
             if (absDist < 11 && abs(dx) > 2) {
-                numberHArrowsPixels[y * 16 + x] = (Color) { 255, 255, 255, 255 };
+                numberHArrowsPixels[y * 16 + x] = DB8_WHITE;
             }
         }
     }
@@ -805,10 +729,10 @@ void DuskGui_init()
     numberInputField->hover->backgroundColor = (Color) { 240, 240, 240, 255 };
     numberInputField->hover->icon.color = (Color) { 80, 80, 120, 255 };
     numberInputField->pressed = DuskGui_createGuiStyle(&numberInputField->fallbackStyle);
-    numberInputField->pressed->backgroundColor = (Color) { 220, 220, 220, 255 };
+    numberInputField->pressed->backgroundColor = DB8_GREY;
     numberInputField->pressed->icon.color = (Color) { 200, 100, 100, 255 };
     numberInputField->focused = DuskGui_createGuiStyle(&numberInputField->fallbackStyle);
-    numberInputField->focused->backgroundColor = (Color) { 250, 200, 200, 255 };
+    numberInputField->focused->backgroundColor = DB8_YELLOW;
     numberInputField->focused->icon.color = (Color) { 200, 100, 100, 255 };
 
     DuskGuiStyleGroup* horizontalSliderBackgroundGroup = &_defaultStyles.groups[DUSKGUI_STYLE_HORIZONTAL_SLIDER_BACKGROUND];
@@ -818,19 +742,19 @@ void DuskGui_init()
         .paddingRight = 1,
         .paddingTop = 1,
         .paddingBottom = 1,
-        .backgroundColor = (Color) { 200, 200, 200, 255 },
-        .textColor = BLACK,
+        .backgroundColor = DB8_GREY,
+        .textColor = DB8_WHITE,
         .transitionLingerTime = 0.033f,
         .backgroundTexture = defaultTexture,
         .backgroundPatchInfo = GenNPatchInfo(o, o, w, h, n, n, n, n),
     };
     horizontalSliderBackgroundGroup->normal = &horizontalSliderBackgroundGroup->fallbackStyle;
     horizontalSliderBackgroundGroup->hover = DuskGui_createGuiStyle(&horizontalSliderBackgroundGroup->fallbackStyle);
-    horizontalSliderBackgroundGroup->hover->backgroundColor = (Color) { 220, 220, 220, 255 };
+    horizontalSliderBackgroundGroup->hover->backgroundColor = DB8_GREY;
     horizontalSliderBackgroundGroup->pressed = DuskGui_createGuiStyle(&horizontalSliderBackgroundGroup->fallbackStyle);
-    horizontalSliderBackgroundGroup->pressed->backgroundColor = (Color) { 200, 200, 250, 255 };
+    horizontalSliderBackgroundGroup->pressed->backgroundColor = DB8_WHITE;
     horizontalSliderBackgroundGroup->focused = DuskGui_createGuiStyle(&horizontalSliderBackgroundGroup->fallbackStyle);
-    horizontalSliderBackgroundGroup->focused->backgroundColor = (Color) { 250, 200, 200, 255 };
+    horizontalSliderBackgroundGroup->focused->backgroundColor = DB8_YELLOW;
 
     DuskGuiStyleGroup* horizontalSliderHandleGroup = &_defaultStyles.groups[DUSKGUI_STYLE_HORIZONTAL_SLIDER_HANDLE];
     horizontalSliderHandleGroup->fallbackStyle = (DuskGuiStyle) {
@@ -839,8 +763,8 @@ void DuskGui_init()
         .paddingRight = 4,
         .paddingTop = 4,
         .paddingBottom = 4,
-        .backgroundColor = (Color) { 200, 200, 200, 255 },
-        .textColor = BLACK,
+        .backgroundColor = DB8_GREY,
+        .textColor = DB8_WHITE,
         .textAlignment = (Vector2) { 0.5f, 0.5f },
         .transitionLingerTime = 0.033f,
         .backgroundTexture = defaultTexture,
@@ -848,13 +772,13 @@ void DuskGui_init()
     };
     horizontalSliderHandleGroup->normal = &horizontalSliderHandleGroup->fallbackStyle;
     horizontalSliderHandleGroup->hover = DuskGui_createGuiStyle(&horizontalSliderHandleGroup->fallbackStyle);
-    horizontalSliderHandleGroup->hover->backgroundColor = (Color) { 220, 220, 220, 255 };
+    horizontalSliderHandleGroup->hover->backgroundColor = DB8_GREY;
     horizontalSliderHandleGroup->pressed = DuskGui_createGuiStyle(&horizontalSliderHandleGroup->fallbackStyle);
-    horizontalSliderHandleGroup->pressed->backgroundColor = (Color) { 200, 200, 250, 255 };
+    horizontalSliderHandleGroup->pressed->backgroundColor = DB8_WHITE;
     horizontalSliderHandleGroup->focused = DuskGui_createGuiStyle(&horizontalSliderHandleGroup->fallbackStyle);
-    horizontalSliderHandleGroup->focused->backgroundColor = (Color) { 250, 200, 200, 255 };
+    horizontalSliderHandleGroup->focused->backgroundColor = DB8_YELLOW;
 
-    Image horizontalImage = GenImageColor(8, 8, WHITE);
+    Image horizontalImage = GenImageColor(8, 8, DB8_WHITE);
     Texture2D horizontalLineTexture = LoadTextureFromImage(horizontalImage);
     UnloadImage(horizontalImage);
     DuskGuiStyleGroup* horizontalLineGroup = &_defaultStyles.groups[DUSKGUI_STYLE_HORIZONTAL_LINE];
@@ -864,8 +788,8 @@ void DuskGui_init()
         .paddingRight = 2,
         .paddingTop = 0,
         .paddingBottom = 0,
-        .backgroundColor = (Color) { 90, 90, 90, 255 },
-        .textColor = (Color) { 170, 170, 170, 255 },
+        .backgroundColor = DB8_GREY,
+        .textColor = DB8_WHITE,
         .textAlignment = (Vector2) { 0.0f, 0.5f },
         .backgroundTexture = horizontalLineTexture,
         .backgroundPatchInfo = GenNPatchInfo(0, 0, 4, 4, 2, 2, 2, 2),
@@ -1344,7 +1268,7 @@ int DuskGui_floatInputField(DuskGuiParams params, float* value, float min, float
         if (IsKeyDown(KEY_LEFT_CONTROL)) {
             delta *= 0.1f;
         }
-        *value += delta;
+        *value += delta * 0.01f;
         *value = *value < min ? min : (*value > max ? max : *value);
         modified = 1;
     }
@@ -1718,7 +1642,7 @@ DuskGuiParamsEntry* DuskGui_icon(const char *id, Rectangle dst, Texture2D icon, 
             .texture = icon,
             .src = src,
             .dst = {0,0,dst.width,dst.height},
-            .color = WHITE
+            .color = DB8_WHITE
         }
     }, &_defaultStyles.groups[DUSKGUI_STYLE_ICON]);
     

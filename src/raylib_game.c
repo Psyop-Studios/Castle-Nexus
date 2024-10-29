@@ -163,11 +163,11 @@ static void build_game()
     UnloadDirectoryFiles(files);
 
 #if defined(_WIN32) || defined(_WIN64)
-    sprintf(buildCommand, "gcc -I../../raylib/src -L../../raylib/src -o game.dll -shared -fPIC %s -lraylib",
+    sprintf(buildCommand, "gcc -g -Wall -I../../raylib/src -L../../raylib/src -o game.dll -shared -fPIC %s -lraylib -DCJSON_HIDE_SYMBOLS",
             cfilelist);
 
 #else
-    sprintf(buildCommand, "gcc -I../../raylib/src -L../../raylib/src -o game.so -shared -fPIC %s -lraylib",
+    sprintf(buildCommand, "gcc -g -I../../raylib/src -L../../raylib/src -o game.so -shared -fPIC %s -lraylib",
             cfilelist);
 #endif
 
@@ -225,7 +225,9 @@ void UpdateDrawFrame(void)
             // trigger complete rebuild and reset context data
             contextData = 0;
         }
+        #if !defined(_WIN32) && !defined(_WIN64)
         system("reset");
+        #endif
         build_game();
     }
 

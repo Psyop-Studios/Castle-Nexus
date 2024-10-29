@@ -20,8 +20,7 @@ uniform float uvOutlineEnabled;
 float decode16bit(vec2 encoded) {
     // Reconstruct the 16-bit value from two 8-bit components
     float high = encoded.x * 255.0;
-    float low = encoded.y * 255.0;
-    float f = ((high * 256.0 + low) / 256.0);
+    float f = ((high + encoded.y));
     return f;
 }
 
@@ -40,7 +39,11 @@ bool mapGreenToRedBlue(float green, float match, vec2 rg, out vec3 col)
 void main() {
     vec4 texelColor = texture2D(texture0, fragTexCoord.xy);
 
-    if (true)
+    if (false) {
+        gl_FragColor = vec4(texelColor.rb,0.0,1.0);
+        return;
+    }
+    if (false)
     {
         float green = texelColor.a * 255.0;
         vec3 color = vec3(0.0,0.0,0.);

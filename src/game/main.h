@@ -5,6 +5,7 @@
 #include "rlgl.h"
 #include "util.h"
 #include <inttypes.h>
+#include "level.h"
 
 #define DB8_WHITE (Color){220, 245, 255, 255}
 #define DB8_DEEPPURPLE (Color){85, 65, 95, 255}
@@ -68,5 +69,6 @@ extern Font _fntMono;
 extern Font _fntMedium;
 extern Shader _modelDitherShader;
 extern Shader _modelTexturedShader;
+Level *Game_getLevel();
 
 #endif
