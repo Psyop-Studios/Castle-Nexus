@@ -197,11 +197,11 @@ void Game_update()
     EndDrawing();
 
 
-    if (IsKeyReleased(KEY_Q))
+    if (IsKeyReleased(KEY_Q) && IsKeyDown(KEY_LEFT_CONTROL))
     {
         _contextData->nextSceneId = _contextData->currentSceneId - 1;
     }
-    if (IsKeyReleased(KEY_E))
+    if (IsKeyReleased(KEY_E) && IsKeyDown(KEY_LEFT_CONTROL))
     {
         _contextData->nextSceneId = _contextData->currentSceneId + 1;
     }

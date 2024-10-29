@@ -226,7 +226,7 @@ int DuskGui_foldout(DuskGuiParams params);
 void DuskGui_horizontalLine(DuskGuiParams params);
 Vector2 DuskGui_getAvailableSpace();
 int DuskGui_horizontalFloatSlider(DuskGuiParams params, float* value, float min, float max);
-int DuskGui_floatInputField(DuskGuiParams params, float *value, float min, float max);
+int DuskGui_floatInputField(DuskGuiParams params, float *value, float min, float max, float deltaScale);
 int DuskGui_menuItem(int opensSubmenu, DuskGuiParams params);
 
 // containers

@@ -1255,7 +1255,7 @@ int DuskGui_label(DuskGuiParams params)
     return entry->isTriggered;
 }
 
-int DuskGui_floatInputField(DuskGuiParams params, float* value, float min, float max)
+int DuskGui_floatInputField(DuskGuiParams params, float* value, float min, float max, float deltaScale)
 {
     DuskGuiStyleGroup* styleGroup = &_defaultStyles.groups[DUSKGUI_STYLE_INPUTNUMBER_FIELD];
 
@@ -1268,7 +1268,7 @@ int DuskGui_floatInputField(DuskGuiParams params, float* value, float min, float
         if (IsKeyDown(KEY_LEFT_CONTROL)) {
             delta *= 0.1f;
         }
-        *value += delta * 0.01f;
+        *value += delta * deltaScale;
         *value = *value < min ? min : (*value > max ? max : *value);
         modified = 1;
     }

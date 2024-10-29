@@ -147,9 +147,9 @@ void Level_updateInstanceTransform(LevelMeshInstance *instance)
     Vector3 position = instance->position;
     Vector3 eulerRotationDeg = instance->eulerRotationDeg;
     Vector3 scale = instance->scale;
-    instance->toWorldTransform = MatrixTranslate(position.x, position.y, position.z);
-    instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, MatrixRotateXYZ((Vector3){DEG2RAD * eulerRotationDeg.x, DEG2RAD * eulerRotationDeg.y, DEG2RAD * eulerRotationDeg.z}));
+    instance->toWorldTransform = MatrixRotateXYZ((Vector3){DEG2RAD * eulerRotationDeg.x, DEG2RAD * eulerRotationDeg.y, DEG2RAD * eulerRotationDeg.z});
     instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, MatrixScale(scale.x, scale.y, scale.z));
+    instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, MatrixTranslate(position.x, position.y, position.z));
     
 }
 
@@ -186,10 +186,130 @@ void Level_addInstance(Level *level, const char *meshName, Vector3 position, Vec
 
 void Level_load(Level *level, const char *levelFile)
 {
+    if (strlen(levelFile) == 0)
+    {
+        TraceLog(LOG_ERROR, "Level file name is empty");
+        return;
+    }
+    Level_clearInstances(level);
+    TraceLog(LOG_INFO, "Loading level from: %s", levelFile);
+    char *data = LoadFileText(levelFile);
+    if (!data)
+    {
+        TraceLog(LOG_ERROR, "Failed to load level file: %s", levelFile);
+        return;
+    }
+    cJSON *root = cJSON_Parse(data);
+    if (!root)
+    {
+        TraceLog(LOG_ERROR, "Failed to parse level file: %s", levelFile);
+        UnloadFileText(data);
+        return;
+    }
+
+    cJSON *meshes = cJSON_GetObjectItem(root, "meshes");
+
+    if (!meshes)
+    {
+        TraceLog(LOG_ERROR, "No meshes found in level file: %s", levelFile);
+        goto cleanup;
+    }
+
+    for (int i = 0; i < cJSON_GetArraySize(meshes); i++)
+    {
+        cJSON *meshObj = cJSON_GetArrayItem(meshes, i);
+        cJSON *filename = cJSON_GetObjectItem(meshObj, "filename");
+        cJSON *instancesPX = cJSON_GetObjectItem(meshObj, "instancesPX");
+        cJSON *instancesPY = cJSON_GetObjectItem(meshObj, "instancesPY");
+        cJSON *instancesPZ = cJSON_GetObjectItem(meshObj, "instancesPZ");
+        cJSON *instancesRX = cJSON_GetObjectItem(meshObj, "instancesRX");
+        cJSON *instancesRY = cJSON_GetObjectItem(meshObj, "instancesRY");
+        cJSON *instancesRZ = cJSON_GetObjectItem(meshObj, "instancesRZ");
+        cJSON *instancesSX = cJSON_GetObjectItem(meshObj, "instancesSX");
+        cJSON *instancesSY = cJSON_GetObjectItem(meshObj, "instancesSY");
+        cJSON *instancesSZ = cJSON_GetObjectItem(meshObj, "instancesSZ");
+
+        if (!filename || !instancesPX || !instancesPY || !instancesPZ || !instancesRX || !instancesRY || !instancesRZ || !instancesSX || !instancesSY || !instancesSZ)
+        {
+            TraceLog(LOG_ERROR, "Invalid mesh object in level file: %s", levelFile);
+            continue;
+        }
+
+        const char *meshName = filename->valuestring;
+
+        for (int j = 0; j < cJSON_GetArraySize(instancesPX); j++)
+        {
+            Vector3 position = (Vector3){cJSON_GetArrayItem(instancesPX, j)->valuedouble, cJSON_GetArrayItem(instancesPY, j)->valuedouble, cJSON_GetArrayItem(instancesPZ, j)->valuedouble};
+            Vector3 eulerRotationDeg = (Vector3){cJSON_GetArrayItem(instancesRX, j)->valuedouble, cJSON_GetArrayItem(instancesRY, j)->valuedouble, cJSON_GetArrayItem(instancesRZ, j)->valuedouble};
+            Vector3 scale = (Vector3){cJSON_GetArrayItem(instancesSX, j)->valuedouble, cJSON_GetArrayItem(instancesSY, j)->valuedouble, cJSON_GetArrayItem(instancesSZ, j)->valuedouble};
+            Level_addInstance(level, meshName, position, eulerRotationDeg, scale);
+        }
+    }
+
+    cleanup:
+    cJSON_Delete(root);
+    UnloadFileText(data);
+    return;
 }
 
 void Level_save(Level *level, const char *levelFile)
 {
+    if (strlen(levelFile) == 0)
+    {
+        TraceLog(LOG_ERROR, "Level file name is empty");
+        return;
+    }
+
+    TraceLog(LOG_INFO, "Saving level to: %s", levelFile);
+    cJSON *root = cJSON_CreateObject();
+    cJSON *meshes = cJSON_CreateArray();
+    cJSON_AddItemToObject(root, "meshes", meshes);
+    for (int i = 0; i < level->meshCount; i++)
+    {
+        LevelMesh *mesh = &level->meshes[i];
+        cJSON *meshObj = cJSON_CreateObject();
+        cJSON_AddItemToArray(meshes, meshObj);
+        cJSON_AddStringToObject(meshObj, "filename", mesh->filename);
+        cJSON *instancesPX = cJSON_CreateArray();
+        cJSON *instancesPY = cJSON_CreateArray();
+        cJSON *instancesPZ = cJSON_CreateArray();
+        cJSON *instancesRX = cJSON_CreateArray();
+        cJSON *instancesRY = cJSON_CreateArray();
+        cJSON *instancesRZ = cJSON_CreateArray();
+        cJSON *instancesSX = cJSON_CreateArray();
+        cJSON *instancesSY = cJSON_CreateArray();
+        cJSON *instancesSZ = cJSON_CreateArray();
+        cJSON_AddItemToObject(meshObj, "instancesPX", instancesPX);
+        cJSON_AddItemToObject(meshObj, "instancesPY", instancesPY);
+        cJSON_AddItemToObject(meshObj, "instancesPZ", instancesPZ);
+        cJSON_AddItemToObject(meshObj, "instancesRX", instancesRX);
+        cJSON_AddItemToObject(meshObj, "instancesRY", instancesRY);
+        cJSON_AddItemToObject(meshObj, "instancesRZ", instancesRZ);
+        cJSON_AddItemToObject(meshObj, "instancesSX", instancesSX);
+        cJSON_AddItemToObject(meshObj, "instancesSY", instancesSY);
+        cJSON_AddItemToObject(meshObj, "instancesSZ", instancesSZ);
+
+        for (int j = 0; j < mesh->instanceCount; j++)
+        {
+            LevelMeshInstance *instance = &mesh->instances[j];
+            cJSON_AddItemToArray(instancesPX, cJSON_CreateNumber(instance->position.x));
+            cJSON_AddItemToArray(instancesPY, cJSON_CreateNumber(instance->position.y));
+            cJSON_AddItemToArray(instancesPZ, cJSON_CreateNumber(instance->position.z));
+            cJSON_AddItemToArray(instancesRX, cJSON_CreateNumber(instance->eulerRotationDeg.x));
+            cJSON_AddItemToArray(instancesRY, cJSON_CreateNumber(instance->eulerRotationDeg.y));
+            cJSON_AddItemToArray(instancesRZ, cJSON_CreateNumber(instance->eulerRotationDeg.z));
+            cJSON_AddItemToArray(instancesSX, cJSON_CreateNumber(instance->scale.x));
+            cJSON_AddItemToArray(instancesSY, cJSON_CreateNumber(instance->scale.y));
+            cJSON_AddItemToArray(instancesSZ, cJSON_CreateNumber(instance->scale.z));
+        }
+    }
+
+    char *data = cJSON_Print(root);
+    cJSON_Delete(root);
+    if (!DirectoryExists("resources/levels"))
+        MakeDirectory("resources/levels");
+    SaveFileData(TextFormat("resources/levels/%s.lvl", levelFile), data, strlen(data));
+    free(data);
 
 }
 

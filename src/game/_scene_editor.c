@@ -73,7 +73,7 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
             .text = _levelFileNameBuffer,
             .isFocusable = 1,
             .rayCastTarget = 1,
-            .bounds = (Rectangle) { 300, 10, 180, 20 },
+            .bounds = (Rectangle) { 300, 5, 180, 20 },
         }, &resultBuffer);
         
         if (resultBuffer)
@@ -81,6 +81,23 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
             strncpy(_levelFileNameBuffer, resultBuffer, 256);
         }
 
+        if (DuskGui_button((DuskGuiParams) {
+            .text = "Save",
+            .rayCastTarget = 1,
+            .bounds = (Rectangle) { 500, 5, 100, 20 },
+        }))
+        {
+            Level_save(Game_getLevel(), _levelFileNameBuffer);
+        }
+
+        if (DuskGui_button((DuskGuiParams) {
+            .text = "Load",
+            .rayCastTarget = 1,
+            .bounds = (Rectangle) { 600, 5, 100, 20 },
+        }))
+        {
+            DuskGui_openMenu("LoadMenu");
+        }
 
     }
     // if (DuskGui_button((DuskGuiParams) {
@@ -134,36 +151,79 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
                     .bounds = (Rectangle) { 10, posY, 180, 1 },
                 });
                 posY += 8.0f;
+
                 char buffer[128];
-                sprintf(buffer, "%.3f##X-%d", instance->position.x, j);
+                
+                // Position input fields
+                sprintf(buffer, "%.3f##X-%d:%d", instance->position.x, i, j);
                 if (DuskGui_floatInputField((DuskGuiParams) {
-                    .text = buffer,
-                    .rayCastTarget = 1,
-                    .bounds = (Rectangle) { 10, posY, 60, 20 },
-                }, &instance->position.x, _worldCursor.x - 1.0f, _worldCursor.x + 1.0f))
+                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, posY, 60, 20 },
+                }, &instance->position.x, _worldCursor.x - 1.0f, _worldCursor.x + 1.0f, 0.025f))
                 {
                     Level_updateInstanceTransform(instance);
                 }
-                sprintf(buffer, "%.3f##Y-%d", instance->position.y, j);
+                sprintf(buffer, "%.3f##Y-%d:%d", instance->position.y, i, j);
                 if (DuskGui_floatInputField((DuskGuiParams) {
-                    .text = buffer,
-                    .rayCastTarget = 1,
-                    .bounds = (Rectangle) { 70, posY, 60, 20 },
-                }, &instance->position.y, _worldCursor.y - 2.0f, _worldCursor.y + 4.0f))
+                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, posY, 60, 20 },
+                }, &instance->position.y, _worldCursor.y - 2.0f, _worldCursor.y + 4.0f, 0.025f))
                 {
                     Level_updateInstanceTransform(instance);
                 }
-                sprintf(buffer, "%.3f##Z-%d", instance->position.z, j);
+                sprintf(buffer, "%.3f##Z-%d:%d", instance->position.z, i, j);
                 if (DuskGui_floatInputField((DuskGuiParams) {
-                    .text = buffer,
-                    .rayCastTarget = 1,
-                    .bounds = (Rectangle) { 130, posY, 60, 20 },
-                }, &instance->position.z, _worldCursor.z - 1.0f, _worldCursor.z + 1.0f))
+                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, posY, 60, 20 },
+                }, &instance->position.z, _worldCursor.z - 1.0f, _worldCursor.z + 1.0f, 0.025f))
                 {
+                    Level_updateInstanceTransform(instance);
+                }
+                posY += 20.0f;
+
+                // Rotation input fields
+                sprintf(buffer, "%.3f##RX-%d:%d", instance->eulerRotationDeg.x, i, j);
+                if (DuskGui_floatInputField((DuskGuiParams) {
+                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, posY, 60, 20 },
+                }, &instance->eulerRotationDeg.x, -3000.0f, 3000.0f, 1.0f))
+                {
+                    Level_updateInstanceTransform(instance);
+                }
+                sprintf(buffer, "%.3f##RY-%d:%d", instance->eulerRotationDeg.y, i, j);
+                if (DuskGui_floatInputField((DuskGuiParams) {
+                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, posY, 60, 20 },
+                }, &instance->eulerRotationDeg.y, -3000.0f, 3000.0f, 1.0f))
+                {
+                    Level_updateInstanceTransform(instance);
+                }
+                sprintf(buffer, "%.3f##RZ-%d:%d", instance->eulerRotationDeg.z, i, j);
+                if (DuskGui_floatInputField((DuskGuiParams) {
+                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, posY, 60, 20 },
+                }, &instance->eulerRotationDeg.z, -3000.0f, 3000.0f, 1.0f))
+                {
+                    Level_updateInstanceTransform(instance);
+                }
+                posY += 20.0f;
+                if (DuskGui_button((DuskGuiParams) {
+                    .text = "Reset Rotation", .rayCastTarget = 1, .bounds = (Rectangle) { 10, posY, 60, 20 }}))
+                {
+                    instance->eulerRotationDeg = (Vector3){0, 0, 0};
+                    Level_updateInstanceTransform(instance);
+                }
+
+                if (DuskGui_button((DuskGuiParams) {
+                    .text = "<-", .rayCastTarget = 1, .bounds = (Rectangle) { 70, posY, 60, 20 }}))
+                {
+                    instance->eulerRotationDeg.y += -45.0f;
+                    Level_updateInstanceTransform(instance);
+                }
+                if (DuskGui_button((DuskGuiParams) {
+                    .text = "->", .rayCastTarget = 1, .bounds = (Rectangle) { 130, posY, 60, 20 }}))
+                {
+                    instance->eulerRotationDeg.y -= -45.0f;
                     Level_updateInstanceTransform(instance);
                 }
 
                 posY += 20.0f;
+
+
                 if (DuskGui_button((DuskGuiParams) {
                     .text = "Delete",
                     .rayCastTarget = 1,
@@ -183,6 +243,48 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
     }
 
     DuskGui_endPanel(objectEditPanel);
+
+    
+    DuskGuiParamsEntry* menu;
+    if ((menu = DuskGui_beginMenu((DuskGuiParams) {
+        .text = "LoadMenu",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 600, 25, 110, 60 },
+    })))
+    {
+        FilePathList levelFiles = LoadDirectoryFilesEx("resources/levels", ".lvl", 0);
+        
+        for (int i = 0; i < levelFiles.count; i++)
+        {
+            char *filename = levelFiles.paths[i];
+            char *lastSlash = strrchr(filename, '/');
+            if (lastSlash)
+            {
+                filename = lastSlash + 1;
+            } else {
+                lastSlash = filename;
+            }
+
+            if (DuskGui_menuItem(0, (DuskGuiParams) {
+                .text = lastSlash,
+                .rayCastTarget = 1,
+                .bounds = (Rectangle) { 5, 5 + i * 20, 100, 20 },
+            }))
+            {
+                Level_load(Game_getLevel(), levelFiles.paths[i]);
+                char *filename = GetFileNameWithoutExt(levelFiles.paths[i]);
+                strncpy(_levelFileNameBuffer, filename, 256);
+                DuskGui_closeMenu("LoadMenu");
+            }
+        }
+        menu->params.bounds.height = 10 + levelFiles.count * 20;
+        UnloadDirectoryFiles(levelFiles);
+        DuskGui_endMenu();
+    }
+    else
+    {
+        DuskGui_closeMenu("LoadMenu");
+    }
 }
 
 static float fsign(float x)
