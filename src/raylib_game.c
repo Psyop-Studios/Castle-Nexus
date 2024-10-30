@@ -34,6 +34,8 @@
 #define LOG(...)
 #endif
 
+#define HONK printf("HONK");
+
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
@@ -233,7 +235,11 @@ void UpdateDrawFrame(void)
 
     if (IsKeyPressed(KEY_F))
     {
+
+        
         run_foreground = !run_foreground;
+        
+
         if (run_foreground)
             SetWindowState(FLAG_WINDOW_TOPMOST);
         else
