@@ -18,6 +18,7 @@ typedef enum EditorMode
 
 Vector3 _worldCursor = {0};
 
+static int _viewIsHovered = 0;
 static EditorMode _editorMode = EDITOR_MODE_EDITGEOMETRY;
 static Camera _camera;
 static int _updateCamera;
@@ -80,7 +81,7 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
     // highlight the quad our mouse is hovering
     Vector3 hitPos = {0};
     Ray ray = GetMouseRay(GetMousePosition(), _camera);
-    if (ray.direction.y != 0.0f)
+    if (ray.direction.y != 0.0f && _viewIsHovered)
     {
         float dist = (_worldCursor.y - ray.position.y) / ray.direction.y;
         hitPos = Vector3Add(ray.position, Vector3Scale(ray.direction, dist));
@@ -524,6 +525,7 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *sceneConfig)
         .bounds = (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() },
         .rayCastTarget = 1,
     });
+    _viewIsHovered = DuskGui_getLastEntry()->isHovered;
 
     if (_editorMode == EDITOR_MODE_EDITGEOMETRY)
     {

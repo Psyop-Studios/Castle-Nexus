@@ -106,10 +106,3 @@ SceneConfig _scene_start = {
     .deinitFn = SceneDeinit,
     .sceneId = SCENE_ID_START,
 };
-SceneConfig _scene_start_intro = {
-    .drawLevelFn = SceneDraw,
-    .updateFn = SceneUpdate,
-    .initFn = SceneInit,
-    .deinitFn = SceneDeinit,
-    .sceneId = SCENE_ID_START_INTRO,
-};

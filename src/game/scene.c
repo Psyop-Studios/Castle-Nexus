@@ -12,6 +12,7 @@ SceneConfig* Scene_getConfig(uint32_t sceneId)
     SceneConfig *_scenes[] = {
         &_scene_editor,
         &_scene_start,
+        &_scene_intro_scene,
     };
 
     for (int i = 0; i < sizeof(_scenes) / sizeof(SceneConfig*); i++)
