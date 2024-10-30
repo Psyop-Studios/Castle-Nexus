@@ -11,5 +11,6 @@
 
 extern SceneConfig _scene_editor;
 extern SceneConfig _scene_start;
+extern SceneConfig _scene_intro_scene;
 
 #endif
