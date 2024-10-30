@@ -220,9 +220,9 @@ static int run_foreground = 0;
 void UpdateDrawFrame(void)
 {
 #ifdef PLATFORM_DESKTOP
-    if (IsKeyPressed(KEY_R) || !is_built)
+    if ((IsKeyPressed(KEY_R) && IsKeyDown(KEY_LEFT_CONTROL)) || !is_built)
     {
-        if (IsKeyDown(KEY_LEFT_CONTROL))
+        if (IsKeyDown(KEY_LEFT_SHIFT))
         {
             // trigger complete rebuild and reset context data
             contextData = 0;
@@ -244,6 +244,21 @@ void UpdateDrawFrame(void)
             SetWindowState(FLAG_WINDOW_TOPMOST);
         else
             ClearWindowState(FLAG_WINDOW_TOPMOST);
+    }
+
+    static int isPaused = 0;
+    if (IsKeyReleased(KEY_P) && IsKeyDown(KEY_LEFT_CONTROL))
+    {
+        isPaused = !isPaused;
+        printf("Toggle pause: %s\n", isPaused ? "true" : "false");
+    }
+    if (isPaused)
+    {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        DrawText("PAUSED", GetScreenWidth() / 2 - MeasureText("PAUSED", 40) / 2, GetScreenHeight() / 2 - 40, 40, GRAY);
+        EndDrawing();
+        return;
     }
 #endif
 

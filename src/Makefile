@@ -37,7 +37,7 @@ ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     PROJECT_SOURCE_FILES += libload.c
 endif
 ifeq ($(PLATFORM),PLATFORM_WEB)
-    PROJECT_SOURCE_FILES += game/_scene_editor.c game/_scene_start.c game/dusk-gui.c game/main.c game/scene.c game/scriptactions.c game/scriptsystem.c game/util.c game/level.c game/cjson.c
+    PROJECT_SOURCE_FILES += game/_scene_editor.c game/_scene_start.c game/dusk-gui.c game/main.c game/scene.c game/scriptactions.c game/scriptsystem.c game/util.c game/level.c game/cjson.c game/level_components.c
 endif
 
 # raylib library variables

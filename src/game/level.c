@@ -40,18 +40,6 @@ static int Level_getTextureIndexByName(Level *level, const char *name)
     return -1;
 }
 
-char* replacePathSeps(char *path)
-{
-    for (int i = 0; i < strlen(path); i++)
-    {
-        if (path[i] == '\\')
-        {
-            path[i] = '/';
-        }
-    }
-    return path;
-}
-
 void Level_loadAssets(Level *level, const char *assetDirectory)
 {
     TraceLog(LOG_INFO, "Loading level assets from: %s", assetDirectory);
@@ -134,12 +122,41 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
 
 void Level_clearInstances(Level *level)
 {
+    for (int i = 0; i < level->entityComponentClassCount; i++)
+    {
+        LevelEntityComponentClass *componentClass = &level->entityComponentClasses[i];
+        if (componentClass->methods.onDestroyFn)
+        {
+            for (int j = 0; j < componentClass->instanceCount; j++)
+            {
+                LevelEntityInstanceId ownerId = componentClass->ownerIds[j];
+                char *componentInstanceData = (char*) componentClass->componentInstanceData + j * componentClass->componentInstanceDataSize;
+                componentClass->methods.onDestroyFn(level, ownerId, componentInstanceData);
+                componentClass->generations[j] = 0;
+            }
+        }
+        else
+        {
+            for (int j = 0; j < componentClass->instanceCount; j++)
+            {
+                componentClass->generations[j] = 0;
+            }
+        }
+    }
+
+    for (int i = 0; i < level->entityCount; i++)
+    {
+        free(level->entities[i].name);
+        level->entities[i].name = NULL;
+    }
+
     for (int i = 0; i < level->meshCount; i++)
     {
         free(level->meshes[i].instances);
         level->meshes[i].instances = NULL;
         level->meshes[i].instanceCount = 0;
     }
+
 }
 
 void Level_updateInstanceTransform(LevelMeshInstance *instance)
@@ -198,6 +215,7 @@ void Level_load(Level *level, const char *levelFile)
     }
 
     cJSON *meshes = cJSON_GetObjectItem(root, "meshes");
+    int *entityMap = NULL;
 
     if (!meshes)
     {
@@ -242,9 +260,117 @@ void Level_load(Level *level, const char *levelFile)
         }
     }
 
+    cJSON *entityNames = cJSON_GetObjectItem(root, "entityNames");
+    cJSON *entityTRS = cJSON_GetObjectItem(root, "entityTRS");
+    cJSON *entityIds = cJSON_GetObjectItem(root, "entityIds");
+    cJSON *components = cJSON_GetObjectItem(root, "components");
+
+    if (!entityNames || !entityTRS || !entityIds || !components)
+    {
+        goto cleanup;
+    }
+
+    int entityCount = cJSON_GetArraySize(entityNames);
+    if (cJSON_GetArraySize(entityTRS) != entityCount * 9 || cJSON_GetArraySize(entityIds) != entityCount)
+    {
+        TraceLog(LOG_ERROR, "Entity data mismatch; not importing entity data: %s", levelFile);
+        goto cleanup;
+    }
+
+    for (int i = 0; i < entityCount; i++)
+    {
+        cJSON *entityNameJSON = cJSON_GetArrayItem(entityNames, i);
+        if (entityNameJSON->type != cJSON_String)
+        {
+            continue;
+        }
+        char *entityName = entityNameJSON->valuestring;
+        cJSON *entityId = cJSON_GetArrayItem(entityIds, i);
+        Vector3 position = (Vector3){
+            (float)cJSON_GetArrayItem(entityTRS, i * 9)->valuedouble, 
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 1)->valuedouble, 
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 2)->valuedouble};
+        Vector3 eulerRotationDeg = (Vector3){
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 3)->valuedouble, 
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 4)->valuedouble, 
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 5)->valuedouble};
+        Vector3 scale = (Vector3){
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 6)->valuedouble, 
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 7)->valuedouble, 
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 8)->valuedouble};
+        LevelEntity *entity = Level_addEntityAtIndex(level, entityId->valueint, entityName, position, eulerRotationDeg, scale);
+        if (entity->id != entityId->valueint)
+        {
+            TraceLog(LOG_ERROR, "Entity id mismatch; not importing entity data: %s", levelFile);
+            goto cleanup;
+        }
+    }
+
+    int componentCount = cJSON_GetArraySize(components);
+    for (int i = 0; i < componentCount; i+=1)
+    {
+        cJSON *componentClass = cJSON_GetArrayItem(components, i);
+        cJSON *componentName = cJSON_GetObjectItem(componentClass, "name");
+        cJSON *componentId = cJSON_GetObjectItem(componentClass, "componentId");
+        cJSON *ownerEntityIds = cJSON_GetObjectItem(componentClass, "ownerEntityIds");
+        cJSON *entityData = cJSON_GetObjectItem(componentClass, "entityData");
+        if (!componentName || !componentId || !ownerEntityIds || !entityData || !cJSON_IsArray(ownerEntityIds) || !cJSON_IsArray(entityData) || !cJSON_IsString(componentName) || !cJSON_IsNumber(componentId))
+        {
+            TraceLog(LOG_ERROR, "Invalid component class in level file: %s", levelFile);
+            continue;
+        }
+
+        if (cJSON_GetArraySize(ownerEntityIds) != cJSON_GetArraySize(entityData))
+        {
+            TraceLog(LOG_ERROR, "Component data mismatch; not importing component data: %s", levelFile);
+            continue;
+        }
+
+        LevelEntityComponentClass *componentClassEntry = Level_getComponentClassById(level, componentId->valueint);
+        if (!componentClassEntry)
+        {
+            TraceLog(LOG_ERROR, "Component class not found; not importing component data: %s", levelFile);
+            continue;
+        }
+
+        for (int j = 0; j < cJSON_GetArraySize(ownerEntityIds); j++)
+        {
+            cJSON *entityDataItem = cJSON_GetArrayItem(entityData, j);
+            if (cJSON_IsNull(entityDataItem))
+            {
+                continue;
+            }
+            cJSON *ownerEntityId = cJSON_GetArrayItem(ownerEntityIds, j);
+            if (!cJSON_IsNumber(ownerEntityId) || !cJSON_IsObject(entityDataItem))
+            {
+                TraceLog(LOG_ERROR, "Invalid component data in level file: %s", levelFile);
+                continue;
+            }
+
+            LevelEntity* ownerEntity = &level->entities[ownerEntityId->valueint];
+            void *componentInstanceData = NULL;
+            LevelEntityComponentInstanceId componentInstanceid = Level_addEntityComponentAtIndex(level, j, ownerEntity, componentClassEntry->componentId, &componentInstanceData);
+            if (componentInstanceid.id != j || componentInstanceid.generation == 0)
+            {
+                TraceLog(LOG_ERROR, "Component instance id mismatch (%d vs %d); "
+                    "not importing component data: %s", componentInstanceid.id, j, levelFile);
+                continue;
+            }
+
+            if (componentClassEntry->methods.onDeserializeFn)
+            {
+                componentClassEntry->methods.onDeserializeFn(level, (LevelEntityInstanceId){ownerEntity->id, ownerEntity->generation}, componentInstanceData, entityDataItem);
+            }
+        }
+    }
+
     cleanup:
     cJSON_Delete(root);
     UnloadFileText(data);
+    if (entityMap)
+    {
+        free(entityMap);
+    }
     return;
 }
 
@@ -303,6 +429,74 @@ void Level_save(Level *level, const char *levelFile)
         }
     }
 
+    cJSON *entityNames = cJSON_CreateArray();
+    cJSON *entityTRS = cJSON_CreateArray();
+    cJSON *entityIds = cJSON_CreateArray();
+    cJSON_AddItemToObject(root, "entityNames", entityNames);
+    cJSON_AddItemToObject(root, "entityTRS", entityTRS);
+    cJSON_AddItemToObject(root, "entityIds", entityIds);
+
+    for (int i = 0; i < level->entityCount; i++)
+    {
+        LevelEntity *entity = &level->entities[i];
+        if (!entity->name)
+        {
+            cJSON_AddItemToArray(entityNames, cJSON_CreateNull());
+            cJSON_AddItemToArray(entityIds, cJSON_CreateNumber(0));
+            for (int i = 0; i < 9; i++)
+            {
+                cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(0));
+            }
+            continue;
+        }
+        
+        cJSON_AddItemToArray(entityNames, cJSON_CreateString(entity->name));
+        cJSON_AddItemToArray(entityIds, cJSON_CreateNumber(entity->id));
+        cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(entity->position.x));
+        cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(entity->position.y));
+        cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(entity->position.z));
+        cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(entity->eulerRotationDeg.x));
+        cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(entity->eulerRotationDeg.y));
+        cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(entity->eulerRotationDeg.z));
+        cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(entity->scale.x));
+        cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(entity->scale.y));
+        cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(entity->scale.z));
+    }
+
+    cJSON *components = cJSON_CreateArray();
+    cJSON_AddItemToObject(root, "components", components);
+
+    for (int i = 0; i < level->entityComponentClassCount; i++)
+    {
+        LevelEntityComponentClass *componentClassEntry = &level->entityComponentClasses[i];
+        cJSON *componentClass = cJSON_CreateObject();
+        cJSON_AddItemToArray(components, componentClass);
+        cJSON_AddStringToObject(componentClass, "name", componentClassEntry->name);
+        cJSON_AddNumberToObject(componentClass, "componentId", componentClassEntry->componentId);
+        cJSON *ownerEntityIds = cJSON_CreateArray();
+        cJSON *entityData = cJSON_CreateArray();
+        cJSON_AddItemToObject(componentClass, "ownerEntityIds", ownerEntityIds);
+        cJSON_AddItemToObject(componentClass, "entityData", entityData);
+        for (int j = 0; j < componentClassEntry->instanceCount; j++)
+        {
+            if (componentClassEntry->generations[j] == 0 || Level_resolveEntity(level, componentClassEntry->ownerIds[j]) == NULL)
+            {
+                cJSON_AddItemToArray(ownerEntityIds, cJSON_CreateNumber(0));
+                cJSON_AddItemToArray(entityData, cJSON_CreateNull());
+                continue;
+            }
+            LevelEntityInstanceId ownerId = componentClassEntry->ownerIds[j];
+            void *componentInstanceData = (char*) componentClassEntry->componentInstanceData + j * componentClassEntry->componentInstanceDataSize;
+            cJSON *entityDataObj = cJSON_CreateObject();
+            cJSON_AddItemToArray(ownerEntityIds, cJSON_CreateNumber(ownerId.id));
+            cJSON_AddItemToArray(entityData, entityDataObj);
+            if (componentClassEntry->methods.onSerializeFn)
+            {
+                componentClassEntry->methods.onSerializeFn(level, ownerId, componentInstanceData, entityDataObj);
+            }
+        }
+    }
+
     char *data = cJSON_Print(root);
     cJSON_Delete(root);
     if (!DirectoryExists("resources/levels"))
@@ -346,10 +540,59 @@ void Level_draw(Level *level)
             DrawMesh(mesh->model.meshes[0], material, instance->toWorldTransform);
         }
     }
+
+    for (int i = 0; i < level->entityComponentClassCount; i++)
+    {
+        LevelEntityComponentClass *componentClass = &level->entityComponentClasses[i];
+        if (componentClass->methods.drawFn)
+        {
+            for (int j = 0; j < componentClass->instanceCount; j++)
+            {
+                if (componentClass->generations[j] == 0 || Level_resolveEntity(level, componentClass->ownerIds[j]) == NULL)
+                {
+                    continue;
+                }
+                LevelEntityInstanceId ownerId = componentClass->ownerIds[j];
+                void *componentInstanceData = (char*) componentClass->componentInstanceData + j * componentClass->componentInstanceDataSize;
+                componentClass->methods.drawFn(level, ownerId, componentInstanceData);
+            }
+        }
+    }
 }
 
 void Level_unload(Level *level)
 {
+    for (int i = 0; i < level->entityCount; i++)
+    {
+        if (level->entities[i].name)
+        {
+            free(level->entities[i].name);
+        }
+    }
+    free(level->entities);
+    level->entities = NULL;
+    level->entityCount = 0;
+
+    for (int i = 0; i < level->entityComponentClassCount; i++)
+    {
+        LevelEntityComponentClass *componentClass = &level->entityComponentClasses[i];
+        if (componentClass->methods.onDestroyFn)
+        {
+            for (int j = 0; j < componentClass->instanceCount; j++)
+            {
+                componentClass->methods.onDestroyFn(level, 
+                    (LevelEntityInstanceId){0}, (void*)((char*)componentClass->componentInstanceData + j * componentClass->componentInstanceDataSize));
+            }
+        }
+        free(level->entityComponentClasses[i].name);
+        free(level->entityComponentClasses[i].componentInstanceData);
+        free(level->entityComponentClasses[i].generations);
+        free(level->entityComponentClasses[i].ownerIds);
+    }
+
+    free(level->entityComponentClasses);
+    level->entityComponentClasses = NULL;
+    level->entityComponentClassCount = 0;
 
     for (int i = 0; i < level->textureCount; i++)
     {
@@ -370,4 +613,285 @@ void Level_unload(Level *level)
 
     level->meshes = NULL;
     level->meshCount = 0;
+}
+
+LevelEntityComponentClass* Level_getComponentClassById(Level *level, uint32_t componentId)
+{
+    if (componentId >= level->entityComponentClassCount)
+    {
+        return NULL;
+    }
+    return &level->entityComponentClasses[componentId];
+}
+
+LevelEntity* Level_resolveEntity(Level *level, LevelEntityInstanceId id)
+{
+    if (id.id >= level->entityCount)
+    {
+        return NULL;
+    }
+    LevelEntity *entity = &level->entities[id.id];
+    if (entity->generation != id.generation)
+    {
+        return NULL;
+    }
+    return entity;
+}
+
+void* Level_resolveComponent(Level *level, LevelEntityComponentInstanceId id)
+{
+    LevelEntityComponentClass *componentClass = Level_getComponentClassById(level, id.componentId);
+    if (!componentClass)
+    {
+        TraceLog(LOG_ERROR, "Component class not found: %d, this could be serious!", id.componentId);
+        return NULL;
+    }
+    if (id.id >= componentClass->instanceCount)
+    {
+        return NULL;
+    }
+    if (componentClass->generations[id.id] != id.generation)
+    {
+        return NULL;
+    }
+    LevelEntityInstanceId ownerId = componentClass->ownerIds[id.id];
+    LevelEntity *owner = Level_resolveEntity(level, ownerId);
+    if (!owner)
+    {
+        return NULL;
+    }
+    return (void*)((char*)componentClass->componentInstanceData + id.id * componentClass->componentInstanceDataSize);
+}
+
+void Level_registerEntityComponentClass(Level *level, uint32_t componentId, const char *name, LevelEntityComponentClassMethods methods, int componentInstanceDataSize)
+{
+    if (componentId < level->entityComponentClassCount && level->entityComponentClasses[componentId].componentId == componentId)
+    {
+        TraceLog(LOG_ERROR, "Component class (%s vs %s) already registered: %d", name, level->entityComponentClasses[componentId].name, componentId);
+        return;
+    }
+    if (componentInstanceDataSize < 4) componentInstanceDataSize = 4;
+    if (componentId >= level->entityComponentClassCount)
+    {
+        int requiredSize = componentId + 1;
+        LevelEntityComponentClass *newClasses = (LevelEntityComponentClass*)malloc(requiredSize * sizeof(LevelEntityComponentClass));
+        memset(newClasses, 0, requiredSize * sizeof(LevelEntityComponentClass));
+        for (int i = 0; i < level->entityComponentClassCount; i++)
+        {
+            if (level->entityComponentClasses[i].name)
+                newClasses[i] = level->entityComponentClasses[i];
+        }
+        free(level->entityComponentClasses);
+        level->entityComponentClasses = newClasses;
+        level->entityComponentClassCount = requiredSize;
+    }
+    LevelEntityComponentClass *componentClass = &level->entityComponentClasses[componentId];
+    componentClass->componentId = componentId;
+    componentClass->name = strdup(name);
+    componentClass->methods = methods;
+    componentClass->componentInstanceDataSize = componentInstanceDataSize;
+    componentClass->componentInstanceData = NULL;
+    componentClass->generations = NULL;
+    componentClass->ownerIds = NULL;
+    componentClass->instanceCount = 0;
+}
+
+void Level_updateEntityTransform(LevelEntity *entity)
+{
+    entity->toWorldTransform = MatrixRotateXYZ((Vector3){DEG2RAD * entity->eulerRotationDeg.x, DEG2RAD * entity->eulerRotationDeg.y, DEG2RAD * entity->eulerRotationDeg.z});
+    entity->toWorldTransform = MatrixMultiply(entity->toWorldTransform, MatrixScale(entity->scale.x, entity->scale.y, entity->scale.z));
+    entity->toWorldTransform = MatrixMultiply(entity->toWorldTransform, MatrixTranslate(entity->position.x, entity->position.y, entity->position.z));
+}
+
+LevelEntity* Level_addEntity(Level *level, const char *name, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale)
+{
+    for (int i = 0; i < level->entityCount; i++)
+    {
+        if (!level->entities[i].name)
+        {
+            level->entities[i].name = strdup(name);
+            level->entities[i].position = position;
+            level->entities[i].eulerRotationDeg = eulerRotationDeg;
+            level->entities[i].scale = scale;
+            level->entities[i].generation++;
+            Level_updateEntityTransform(&level->entities[i]);
+            return &level->entities[i];
+        }
+    }
+
+    int entityId = level->entityCount++;
+    level->entities = (LevelEntity*)realloc(level->entities, level->entityCount * sizeof(LevelEntity));
+    memset(&level->entities[entityId], 0, sizeof(LevelEntity));
+    level->entities[entityId].name = strdup(name);
+    level->entities[entityId].position = position;
+    level->entities[entityId].eulerRotationDeg = eulerRotationDeg;
+    level->entities[entityId].scale = scale;
+    level->entities[entityId].id = entityId;
+    level->entities[entityId].generation = 1;
+    Level_updateEntityTransform(&level->entities[entityId]);
+    return &level->entities[entityId];
+}
+
+// this is required for deserialization; don't use otherwise
+LevelEntity* Level_addEntityAtIndex(Level *level, int index, const char *name, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale)
+{
+    if (index < level->entityCount)
+    {
+        if (!level->entities[index].name)
+        {
+            level->entities[index].name = strdup(name);
+            level->entities[index].position = position;
+            level->entities[index].eulerRotationDeg = eulerRotationDeg;
+            level->entities[index].scale = scale;
+            level->entities[index].generation++;
+            Level_updateEntityTransform(&level->entities[index]);
+            return &level->entities[index];
+        }
+        else
+        {
+            TraceLog(LOG_ERROR, "Entity already exists at index: %d", index);
+            return NULL;
+        }
+    }
+
+    int newCount = index + 8;
+    level->entities = (LevelEntity*)realloc(level->entities, newCount * sizeof(LevelEntity));
+    memset(&level->entities[level->entityCount], 0, sizeof(LevelEntity) * (newCount - level->entityCount));
+    level->entityCount = newCount;
+
+    level->entities[index].name = strdup(name);
+    level->entities[index].position = position;
+    level->entities[index].eulerRotationDeg = eulerRotationDeg;
+    level->entities[index].scale = scale;
+    level->entities[index].id = index;
+    level->entities[index].generation = 1;
+    Level_updateEntityTransform(&level->entities[index]);
+    return &level->entities[index];
+}
+
+// this is required for deserialization; don't use otherwise
+LevelEntityComponentInstanceId Level_addEntityComponentAtIndex(Level *level, int index, LevelEntity *entity, uint32_t componentId,
+    void **componentInstanceData)
+{
+    LevelEntityComponentClass *componentClass = Level_getComponentClassById(level, componentId);
+    if (!componentClass)
+    {
+        TraceLog(LOG_ERROR, "Component class not found: %d", componentId);
+        return (LevelEntityComponentInstanceId){0};
+    }
+
+    LevelEntityComponentInstanceId instanceId = {0};
+
+    if (index < componentClass->instanceCount)
+    {
+        if (componentClass->generations[index] == 0 || Level_resolveEntity(level, componentClass->ownerIds[index]) == NULL)
+        {
+            componentClass->generations[index]++;
+            componentClass->ownerIds[index] = (LevelEntityInstanceId){entity->id, entity->generation};
+            instanceId.componentId = componentId;
+            instanceId.id = index;
+            instanceId.generation = componentClass->generations[index];
+        }
+        else
+        {
+            TraceLog(LOG_ERROR, "Component instance already exists at index: %d", index);
+            return (LevelEntityComponentInstanceId){0};
+        }
+    }
+    if (instanceId.generation == 0)
+    {
+        // increase pool size
+        int newSize = (componentClass->instanceCount + 4) * 2;
+        if (newSize < index + 1)
+        {
+            newSize = index + 1;
+        }
+        componentClass->componentInstanceData = realloc(componentClass->componentInstanceData, newSize * componentClass->componentInstanceDataSize);
+        componentClass->generations = realloc(componentClass->generations, newSize * sizeof(uint32_t));
+        componentClass->ownerIds = realloc(componentClass->ownerIds, newSize * sizeof(LevelEntityInstanceId));
+        memset((char*)componentClass->componentInstanceData + componentClass->instanceCount * componentClass->componentInstanceDataSize, 0, (newSize - componentClass->instanceCount) * componentClass->componentInstanceDataSize);
+        memset(componentClass->generations + componentClass->instanceCount, 0, (newSize - componentClass->instanceCount) * sizeof(uint32_t));
+        memset(componentClass->ownerIds + componentClass->instanceCount, 0, (newSize - componentClass->instanceCount) * sizeof(LevelEntityInstanceId));
+
+
+        componentClass->generations[index] = 1;
+        componentClass->ownerIds[index] = (LevelEntityInstanceId){entity->id, entity->generation};
+        instanceId.componentId = componentId;
+        instanceId.id = index;
+        instanceId.generation = 1;
+
+        componentClass->instanceCount = newSize;
+    }
+
+    if (componentClass->methods.onInitFn)
+    {
+        void *componentInstanceData = (char*)componentClass->componentInstanceData + instanceId.id * componentClass->componentInstanceDataSize;
+        componentClass->methods.onInitFn(level, (LevelEntityInstanceId){entity->id, entity->generation}, componentInstanceData);
+    }
+    if (componentInstanceData)
+        *componentInstanceData = (void*)((char*)componentClass->componentInstanceData + instanceId.id * componentClass->componentInstanceDataSize);
+    return instanceId;
+}
+
+LevelEntityComponentInstanceId Level_addEntityComponent(Level *level, LevelEntity *entity, uint32_t componentId,
+    void **componentInstanceData)
+{
+    LevelEntityComponentClass *componentClass = Level_getComponentClassById(level, componentId);
+    if (!componentClass)
+    {
+        TraceLog(LOG_ERROR, "Component class not found: %d", componentId);
+        return (LevelEntityComponentInstanceId){0};
+    }
+
+    LevelEntityComponentInstanceId instanceId = {0};
+
+    for (int i = 0; i < componentClass->instanceCount; i++)
+    {
+        if (componentClass->generations[i] == 0 || Level_resolveEntity(level, componentClass->ownerIds[i]) == NULL)
+        {
+            componentClass->generations[i]++;
+            componentClass->ownerIds[i] = (LevelEntityInstanceId){entity->id, entity->generation};
+            instanceId.componentId = componentId;
+            instanceId.id = i;
+            instanceId.generation = componentClass->generations[i];
+            break;
+        }
+    }
+    if (instanceId.generation == 0)
+    {
+        // increase pool size
+        int newSize = (componentClass->instanceCount + 4) * 2;
+        componentClass->componentInstanceData = realloc(componentClass->componentInstanceData, newSize * componentClass->componentInstanceDataSize);
+        componentClass->generations = realloc(componentClass->generations, newSize * sizeof(uint32_t));
+        componentClass->ownerIds = realloc(componentClass->ownerIds, newSize * sizeof(LevelEntityInstanceId));
+        memset((char*)componentClass->componentInstanceData + componentClass->instanceCount * componentClass->componentInstanceDataSize, 0, (newSize - componentClass->instanceCount) * componentClass->componentInstanceDataSize);
+        memset(componentClass->generations + componentClass->instanceCount, 0, (newSize - componentClass->instanceCount) * sizeof(uint32_t));
+        memset(componentClass->ownerIds + componentClass->instanceCount, 0, (newSize - componentClass->instanceCount) * sizeof(LevelEntityInstanceId));
+        componentClass->generations[componentClass->instanceCount] = 1;
+        componentClass->ownerIds[componentClass->instanceCount] = (LevelEntityInstanceId){entity->id, entity->generation};
+        instanceId.componentId = componentId;
+        instanceId.id = componentClass->instanceCount;
+        instanceId.generation = 1;
+        componentClass->instanceCount = newSize;
+    }
+
+    if (componentClass->methods.onInitFn)
+    {
+        void *componentInstanceData = (char*)componentClass->componentInstanceData + instanceId.id * componentClass->componentInstanceDataSize;
+        componentClass->methods.onInitFn(level, (LevelEntityInstanceId){entity->id, entity->generation}, componentInstanceData);
+    }
+    if (componentInstanceData)
+        *componentInstanceData = (void*)((char*)componentClass->componentInstanceData + instanceId.id * componentClass->componentInstanceDataSize);
+    return instanceId;
+}
+
+void Level_deleteEntity(Level *level, LevelEntity *entity)
+{
+    if (!entity->name)
+    {
+        return;
+    }
+    free(entity->name);
+    entity->name = NULL;
+    entity->generation++;
 }

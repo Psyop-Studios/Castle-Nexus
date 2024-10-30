@@ -10,7 +10,7 @@
 #include "_scenes.h"
 #include "dusk-gui.h"
 #include "level.h"
-
+#include "level_components.h"
 
 static GameContext *_contextData;
 
@@ -79,6 +79,8 @@ void Game_init(void** contextData)
     SetTextLineSpacingEx(-6);
 
     Level_init(&_level);
+    LevelComponents_register(&_level);
+    
     Level_loadAssets(&_level, "resources/level_assets");
 
     DuskGui_setDefaultFont(_fntMedium, _fntMedium.baseSize, -1);
@@ -160,7 +162,6 @@ void Game_update()
         _contextData->nextSceneId = SCENE_ID_INVALID;
     }
 
-    static int mode = 0;
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
 

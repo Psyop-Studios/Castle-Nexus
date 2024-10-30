@@ -2,6 +2,9 @@
 #include "rlgl.h"
 #include <string.h>
 #include "main.h"
+#include "dusk-gui.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 int textLineSpacing = 0;
 void SetTextLineSpacingEx(int spacing)
@@ -318,3 +321,104 @@ Rectangle DrawTextBoxAligned(Font font, const char *text, int x, int y, int w, i
 //     }
 //     return rect;
 // }
+
+
+
+char* replacePathSeps(char *path)
+{
+    for (int i = 0; i < strlen(path); i++)
+    {
+        if (path[i] == '\\')
+        {
+            path[i] = '/';
+        }
+    }
+    return path;
+}
+
+extern Vector3 _worldCursor;
+
+int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Vector3 *euler, Vector3 *scale)
+{
+    int modified = 0;
+    char buffer[256];
+    // Position input fields
+    sprintf(buffer, "%.3f##X-%s", position->x, uiId);
+    
+    if (DuskGui_floatInputField((DuskGuiParams) {
+        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 },
+    }, &position->x, _worldCursor.x - 1.0f, _worldCursor.x + 1.0f, 0.025f))
+    {
+        modified = 1;
+    }
+    
+    sprintf(buffer, "%.3f##Y-%s", position->y, uiId);
+    if (DuskGui_floatInputField((DuskGuiParams) {
+        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 },
+    }, &position->y, _worldCursor.y - 2.0f, _worldCursor.y + 4.0f, 0.025f))
+    {
+        modified = 1;
+    }
+    
+    sprintf(buffer, "%.3f##Z-%s", position->z, uiId);
+    if (DuskGui_floatInputField((DuskGuiParams) {
+        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 },
+    }, &position->z, _worldCursor.z - 1.0f, _worldCursor.z + 1.0f, 0.025f))
+    {
+        modified = 1;
+    }
+    
+    *posY += 20.0f;
+    
+    // Rotation input fields
+    sprintf(buffer, "%.3f##RX-%s", euler->x, uiId);
+    if (DuskGui_floatInputField((DuskGuiParams) {
+        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 },
+    }, &euler->x, -3000.0f, 3000.0f, 1.0f))
+    {
+        modified = 1;
+    }
+    
+    sprintf(buffer, "%.3f##RY-%s", euler->y, uiId);
+    if (DuskGui_floatInputField((DuskGuiParams) {
+        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 },
+    }, &euler->y, -3000.0f, 3000.0f, 1.0f))
+    {
+        modified = 1;
+    }
+    
+    sprintf(buffer, "%.3f##RZ-%s", euler->z, uiId);
+    if (DuskGui_floatInputField((DuskGuiParams) {
+        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 },
+    }, &euler->z, -3000.0f, 3000.0f, 1.0f))
+    {
+        modified = 1;
+    }
+    
+    *posY += 20.0f;
+    if (DuskGui_button((DuskGuiParams) {
+        .text = TextFormat("Reset Rotation##reset-rot-%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 }}))
+    {
+        *euler = (Vector3){0, 0, 0};
+        modified = 1;
+    }
+    
+
+    if (DuskGui_button((DuskGuiParams) {
+        .text = TextFormat("<-##<-%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 }}))
+    {
+        euler->y += -45.0f;
+        modified = 1;
+    }
+    
+    if (DuskGui_button((DuskGuiParams) {
+        .text = TextFormat("->##->%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 }}))
+    {
+        euler->y -= -45.0f;
+        modified = 1;
+    }
+
+    *posY += 20.0f;
+    
+    return modified;
+}

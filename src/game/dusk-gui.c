@@ -412,6 +412,7 @@ void DuskGui_init()
 {
     _defaultStyles.groups[DUSKGUI_STYLE_BUTTON].name = "DUSKGUI_STYLE_BUTTON";
     _defaultStyles.groups[DUSKGUI_STYLE_LABEL].name = "DUSKGUI_STYLE_LABEL";
+    _defaultStyles.groups[DUSKGUI_STYLE_LABEL_ALIGNRIGHT].name = "DUSKGUI_STYLE_LABEL_ALIGNRIGHT";
     _defaultStyles.groups[DUSKGUI_STYLE_LABELBUTTON].name = "DUSKGUI_STYLE_LABELBUTTON";
     _defaultStyles.groups[DUSKGUI_STYLE_FOLDOUT_OPEN].name = "DUSKGUI_STYLE_FOLDOUT_OPEN";
     _defaultStyles.groups[DUSKGUI_STYLE_FOLDOUT_CLOSED].name = "DUSKGUI_STYLE_FOLDOUT_CLOSED";
@@ -585,6 +586,13 @@ void DuskGui_init()
         .textColor = DB8_WHITE,
     };
 
+    DuskGuiStyleGroup* labelAlignRightGroup = &_defaultStyles.groups[DUSKGUI_STYLE_LABEL_ALIGNRIGHT];
+    labelAlignRightGroup->fallbackStyle = (DuskGuiStyle) {
+        .fontStyle = &_defaultFont,
+        .textAlignment = (Vector2) { 1.0f, 0.5f },
+        .textColor = DB8_WHITE,
+    };
+
     DuskGuiStyleGroup* labelButtonGroup = &_defaultStyles.groups[DUSKGUI_STYLE_LABELBUTTON];
     labelButtonGroup->fallbackStyle = (DuskGuiStyle) {
         .fontStyle = &_defaultFont,
@@ -742,7 +750,7 @@ void DuskGui_init()
         .paddingRight = 1,
         .paddingTop = 1,
         .paddingBottom = 1,
-        .backgroundColor = DB8_GREY,
+        .backgroundColor = DB8_DEEPPURPLE,
         .textColor = DB8_WHITE,
         .transitionLingerTime = 0.033f,
         .backgroundTexture = defaultTexture,
@@ -763,7 +771,7 @@ void DuskGui_init()
         .paddingRight = 4,
         .paddingTop = 4,
         .paddingBottom = 4,
-        .backgroundColor = DB8_GREY,
+        .backgroundColor = DB8_DEEPPURPLE,
         .textColor = DB8_WHITE,
         .textAlignment = (Vector2) { 0.5f, 0.5f },
         .transitionLingerTime = 0.033f,
@@ -788,7 +796,7 @@ void DuskGui_init()
         .paddingRight = 2,
         .paddingTop = 0,
         .paddingBottom = 0,
-        .backgroundColor = DB8_GREY,
+        .backgroundColor = DB8_DEEPPURPLE,
         .textColor = DB8_WHITE,
         .textAlignment = (Vector2) { 0.0f, 0.5f },
         .backgroundTexture = horizontalLineTexture,
@@ -932,7 +940,6 @@ void DuskGui_finalize()
             DuskGuiParamsEntry* entry = &_duskGuiState.currentParams.params[i];
             if (entry->params.rayCastTarget == 0 || ((entry->drawFn == NULL) ^ (pass == 1)))
                 continue;
-            
             int isHit = CheckCollisionPointRec(GetMousePosition(), entry->params.bounds);
             
             if (isHit)
@@ -1105,6 +1112,8 @@ void DuskGui_update(DuskGuiParamsEntry* entry, DuskGuiStyleGroup* initStyleGroup
         entry->nextStyle = match->nextStyle;
         entry->transitionTime = match->transitionTime + GetFrameTime();
         entry->transitionDuration = match->transitionDuration;
+        entry->isMouseOver = match->isMouseOver;
+
 
         if (entry->isFocused) {
             entry->textBuffer = match->textBuffer;
@@ -1667,10 +1676,11 @@ Vector2 DuskGui_getAvailableSpace()
 Vector2 DuskGui_toScreenSpace(Vector2 pos)
 {
     DuskGuiParamsEntry* panel = DuskGui_getCurrentPanel();
-    while (panel) {
-        pos.x += panel->params.bounds.x;
-        pos.y += panel->params.bounds.y;
-        panel = DuskGui_getParent(panel, 0);
+    if (panel) {
+        // printf("%s: %.2f %.2f +> %.2f %.2f\n", panel->txId, pos.x, pos.y, panel->params.bounds.x, panel->params.bounds.y);
+        pos.x += panel->params.bounds.x + panel->contentOffset.x;
+        pos.y += panel->params.bounds.y + panel->contentOffset.y;
+        // panel = DuskGui_getParent(panel, 0);
     }
     return pos;
 }

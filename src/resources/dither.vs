@@ -21,5 +21,5 @@ void main() {
     gl_Position = mvp * vec4(vertexPosition, 1.0);
     fragPosition = (matView * matModel * vec4(vertexPosition, 1.0)).xyz;
     fragNormal = (matModel * vec4(vertexNormal, 0.0)).xyz;
-    fragPosition -= fragNormal * 0.5;
+    // fragPosition -= fragNormal * 0.5;
 }

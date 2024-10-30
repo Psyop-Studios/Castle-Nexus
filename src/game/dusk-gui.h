@@ -174,6 +174,7 @@ typedef struct DuskGuiState {
 typedef enum DuskGuiStyleType {
     DUSKGUI_STYLE_BUTTON = 0,
     DUSKGUI_STYLE_LABEL,
+    DUSKGUI_STYLE_LABEL_ALIGNRIGHT,
     DUSKGUI_STYLE_LABELBUTTON,
     DUSKGUI_STYLE_FOLDOUT_OPEN,
     DUSKGUI_STYLE_FOLDOUT_CLOSED,
@@ -243,6 +244,7 @@ DuskGuiParamsEntry* DuskGui_getEntryById(DuskGuiParamsEntryId entryId);
 // utils
 Vector2 DuskGui_getAvailableSpace();
 Vector2 DuskGui_toScreenSpace(Vector2 pos);
+void DuskGui_setContentSize(DuskGuiParamsEntry entry, Vector2 contentSize);
 
 #ifdef DUSK_GUI_IMPLEMENTATION
 

@@ -4,17 +4,31 @@
 #include <raymath.h>
 #include <math.h>
 #include "level.h"
+#include "util.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef enum EditorMode
+{
+    EDITOR_MODE_EDITGEOMETRY,
+    EDITOR_MODE_EDITENTITIES,
+    
+} EditorMode;
 
+Vector3 _worldCursor = {0};
 
+static EditorMode _editorMode = EDITOR_MODE_EDITGEOMETRY;
 static Camera _camera;
-
-static Vector3 _worldCursor = {0};
 static int _updateCamera;
 static char _levelFileNameBuffer[256] = {0};
+static DuskGuiStyleGroup _editor_invisibleStyleGroup = { 0 };
+
+static LevelMeshInstance *_textureMenuInstance = NULL;
+static Vector2 _textureMenuPos = {0};
+static LevelEntity *_selectedEntity = NULL;
+static Vector2 _componentMenu = {0};
+
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     
@@ -49,6 +63,18 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
         }
     }
     DrawCubeWires((Vector3){_worldCursor.x, _worldCursor.y + .5f, _worldCursor.z}, 1.0f, 1.0f, 1.0f, DB8_RED);
+
+    if (_editorMode == EDITOR_MODE_EDITENTITIES)
+    {
+        for (int i = 0; i < level->entityCount; i++)
+        {
+            LevelEntity *entity = &level->entities[i];
+            if (entity->name)
+            {
+                DrawCube(entity->position, .2f, .2f, .2f, DB8_BLUE);
+            }
+        }
+    }
     
     // highlight the quad our mouse is hovering
     Vector3 hitPos = {0};
@@ -81,16 +107,8 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
     }
 }
 
-static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
+static void SceneDrawUi_mainBar(GameContext *gameCtx, SceneConfig *sceneConfig)
 {
-    
-    _updateCamera = DuskGui_dragArea((DuskGuiParams) {
-        .text = "Camera",
-        .bounds = (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() },
-        .rayCastTarget = 1,
-    });
-    
-    // DrawRectangle(0, 0, 200, 200, DB8_WHITE);
     DuskGuiParamsEntryId panel = DuskGui_beginPanel((DuskGuiParams) {
         .bounds = (Rectangle) { -5, -5, GetScreenWidth() + 10, 30 },
         .rayCastTarget = 1,
@@ -98,65 +116,96 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
     
     
     DuskGui_label((DuskGuiParams) {
-        .text = TextFormat("Cursor: %.2f %.2f %.2f", _worldCursor.x, _worldCursor.y, _worldCursor.z),
-        .bounds = (Rectangle) { 10, 10, 180, 20 },
+        .text = TextFormat("Cursor: %.1f %.1f %.1f", _worldCursor.x, _worldCursor.y, _worldCursor.z),
+        .bounds = (Rectangle) { 10, 7, 180, 20 },
     });
     
-
+    
+    DuskGui_label((DuskGuiParams) {
+        .text = "Level name:",
+        .bounds = (Rectangle) { 300-190, 7, 180, 20 },
+        .styleGroup = DuskGui_getStyleGroup(DUSKGUI_STYLE_LABEL_ALIGNRIGHT)
+    });
+    char *resultBuffer = NULL;
+    DuskGui_textInputField((DuskGuiParams) {
+        .text = TextFormat("%s##levelFileNameTextField", _levelFileNameBuffer),
+        .isFocusable = 1,
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 300, 7, 180, 20 },
+    }, &resultBuffer);
+    
+    
+    if (resultBuffer)
     {
-        char *resultBuffer = NULL;
-        DuskGui_textInputField((DuskGuiParams) {
-            .text = _levelFileNameBuffer,
-            .isFocusable = 1,
-            .rayCastTarget = 1,
-            .bounds = (Rectangle) { 300, 5, 180, 20 },
-        }, &resultBuffer);
         
-        
-        if (resultBuffer)
-        {
-            
-            strncpy(_levelFileNameBuffer, resultBuffer, 256);
-        }
-        
-        if (DuskGui_button((DuskGuiParams) {
-            .text = "Save",
-            .rayCastTarget = 1,
-            .bounds = (Rectangle) { 500, 5, 100, 20 },
-        }))
-        
-        {
-            Level_save(Game_getLevel(), _levelFileNameBuffer);
-        }
-        
-
-        if (DuskGui_button((DuskGuiParams) {
-            .text = "Load",
-            .rayCastTarget = 1,
-            .bounds = (Rectangle) { 600, 5, 100, 20 },
-        }))
-        {
-            DuskGui_openMenu("LoadMenu");
-        }
-        
-
+        strncpy(_levelFileNameBuffer, resultBuffer, 256);
     }
-    // if (DuskGui_button((DuskGuiParams) {
-    //     .text = "Editor",
-    //     .rayCastTarget = 1,
-    //     .bounds = (Rectangle) { 10, 10, 100, 20 },
-    // })) {
-    //     TraceLog(LOG_INFO, "Button clicked");
-    // }
-    DuskGui_endPanel(panel);
+    
+    if (DuskGui_button((DuskGuiParams) {
+        .text = "Save",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 480, 7, 50, 20 },
+    }))
+    
+    {
+        Level_save(Game_getLevel(), _levelFileNameBuffer);
+    }
     
 
+    if (DuskGui_button((DuskGuiParams) {
+        .text = "Load",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 530, 7, 50, 20 },
+    }))
+    {
+        DuskGui_openMenu("LoadMenu");
+    }
+
+    if (DuskGui_button((DuskGuiParams) {
+        .text = "New",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 580, 7, 50, 20 },
+    }))
+    {
+        Level_clearInstances(Game_getLevel());
+    }
+    
+    const char* toggleModeName = _editorMode == EDITOR_MODE_EDITGEOMETRY ? "Geometry mode##mode_selection" : "Entity mode##mode_selection";
+    if (DuskGui_button((DuskGuiParams) {
+        .text = toggleModeName,
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { DuskGui_getAvailableSpace().x - 105, 7, 100, 20 },
+    }))
+    {
+        _editorMode = _editorMode == EDITOR_MODE_EDITGEOMETRY ? EDITOR_MODE_EDITENTITIES : EDITOR_MODE_EDITGEOMETRY;
+    }
+    DuskGui_endPanel(panel);
+}
+
+static void SceneDrawUi_meshCreationBar(GameContext *gameCtx, SceneConfig *sceneConfig)
+{
     DuskGuiParamsEntryId objectCreatePanel = DuskGui_beginPanel((DuskGuiParams) {
-        .bounds = (Rectangle) { 0, 20, 200, GetScreenHeight() - 20},
+        .bounds = (Rectangle) { -2, 22, 200, GetScreenHeight() - 20},
         .rayCastTarget = 1,
     });
     
     Level *level = Game_getLevel();
+    float yPos = 10.0f;
+
+    static char meshFileFilter[256] = {0};
+    char *resultBuffer = NULL;
+    DuskGui_textInputField((DuskGuiParams) {
+        .text = TextFormat("%s##meshNameFilter", meshFileFilter),
+        .isFocusable = 1,
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 10, yPos, 180, 20 },
+    }, &resultBuffer);
+    if (resultBuffer)
+    {
+        strncpy(meshFileFilter, resultBuffer, 256);
+    }
+
+    yPos += 22.0f;
     
     for (int i = 0; i < level->meshCount; i++)
     {
@@ -164,29 +213,37 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
         LevelMesh *mesh = &level->meshes[i];
         
         char *lastSlash = strrchr(mesh->filename, '/');
+        char *pureName = GetFileNameWithoutExt(lastSlash ? lastSlash + 1 : mesh->filename);
+        if (strlen(meshFileFilter) > 0 && !strstr(pureName, meshFileFilter))
+        {
+            continue;
+        }
         
         if (DuskGui_button((DuskGuiParams) {
             .rayCastTarget = 1,
-            .text = lastSlash ? lastSlash + 1 : mesh->filename,
-            .bounds = (Rectangle) { 10, 10 + i * 20, 180, 20 },
+            .text = pureName,
+            .bounds = (Rectangle) { 10, 10 + yPos, 180, 20 },
         }))
         {
             Level_addInstance(level, mesh->filename, _worldCursor, (Vector3){0, 0, 0}, (Vector3){1, 1, 1});
         }
+        yPos += 20.0f;
         
     }
     DuskGui_endPanel(objectCreatePanel);
+}
+
+static void SceneDrawUi_meshInspector(GameContext *gameCtx, SceneConfig *SceneConfig)
+{
+    Level *level = Game_getLevel();
+
     DuskGuiParamsEntryId objectEditPanel = DuskGui_beginPanel((DuskGuiParams) {
-        .bounds = (Rectangle) { GetScreenWidth() - 200, 20, 200, GetScreenHeight() - 20},
+        .bounds = (Rectangle) { GetScreenWidth() - 198, 22, 200, GetScreenHeight() - 20},
         .rayCastTarget = 1,
     });
     
 
     float posY = 10.0f;
-
-    static LevelMeshInstance *textureMenuInstance = NULL;
-    static Vector2 textureMenuPos = {0};
-    
 
     for (int i = 0; i < level->meshCount; i++)
     {
@@ -215,86 +272,15 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
                 
 
                 char buffer[128];
+                sprintf(buffer, "%d:%d", i, j);
                 
-                
-                // Position input fields
-                sprintf(buffer, "%.3f##X-%d:%d", instance->position.x, i, j);
-                
-                if (DuskGui_floatInputField((DuskGuiParams) {
-                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, posY, 60, 20 },
-                }, &instance->position.x, _worldCursor.x - 1.0f, _worldCursor.x + 1.0f, 0.025f))
+                if (SceneDrawUi_transformUi(&posY, buffer, &instance->position, &instance->eulerRotationDeg, &instance->scale))
                 {
                     Level_updateInstanceTransform(instance);
                 }
-                
-                sprintf(buffer, "%.3f##Y-%d:%d", instance->position.y, i, j);
-                if (DuskGui_floatInputField((DuskGuiParams) {
-                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, posY, 60, 20 },
-                }, &instance->position.y, _worldCursor.y - 2.0f, _worldCursor.y + 4.0f, 0.025f))
-                {
-                    Level_updateInstanceTransform(instance);
-                }
-                
-                sprintf(buffer, "%.3f##Z-%d:%d", instance->position.z, i, j);
-                if (DuskGui_floatInputField((DuskGuiParams) {
-                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, posY, 60, 20 },
-                }, &instance->position.z, _worldCursor.z - 1.0f, _worldCursor.z + 1.0f, 0.025f))
-                {
-                    Level_updateInstanceTransform(instance);
-                }
-                
-                posY += 20.0f;
-                
-                // Rotation input fields
-                sprintf(buffer, "%.3f##RX-%d:%d", instance->eulerRotationDeg.x, i, j);
-                if (DuskGui_floatInputField((DuskGuiParams) {
-                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, posY, 60, 20 },
-                }, &instance->eulerRotationDeg.x, -3000.0f, 3000.0f, 1.0f))
-                {
-                    Level_updateInstanceTransform(instance);
-                }
-                
-                sprintf(buffer, "%.3f##RY-%d:%d", instance->eulerRotationDeg.y, i, j);
-                if (DuskGui_floatInputField((DuskGuiParams) {
-                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, posY, 60, 20 },
-                }, &instance->eulerRotationDeg.y, -3000.0f, 3000.0f, 1.0f))
-                {
-                    Level_updateInstanceTransform(instance);
-                }
-                
-                sprintf(buffer, "%.3f##RZ-%d:%d", instance->eulerRotationDeg.z, i, j);
-                if (DuskGui_floatInputField((DuskGuiParams) {
-                    .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, posY, 60, 20 },
-                }, &instance->eulerRotationDeg.z, -3000.0f, 3000.0f, 1.0f))
-                {
-                    Level_updateInstanceTransform(instance);
-                }
-                
-                posY += 20.0f;
-                if (DuskGui_button((DuskGuiParams) {
-                    .text = "Reset Rotation", .rayCastTarget = 1, .bounds = (Rectangle) { 10, posY, 60, 20 }}))
-                {
-                    instance->eulerRotationDeg = (Vector3){0, 0, 0};
-                    Level_updateInstanceTransform(instance);
-                }
-                
 
-                if (DuskGui_button((DuskGuiParams) {
-                    .text = "<-", .rayCastTarget = 1, .bounds = (Rectangle) { 70, posY, 60, 20 }}))
-                {
-                    instance->eulerRotationDeg.y += -45.0f;
-                    Level_updateInstanceTransform(instance);
-                }
-                
-                if (DuskGui_button((DuskGuiParams) {
-                    .text = "->", .rayCastTarget = 1, .bounds = (Rectangle) { 130, posY, 60, 20 }}))
-                {
-                    instance->eulerRotationDeg.y -= -45.0f;
-                    Level_updateInstanceTransform(instance);
-                }
-                
+                posY += 5.0f;
 
-                posY += 20.0f;
                 DuskGui_label((DuskGuiParams) {
                     .text = "Texture",
                     .bounds = (Rectangle) { 10, posY, 40, 20 },
@@ -311,8 +297,8 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
                 }))
                 {
                     DuskGui_openMenu("TextureMenu");
-                    textureMenuInstance = instance;
-                    textureMenuPos = DuskGui_toScreenSpace((Vector2){50, posY});
+                    _textureMenuInstance = instance;
+                    _textureMenuPos = DuskGui_toScreenSpace((Vector2){50, posY});
                 }
                 
                 posY += 20.0f;
@@ -338,13 +324,180 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
     }
 
     DuskGui_endPanel(objectEditPanel);
+}
 
+static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* entity)
+{
+    char *nameBuffer = NULL;
+    DuskGui_textInputField((DuskGuiParams) {
+        .text = TextFormat("%s##entity-name-textfield-%p", entity->name, entity),
+        .isFocusable = 1,
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 10, *posY, 180, 20 },
+    }, &nameBuffer);
+    if (nameBuffer)
+    {
+        free(entity->name);
+        entity->name = strdup(nameBuffer);
+    }
+    
+    *posY += 20.0f;
+    
+    char buffer[128];
+    sprintf(buffer, "%d-%d", entity->id, entity->generation);
+    if (SceneDrawUi_transformUi(posY, buffer, &entity->position, &entity->eulerRotationDeg, &entity->scale))
+    {
+        Level_updateEntityTransform(entity);
+    }
+    
+
+    *posY += 5.0f;
+
+    for (int i = 0; i < level->entityComponentClassCount; i++)
+    {
+        LevelEntityComponentClass *componentClass = &level->entityComponentClasses[i];
+        if (componentClass->instanceCount > 0)
+        {
+            for (int j = 0; j < componentClass->instanceCount; j++)
+            {
+                LevelEntityInstanceId ownerId = componentClass->ownerIds[j];
+                if (componentClass->generations[j] > 0 && ownerId.id == entity->id && ownerId.generation == entity->generation)
+                {
+                    sprintf(buffer, "%s-%d", componentClass->name, j);
+                    DuskGui_horizontalLine((DuskGuiParams) {
+                        .text = componentClass->name,
+                        .bounds = (Rectangle) { 10, *posY, 180, 12.0f },
+                    });
+                    *posY += 12.0f;
+
+                    if (componentClass->methods.onEditorInspectFn)
+                    {
+                        void *componentInstanceData = (char*)componentClass->componentInstanceData + j * componentClass->componentInstanceDataSize;
+                        componentClass->methods.onEditorInspectFn(level, (LevelEntityInstanceId){entity->id, entity->generation}, componentInstanceData, posY);
+                        *posY += 4.0f;
+                    }
+
+                    if (DuskGui_button((DuskGuiParams) {
+                        .text = TextFormat("Delete %s##DeleteComponent-%s", componentClass->name, buffer),
+                        .rayCastTarget = 1,
+                        .bounds = (Rectangle) { 10, *posY, 180, 20 },
+                    }))
+                    {
+                        componentClass->generations[j] = 0;
+                    }
+                    *posY += 20.0f;
+                }
+            }
+        }
+    }
+
+    *posY += 4.0f;
+    DuskGui_horizontalLine((DuskGuiParams) {
+        .bounds = (Rectangle) { 10, *posY, 180, 2 },
+    });
+    *posY += 4.0f;
+    if (DuskGui_button((DuskGuiParams) {
+        .text = TextFormat("Add Component##AddComponent-%d-%d", entity->id, entity->generation),
+        .bounds = (Rectangle) { 10, *posY, 180, 20 },
+        .rayCastTarget = 1,}
+        ))
+    {
+        DuskGui_openMenu("AddComponentMenu");
+        _selectedEntity = entity;
+        _componentMenu = DuskGui_toScreenSpace((Vector2){10, *posY});
+    }
+
+    *posY += 20.0f;
+    if (DuskGui_button((DuskGuiParams) {
+        .text = TextFormat("Delete Entity##DeleteEntity-%d-%d", entity->id, entity->generation),
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 10, *posY, 180, 20 },
+    }))
+    {
+        Level_deleteEntity(level, entity);
+    }
+    *posY += 20.0f;
+
+    *posY += 10.0f;
+}
+
+static void SceneDrawUi_entityInspector(GameContext *gameCtx, SceneConfig *sceneConfig)
+{
+    Level *level = Game_getLevel();
+
+    DuskGuiParamsEntryId objectEditPanel = DuskGui_beginPanel((DuskGuiParams) {
+        .bounds = (Rectangle) { GetScreenWidth() - 198, 22, 200, GetScreenHeight() - 20},
+        .rayCastTarget = 1,
+        .text = "##entityInspector",
+    });
+    
+    float posY = 10.0f;
+
+    if (DuskGui_button((DuskGuiParams) {
+        .text = "Add Entity",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 10, posY, 180, 20 },
+    }))
+    {
+        Level_addEntity(level, "New Entity", _worldCursor, (Vector3){0,0,0}, (Vector3){1,1,1});
+    }
+
+    posY += 30.0f;
+
+    DuskGuiParamsEntryId scrollArea = DuskGui_beginScrollArea((DuskGuiParams) {
+        .text = "##EntityList",
+        .bounds = (Rectangle) { 0, posY, 200, DuskGui_getAvailableSpace().y - posY - 10},
+        .isFocusable = 1,
+        .styleGroup = &_editor_invisibleStyleGroup,
+    });
+
+    posY = 10.0f;
+
+    for (int i = 0; i < level->entityCount; i++)
+    {
+        LevelEntity *entity = &level->entities[i];
+        if (entity->name)
+        {
+            SceneDrawUi_drawEntityUi(level, &posY, entity);
+        }
+    }
+
+    DuskGuiParamsEntry *entry = DuskGui_getEntryById(scrollArea);
+    entry->contentSize = (Vector2){200, posY + 10};
+    // TraceLog(LOG_INFO, "contentSize: %f %f, isMouseOver: %d %d", entry->contentSize.x, entry->contentSize.y, entry->isMouseOver, entry->isHovered);
+
+    DuskGui_endScrollArea(scrollArea);
+
+
+    DuskGui_endPanel(objectEditPanel);
+
+}
+static void SceneDrawUi(GameContext *gameCtx, SceneConfig *sceneConfig)
+{
+    Level *level = Game_getLevel();
+
+    _updateCamera = DuskGui_dragArea((DuskGuiParams) {
+        .text = "Camera",
+        .bounds = (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() },
+        .rayCastTarget = 1,
+    });
+
+    if (_editorMode == EDITOR_MODE_EDITGEOMETRY)
+    {
+        SceneDrawUi_meshCreationBar(gameCtx, sceneConfig);
+        SceneDrawUi_meshInspector(gameCtx, sceneConfig);
+    }
+    if (_editorMode == EDITOR_MODE_EDITENTITIES)
+    {
+        SceneDrawUi_entityInspector(gameCtx, sceneConfig);
+    }
+    SceneDrawUi_mainBar(gameCtx, sceneConfig);
     
     DuskGuiParamsEntry* textureMenu;
     if ((textureMenu = DuskGui_beginMenu((DuskGuiParams) {
         .text = "TextureMenu",
         .rayCastTarget = 1,
-        .bounds = (Rectangle) { textureMenuPos.x, textureMenuPos.y, 160, 60 },
+        .bounds = (Rectangle) { _textureMenuPos.x, _textureMenuPos.y, 160, 60 },
     })))
     {   
         if (DuskGui_menuItem(0, (DuskGuiParams) {
@@ -353,7 +506,7 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
             .bounds = (Rectangle) { 5, 5, 150, 20 },
         }))
         {
-            textureMenuInstance->textureIndex = -1;
+            _textureMenuInstance->textureIndex = -1;
             DuskGui_closeMenu("TextureMenu");
         }
         for (int i = 0; i < level->textureCount; i++)
@@ -367,7 +520,7 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
                 .bounds = (Rectangle) { 5, 25 + i * 20, 170, 20 },
             }))
             {
-                textureMenuInstance->textureIndex = i;
+                _textureMenuInstance->textureIndex = i;
                 DuskGui_closeMenu("TextureMenu");
             }
             
@@ -385,7 +538,7 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
     if ((menu = DuskGui_beginMenu((DuskGuiParams) {
         .text = "LoadMenu",
         .rayCastTarget = 1,
-        .bounds = (Rectangle) { 600, 25, 110, 60 },
+        .bounds = (Rectangle) { 530, 25, 110, 60 },
     })))
     {
         
@@ -395,6 +548,7 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
         {
             
             char *filename = levelFiles.paths[i];
+            filename = replacePathSeps(filename);
             char *lastSlash = strrchr(filename, '/');
             if (lastSlash)
             {
@@ -426,6 +580,41 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
     else
     {
         DuskGui_closeMenu("LoadMenu");
+    }
+
+    
+
+    DuskGuiParamsEntry *componentMenu = DuskGui_beginMenu((DuskGuiParams) {
+        .text = "AddComponentMenu",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { _componentMenu.x, _componentMenu.y, 180, 20 * level->entityComponentClassCount + 10.0f },
+    });
+    if (componentMenu)
+    {
+        for (int i = 0; i < level->entityComponentClassCount; i++)
+        {
+            LevelEntityComponentClass *componentClass = &level->entityComponentClasses[i];
+            if (DuskGui_menuItem(0, (DuskGuiParams) {
+                .text = componentClass->name,
+                .rayCastTarget = 1,
+                .bounds = (Rectangle) { 5, 5 + i * 20, 170, 20 },
+            }))
+            {
+                Level_addEntityComponent(level, _selectedEntity, componentClass->componentId, NULL);
+                DuskGui_closeMenu("AddComponentMenu");
+            }
+        }
+
+        DuskGui_endMenu();
+    }
+
+    for (int i = 0; i < level->entityComponentClassCount; i++)
+    {
+        LevelEntityComponentClass *componentClass = &level->entityComponentClasses[i];
+        if (componentClass->methods.onEditorMenuFn)
+        {
+            componentClass->methods.onEditorMenuFn(level);
+        }
     }
 }
 
@@ -473,7 +662,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     // _model.materials[2].shader = _modelTexturedShader;
 
     _camera = (Camera){0};
-    _camera.position = (Vector3){ 5.0f, 3.70f, 2.0f };
+    _camera.position = (Vector3){ 5.0f, 1.70f, 2.0f };
     _camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     _camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     _camera.fovy = 45.0f;

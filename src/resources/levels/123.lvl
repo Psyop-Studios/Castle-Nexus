@@ -1,5 +1,17 @@
 {
 	"meshes":	[{
+			"filename":	"resources/level_assets/ceiling-large-blocks-a.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
 			"filename":	"resources/level_assets/crate.glb",
 			"instancesPX":	[0],
 			"instancesPY":	[0.52999991178512573],
@@ -9,7 +21,68 @@
 			"instancesRZ":	[0],
 			"instancesSX":	[1],
 			"instancesSY":	[1],
-			"instancesSZ":	[1]
+			"instancesSZ":	[1],
+			"instancesTexId":	[-1]
+		}, {
+			"filename":	"resources/level_assets/decoration-barrel-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-bookshelf.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-candle-holder.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-picture-frame-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-rug-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/ground-large-blocks-a.glb",
 			"instancesPX":	[0, -2],
@@ -20,7 +93,8 @@
 			"instancesRZ":	[0, 0],
 			"instancesSX":	[1, 1],
 			"instancesSY":	[1, 1],
-			"instancesSZ":	[1, 1]
+			"instancesSZ":	[1, 1],
+			"instancesTexId":	[-1, -1]
 		}, {
 			"filename":	"resources/level_assets/ground-large-blocks-b.glb",
 			"instancesPX":	[0, 0, -4],
@@ -31,7 +105,20 @@
 			"instancesRZ":	[0, 0, 0],
 			"instancesSX":	[1, 1, 1],
 			"instancesSY":	[1, 1, 1],
-			"instancesSZ":	[1, 1, 1]
+			"instancesSZ":	[1, 1, 1],
+			"instancesTexId":	[-1, -1, -1]
+		}, {
+			"filename":	"resources/level_assets/ground-medium-blocks-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/wall-large-blocks-1000a.glb",
 			"instancesPX":	[-2, -2],
@@ -42,7 +129,8 @@
 			"instancesRZ":	[0, 0],
 			"instancesSX":	[1, 1],
 			"instancesSY":	[1, 1],
-			"instancesSZ":	[1, 1]
+			"instancesSZ":	[1, 1],
+			"instancesTexId":	[-1, -1]
 		}, {
 			"filename":	"resources/level_assets/wall-large-blocks-1000b.glb",
 			"instancesPX":	[-2, -4],
@@ -53,7 +141,8 @@
 			"instancesRZ":	[0, 0],
 			"instancesSX":	[1, 1],
 			"instancesSY":	[1, 1],
-			"instancesSZ":	[1, 1]
+			"instancesSZ":	[1, 1],
+			"instancesTexId":	[-1, -1]
 		}, {
 			"filename":	"resources/level_assets/wall-large-blocks-arch-1000a.glb",
 			"instancesPX":	[],
@@ -64,6 +153,20 @@
 			"instancesRZ":	[],
 			"instancesSX":	[],
 			"instancesSY":	[],
-			"instancesSZ":	[]
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}],
+	"entityNames":	[null, "This is a cool renamed Entity!", null, null, null, null, null, null, null],
+	"entityTRS":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"entityIds":	[0, 1, 0, 0, 0, 0, 0, 0, 0],
+	"components":	[{
+			"name":	"MeshRenderer",
+			"componentId":	0,
+			"ownerEntityIds":	[1, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[{
+					"mesh":	"resources/level_assets/crate.glb",
+					"isDithered":	0,
+					"trs":	[0.47500008344650269, 0, 1, 0, 0, 0, 1, 1, 1]
+				}, null, null, null, null, null, null, null]
 		}]
 }

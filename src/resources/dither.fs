@@ -62,7 +62,7 @@ void main() {
     }
 
     gl_FragColor.g = (fragTexCoord.y + (fragTexCoord.x > 1.0 ? 1.0 : 0.0));
-    float z = (-fragPosition.z + fragNormal.z * (1.0 + fragTexCoord.y)) * 32.0;
+    float z = (-fragPosition.z + 0.0 * fragNormal.z * (1.0 + fragTexCoord.y)) * 32.0;
     gl_FragColor.rb = encode16bit(z);
     // use green channel value to reconstruct red / blue via lookup
     gl_FragColor.a = color.g;
