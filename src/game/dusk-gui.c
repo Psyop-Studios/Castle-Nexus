@@ -1663,3 +1663,14 @@ Vector2 DuskGui_getAvailableSpace()
     Rectangle rect = panel->params.bounds;
     return (Vector2) { rect.width, rect.height };
 }
+
+Vector2 DuskGui_toScreenSpace(Vector2 pos)
+{
+    DuskGuiParamsEntry* panel = DuskGui_getCurrentPanel();
+    while (panel) {
+        pos.x += panel->params.bounds.x;
+        pos.y += panel->params.bounds.y;
+        panel = DuskGui_getParent(panel, 0);
+    }
+    return pos;
+}

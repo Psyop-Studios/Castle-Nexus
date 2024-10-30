@@ -9,6 +9,7 @@ typedef struct LevelMeshInstance
     Vector3 eulerRotationDeg;
     Vector3 scale;
     Matrix toWorldTransform;
+    int textureIndex;
 } LevelMeshInstance;
 
 typedef struct LevelMesh
@@ -36,7 +37,7 @@ typedef struct Level {
 
 void Level_init(Level *level);
 void Level_loadAssets(Level *level, const char *assetsDirectory);
-void Level_addInstance(Level *level, const char *meshName, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale);
+LevelMeshInstance* Level_addInstance(Level *level, const char *meshName, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale);
 void Level_clearInstances(Level *level);
 void Level_load(Level *level, const char *levelFile);
 void Level_save(Level *level, const char *levelFile);

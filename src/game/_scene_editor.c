@@ -167,6 +167,9 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
     
 
     float posY = 10.0f;
+
+    static LevelMeshInstance *textureMenuInstance = NULL;
+    static Vector2 textureMenuPos = {0};
     
 
     for (int i = 0; i < level->meshCount; i++)
@@ -276,7 +279,27 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
                 
 
                 posY += 20.0f;
+                DuskGui_label((DuskGuiParams) {
+                    .text = "Texture",
+                    .bounds = (Rectangle) { 10, posY, 40, 20 },
+                });
+                const char *texName = "Default";
+                if (instance->textureIndex >= 0 && instance->textureIndex < level->textureCount)
+                {
+                    texName = strrchr(level->textures[instance->textureIndex].filename, '/') + 1;
+                }
+                if (DuskGui_button((DuskGuiParams) {
+                    .text = TextFormat("%s##%d:%d", texName, i, j),
+                    .rayCastTarget = 1,
+                    .bounds = (Rectangle) { 50, posY, 140, 20 },
+                }))
+                {
+                    DuskGui_openMenu("TextureMenu");
+                    textureMenuInstance = instance;
+                    textureMenuPos = DuskGui_toScreenSpace((Vector2){50, posY});
+                }
                 
+                posY += 20.0f;
 
                 if (DuskGui_button((DuskGuiParams) {
                     .text = "Delete",
@@ -300,6 +323,47 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     DuskGui_endPanel(objectEditPanel);
 
+    
+    DuskGuiParamsEntry* textureMenu;
+    if ((textureMenu = DuskGui_beginMenu((DuskGuiParams) {
+        .text = "TextureMenu",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { textureMenuPos.x, textureMenuPos.y, 160, 60 },
+    })))
+    {   
+        if (DuskGui_menuItem(0, (DuskGuiParams) {
+            .text = "None",
+            .rayCastTarget = 1,
+            .bounds = (Rectangle) { 5, 5, 150, 20 },
+        }))
+        {
+            textureMenuInstance->textureIndex = -1;
+            DuskGui_closeMenu("TextureMenu");
+        }
+        for (int i = 0; i < level->textureCount; i++)
+        {
+            
+            LevelTexture *texture = &level->textures[i];
+            
+            if (DuskGui_menuItem(0, (DuskGuiParams) {
+                .text = strrchr(texture->filename, '/') + 1,
+                .rayCastTarget = 1,
+                .bounds = (Rectangle) { 5, 25 + i * 20, 170, 20 },
+            }))
+            {
+                textureMenuInstance->textureIndex = i;
+                DuskGui_closeMenu("TextureMenu");
+            }
+            
+        }
+        textureMenu->params.bounds.height = 30 + level->textureCount * 20;
+        
+        DuskGui_endMenu();
+    }
+    else
+    {
+        DuskGui_closeMenu("TextureMenu");
+    }
     
     DuskGuiParamsEntry* menu;
     if ((menu = DuskGui_beginMenu((DuskGuiParams) {
@@ -331,7 +395,7 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *SceneConfig)
             }))
             {
                 Level_load(Game_getLevel(), levelFiles.paths[i]);
-                char *filename = GetFileNameWithoutExt(levelFiles.paths[i]);
+                const char *filename = GetFileNameWithoutExt(levelFiles.paths[i]);
                 strncpy(_levelFileNameBuffer, filename, 256);
                 DuskGui_closeMenu("LoadMenu");
             }

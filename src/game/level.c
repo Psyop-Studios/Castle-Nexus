@@ -153,7 +153,7 @@ void Level_updateInstanceTransform(LevelMeshInstance *instance)
     
 }
 
-void Level_addInstance(Level *level, const char *meshName, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale)
+LevelMeshInstance* Level_addInstance(Level *level, const char *meshName, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale)
 {
     for (int i = 0; i < level->meshCount; i++)
     {
@@ -166,22 +166,12 @@ void Level_addInstance(Level *level, const char *meshName, Vector3 position, Vec
             instance->position = position;
             instance->eulerRotationDeg = eulerRotationDeg;
             instance->scale = scale;
+            instance->textureIndex = -1;
             Level_updateInstanceTransform(instance);
-            Matrix m = instance->toWorldTransform;
-            TraceLog(LOG_INFO, "pos: %.2f %.2f %.2f", position.x, position.y, position.z);
-            TraceLog(LOG_INFO, "Matrix: \n"
-                "%.2f %.2f %.2f %.2f\n"
-                "%.2f %.2f %.2f %.2f\n"
-                "%.2f %.2f %.2f %.2f\n"
-                "%.2f %.2f %.2f %.2f\n"
-                , m.m0, m.m4, m.m8, m.m12,
-                m.m1, m.m5, m.m9, m.m13,
-                m.m2, m.m6, m.m10, m.m14,
-                m.m3, m.m7, m.m11, m.m15
-            );
-            return;
+            return instance;
         }
     }
+    return NULL;
 }
 
 void Level_load(Level *level, const char *levelFile)
@@ -235,6 +225,8 @@ void Level_load(Level *level, const char *levelFile)
             continue;
         }
 
+        cJSON *instancesTexId = cJSON_GetObjectItem(meshObj, "instancesTexId");
+
         const char *meshName = filename->valuestring;
 
         for (int j = 0; j < cJSON_GetArraySize(instancesPX); j++)
@@ -242,7 +234,11 @@ void Level_load(Level *level, const char *levelFile)
             Vector3 position = (Vector3){cJSON_GetArrayItem(instancesPX, j)->valuedouble, cJSON_GetArrayItem(instancesPY, j)->valuedouble, cJSON_GetArrayItem(instancesPZ, j)->valuedouble};
             Vector3 eulerRotationDeg = (Vector3){cJSON_GetArrayItem(instancesRX, j)->valuedouble, cJSON_GetArrayItem(instancesRY, j)->valuedouble, cJSON_GetArrayItem(instancesRZ, j)->valuedouble};
             Vector3 scale = (Vector3){cJSON_GetArrayItem(instancesSX, j)->valuedouble, cJSON_GetArrayItem(instancesSY, j)->valuedouble, cJSON_GetArrayItem(instancesSZ, j)->valuedouble};
-            Level_addInstance(level, meshName, position, eulerRotationDeg, scale);
+            LevelMeshInstance *instance = Level_addInstance(level, meshName, position, eulerRotationDeg, scale);
+            if (instance && instancesTexId)
+            {
+                instance->textureIndex = cJSON_GetArrayItem(instancesTexId, j)->valueint;
+            }
         }
     }
 
@@ -279,6 +275,7 @@ void Level_save(Level *level, const char *levelFile)
         cJSON *instancesSX = cJSON_CreateArray();
         cJSON *instancesSY = cJSON_CreateArray();
         cJSON *instancesSZ = cJSON_CreateArray();
+        cJSON *instancesTexId = cJSON_CreateArray();
         cJSON_AddItemToObject(meshObj, "instancesPX", instancesPX);
         cJSON_AddItemToObject(meshObj, "instancesPY", instancesPY);
         cJSON_AddItemToObject(meshObj, "instancesPZ", instancesPZ);
@@ -288,6 +285,7 @@ void Level_save(Level *level, const char *levelFile)
         cJSON_AddItemToObject(meshObj, "instancesSX", instancesSX);
         cJSON_AddItemToObject(meshObj, "instancesSY", instancesSY);
         cJSON_AddItemToObject(meshObj, "instancesSZ", instancesSZ);
+        cJSON_AddItemToObject(meshObj, "instancesTexId", instancesTexId);
 
         for (int j = 0; j < mesh->instanceCount; j++)
         {
@@ -301,6 +299,7 @@ void Level_save(Level *level, const char *levelFile)
             cJSON_AddItemToArray(instancesSX, cJSON_CreateNumber(instance->scale.x));
             cJSON_AddItemToArray(instancesSY, cJSON_CreateNumber(instance->scale.y));
             cJSON_AddItemToArray(instancesSZ, cJSON_CreateNumber(instance->scale.z));
+            cJSON_AddItemToArray(instancesTexId, cJSON_CreateNumber(instance->textureIndex));
         }
     }
 
@@ -328,7 +327,7 @@ void Level_draw(Level *level)
         Material material = {0};
         material.shader = mesh->isDithered ? _modelDitherShader : _modelTexturedShader;
         MaterialMap maps[16];
-        maps[MATERIAL_MAP_ALBEDO].texture = 
+        Texture2D defaultTex = maps[MATERIAL_MAP_ALBEDO].texture = 
             mesh->textureIndex >= 0 ? level->textures[mesh->textureIndex].texture : (Texture2D) {0};
         material.maps = maps;
         
@@ -336,6 +335,14 @@ void Level_draw(Level *level)
         {
             // TraceLog(LOG_INFO, "Drawing mesh: %s", mesh->filename);
             LevelMeshInstance *instance = &mesh->instances[j];
+            if (instance->textureIndex >= 0)
+            {
+                material.maps[MATERIAL_MAP_ALBEDO].texture = level->textures[instance->textureIndex].texture;
+            }
+            else
+            {
+                material.maps[MATERIAL_MAP_ALBEDO].texture = defaultTex;
+            }
             DrawMesh(mesh->model.meshes[0], material, instance->toWorldTransform);
         }
     }

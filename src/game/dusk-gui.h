@@ -224,7 +224,6 @@ int DuskGui_label(DuskGuiParams params);
 int DuskGui_textInputField(DuskGuiParams params, char** buffer);
 int DuskGui_foldout(DuskGuiParams params);
 void DuskGui_horizontalLine(DuskGuiParams params);
-Vector2 DuskGui_getAvailableSpace();
 int DuskGui_horizontalFloatSlider(DuskGuiParams params, float* value, float min, float max);
 int DuskGui_floatInputField(DuskGuiParams params, float *value, float min, float max, float deltaScale);
 int DuskGui_menuItem(int opensSubmenu, DuskGuiParams params);
@@ -240,6 +239,10 @@ DuskGuiParamsEntry* DuskGui_beginMenu(DuskGuiParams params);
 void DuskGui_endMenu();
 
 DuskGuiParamsEntry* DuskGui_getEntryById(DuskGuiParamsEntryId entryId);
+
+// utils
+Vector2 DuskGui_getAvailableSpace();
+Vector2 DuskGui_toScreenSpace(Vector2 pos);
 
 #ifdef DUSK_GUI_IMPLEMENTATION
 
