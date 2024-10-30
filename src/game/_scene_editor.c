@@ -93,6 +93,18 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
         {
             _worldCursor = hitPos;
         }
+        if (IsKeyDown(KEY_TWO))
+        {
+            _camera.position.y += 5.0 * GetFrameTime();
+        }
+        if (IsKeyDown(KEY_X))
+        {
+            _camera.position.y -= 5.0 * GetFrameTime();
+        }
+        if (IsKeyDown(KEY_ONE))
+        {
+            _camera.position.y = 1.70f;
+        }
     }
 
     EndShaderMode();
