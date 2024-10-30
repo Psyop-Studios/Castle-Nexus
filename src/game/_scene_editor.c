@@ -50,6 +50,22 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
     }
     DrawCubeWires((Vector3){_worldCursor.x, _worldCursor.y + .5f, _worldCursor.z}, 1.0f, 1.0f, 1.0f, DB8_RED);
     
+    // highlight the quad our mouse is hovering
+    Vector3 hitPos = {0};
+    Ray ray = GetMouseRay(GetMousePosition(), _camera);
+    if (ray.direction.y != 0.0f)
+    {
+        float dist = (_worldCursor.y - ray.position.y) / ray.direction.y;
+        hitPos = Vector3Add(ray.position, Vector3Scale(ray.direction, dist));
+        hitPos.x = floorf(hitPos.x + .5f);
+        hitPos.y = hitPos.y;
+        hitPos.z = floorf(hitPos.z + .5f);
+        DrawCubeWires(hitPos, 1.0f, 0.0f, 1.0f, DB8_GREEN);
+        if (IsKeyDown(KEY_SPACE))
+        {
+            _worldCursor = hitPos;
+        }
+    }
 
     EndShaderMode();
     
