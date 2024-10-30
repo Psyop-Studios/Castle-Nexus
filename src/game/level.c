@@ -299,9 +299,15 @@ void Level_load(Level *level, const char *levelFile)
             (float)cJSON_GetArrayItem(entityTRS, i * 9 + 7)->valuedouble, 
             (float)cJSON_GetArrayItem(entityTRS, i * 9 + 8)->valuedouble};
         LevelEntity *entity = Level_addEntityAtIndex(level, entityId->valueint, entityName, position, eulerRotationDeg, scale);
+        if (!entity)
+        {
+            TraceLog(LOG_ERROR, "Failed to add entity at %d: %s", entityId->valueint, entityName);
+            continue;
+        }
         if (entity->id != entityId->valueint)
         {
-            TraceLog(LOG_ERROR, "Entity id mismatch; not importing entity data: %s", levelFile);
+            TraceLog(LOG_ERROR, "Entity id mismatch at %d (%d vs %d); not importing entity data: %s", 
+                i, entity->id, entityId->valueint, levelFile);
             goto cleanup;
         }
     }
@@ -631,7 +637,7 @@ LevelEntity* Level_resolveEntity(Level *level, LevelEntityInstanceId id)
         return NULL;
     }
     LevelEntity *entity = &level->entities[id.id];
-    if (entity->generation != id.generation)
+    if (entity->generation != id.generation || !entity->name)
     {
         return NULL;
     }
@@ -757,6 +763,10 @@ LevelEntity* Level_addEntityAtIndex(Level *level, int index, const char *name, V
     int newCount = index + 8;
     level->entities = (LevelEntity*)realloc(level->entities, newCount * sizeof(LevelEntity));
     memset(&level->entities[level->entityCount], 0, sizeof(LevelEntity) * (newCount - level->entityCount));
+    for (int i = level->entityCount; i < newCount; i++)
+    {
+        level->entities[i].id = i;
+    }
     level->entityCount = newCount;
 
     level->entities[index].name = strdup(name);

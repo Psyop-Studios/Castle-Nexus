@@ -120,6 +120,18 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}, {
+			"filename":	"resources/level_assets/ground-small-stairs-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
 			"filename":	"resources/level_assets/wall-large-blocks-1000a.glb",
 			"instancesPX":	[-2, -2],
 			"instancesPY":	[0, 0],
@@ -156,8 +168,8 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}],
-	"entityNames":	[null, "This is a cool renamed Entity!", null, null, null, null, null, null, null],
-	"entityTRS":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"entityNames":	["Cool entity", "This is a cool renamed Entity!", null, null, null, null, null, null, null],
+	"entityTRS":	[2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	"entityIds":	[0, 1, 0, 0, 0, 0, 0, 0, 0],
 	"components":	[{
 			"name":	"MeshRenderer",
@@ -167,6 +179,10 @@
 					"mesh":	"resources/level_assets/crate.glb",
 					"isDithered":	0,
 					"trs":	[0.47500008344650269, 0, 1, 0, 0, 0, 1, 1, 1]
-				}, null, null, null, null, null, null, null]
+				}, {
+					"mesh":	"resources/level_assets/crate.glb",
+					"isDithered":	0,
+					"trs":	[0, 0.525000035762787, 0, 0, 0, 0, 1, 1, 1]
+				}, null, null, null, null, null, null]
 		}]
 }

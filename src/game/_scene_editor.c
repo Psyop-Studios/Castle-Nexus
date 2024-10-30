@@ -28,6 +28,7 @@ static LevelMeshInstance *_textureMenuInstance = NULL;
 static Vector2 _textureMenuPos = {0};
 static LevelEntity *_selectedEntity = NULL;
 static Vector2 _componentMenu = {0};
+static LevelEntityInstanceId _selectedEntityId = {0};
 
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
@@ -133,12 +134,10 @@ static void SceneDrawUi_mainBar(GameContext *gameCtx, SceneConfig *sceneConfig)
         .rayCastTarget = 1,
         .bounds = (Rectangle) { 300, 7, 180, 20 },
     }, &resultBuffer);
-    
-    
     if (resultBuffer)
     {
-        
         strncpy(_levelFileNameBuffer, resultBuffer, 256);
+        DuskGui_getLastEntry()->isFocused = 0;
     }
     
     if (DuskGui_button((DuskGuiParams) {
@@ -203,6 +202,7 @@ static void SceneDrawUi_meshCreationBar(GameContext *gameCtx, SceneConfig *scene
     if (resultBuffer)
     {
         strncpy(meshFileFilter, resultBuffer, 256);
+        DuskGui_getLastEntry()->isFocused = 0;
     }
 
     yPos += 22.0f;
@@ -213,7 +213,7 @@ static void SceneDrawUi_meshCreationBar(GameContext *gameCtx, SceneConfig *scene
         LevelMesh *mesh = &level->meshes[i];
         
         char *lastSlash = strrchr(mesh->filename, '/');
-        char *pureName = GetFileNameWithoutExt(lastSlash ? lastSlash + 1 : mesh->filename);
+        const char *pureName = GetFileNameWithoutExt(lastSlash ? lastSlash + 1 : mesh->filename);
         if (strlen(meshFileFilter) > 0 && !strstr(pureName, meshFileFilter))
         {
             continue;
@@ -339,6 +339,7 @@ static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* ent
     {
         free(entity->name);
         entity->name = strdup(nameBuffer);
+        DuskGui_getLastEntry()->isFocused = 0;
     }
     
     *posY += 20.0f;
@@ -407,7 +408,7 @@ static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* ent
         _componentMenu = DuskGui_toScreenSpace((Vector2){10, *posY});
     }
 
-    *posY += 20.0f;
+    *posY += 25.0f;
     if (DuskGui_button((DuskGuiParams) {
         .text = TextFormat("Delete Entity##DeleteEntity-%d-%d", entity->id, entity->generation),
         .rayCastTarget = 1,
@@ -419,6 +420,62 @@ static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* ent
     *posY += 20.0f;
 
     *posY += 10.0f;
+}
+
+static void SceneDrawUi_entitySelection(GameContext *gameCtx, SceneConfig *SceneConfig)
+{
+    DuskGuiParamsEntryId panel = DuskGui_beginPanel((DuskGuiParams) {
+        .bounds = (Rectangle) { -2, 20, 200, GetScreenHeight() - 15 },
+        .rayCastTarget = 1,
+    });
+    Level *level = Game_getLevel();
+    float posY = 10.0f;
+
+    if (DuskGui_button((DuskGuiParams) {
+        .text = "Add Entity",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 10, posY, 180, 20 },
+    }))
+    {
+        LevelEntity *newEntity = Level_addEntity(level, "New Entity", _worldCursor, (Vector3){0,0,0}, (Vector3){1,1,1});
+        _selectedEntityId = (LevelEntityInstanceId){newEntity->id, newEntity->generation};
+    }
+
+    posY += 30.0f;
+
+    static char entityFilter[256] = {0};
+    char *resultBuffer = NULL;
+    DuskGui_textInputField((DuskGuiParams) {
+        .text = TextFormat("%s##entityNameFilter", entityFilter),
+        .isFocusable = 1,
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 10, posY, 180, 20 },
+    }, &resultBuffer);
+    if (resultBuffer)
+    {
+        strncpy(entityFilter, resultBuffer, 256);
+        DuskGui_getLastEntry()->isFocused = 0;
+    }
+
+    posY += 25.0f;
+
+    for (int i = 0; i < level->entityCount; i++)
+    {
+        LevelEntity *entity = &level->entities[i];
+        if (entity->name && (strlen(entityFilter) == 0 || strstr(entity->name, entityFilter)))
+        {
+            if (DuskGui_button((DuskGuiParams) {
+                .text = entity->name,
+                .rayCastTarget = 1,
+                .bounds = (Rectangle) { 10, posY, 180, 20 },
+            }))
+            {
+                _selectedEntityId = (LevelEntityInstanceId){entity->id, entity->generation};
+            }
+            posY += 20.0f;
+        }
+    }
+    DuskGui_endPanel(panel);
 }
 
 static void SceneDrawUi_entityInspector(GameContext *gameCtx, SceneConfig *sceneConfig)
@@ -433,17 +490,6 @@ static void SceneDrawUi_entityInspector(GameContext *gameCtx, SceneConfig *scene
     
     float posY = 10.0f;
 
-    if (DuskGui_button((DuskGuiParams) {
-        .text = "Add Entity",
-        .rayCastTarget = 1,
-        .bounds = (Rectangle) { 10, posY, 180, 20 },
-    }))
-    {
-        Level_addEntity(level, "New Entity", _worldCursor, (Vector3){0,0,0}, (Vector3){1,1,1});
-    }
-
-    posY += 30.0f;
-
     DuskGuiParamsEntryId scrollArea = DuskGui_beginScrollArea((DuskGuiParams) {
         .text = "##EntityList",
         .bounds = (Rectangle) { 0, posY, 200, DuskGui_getAvailableSpace().y - posY - 10},
@@ -453,13 +499,10 @@ static void SceneDrawUi_entityInspector(GameContext *gameCtx, SceneConfig *scene
 
     posY = 10.0f;
 
-    for (int i = 0; i < level->entityCount; i++)
+    LevelEntity *entity = Level_resolveEntity(level, _selectedEntityId);
+    if (entity)
     {
-        LevelEntity *entity = &level->entities[i];
-        if (entity->name)
-        {
-            SceneDrawUi_drawEntityUi(level, &posY, entity);
-        }
+        SceneDrawUi_drawEntityUi(level, &posY, entity);
     }
 
     DuskGuiParamsEntry *entry = DuskGui_getEntryById(scrollArea);
@@ -489,6 +532,7 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *sceneConfig)
     }
     if (_editorMode == EDITOR_MODE_EDITENTITIES)
     {
+        SceneDrawUi_entitySelection(gameCtx, sceneConfig);
         SceneDrawUi_entityInspector(gameCtx, sceneConfig);
     }
     SceneDrawUi_mainBar(gameCtx, sceneConfig);
