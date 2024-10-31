@@ -75,6 +75,8 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
         if (strcmp(ext, ".png") == 0)
         {
             level->textures[textureCount].texture = LoadTexture(file);
+            SetTextureWrap(level->textures[textureCount].texture, TEXTURE_WRAP_REPEAT);
+            SetTextureFilter(level->textures[textureCount].texture, TEXTURE_FILTER_POINT);
             level->textures[textureCount].filename = replacePathSeps(strdup(file));
             textureCount++;
         }
@@ -168,6 +170,20 @@ void Level_updateInstanceTransform(LevelMeshInstance *instance)
     instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, MatrixScale(scale.x, scale.y, scale.z));
     instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, MatrixTranslate(position.x, position.y, position.z));
     
+}
+
+
+Texture2D Level_getTexture(Level *level, const char *filename, Texture2D fallback)
+{
+    for (int i = 0; i < level->textureCount; i++)
+    {
+        char *lastSlash = strrchr(level->textures[i].filename, '/');
+        if (strcmp(level->textures[i].filename, filename) == 0 || (lastSlash && strcmp(lastSlash + 1, filename) == 0))
+        {
+            return level->textures[i].texture;
+        }
+    }
+    return fallback;
 }
 
 LevelMeshInstance* Level_addInstance(Level *level, const char *meshName, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale)

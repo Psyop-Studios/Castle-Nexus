@@ -56,6 +56,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .action = ScriptAction_jumpStep,
         .actionData = ScriptAction_JumpStepData_new(-1, 1, 1)});
     step++;
+    
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .action = ScriptAction_setCameraMovementEnabled,

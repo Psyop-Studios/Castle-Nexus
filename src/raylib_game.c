@@ -143,6 +143,7 @@ void load_game();
 static int is_built = 0;
 static void build_game()
 {
+    SetTraceLogLevel(LOG_WARNING);
     is_built = 1;
     deinit();
     unload_game();
@@ -151,6 +152,7 @@ static void build_game()
     Game_update = NULL;
     char buildCommand[4096] = {0};
     char cfilelist[2048] = {0};
+    long lastModTime = 0;
     FilePathList files = LoadDirectoryFiles("game");
     for (int i = 0; i < files.count; i++)
     {
@@ -160,25 +162,31 @@ static void build_game()
         {
             strcat(cfilelist, file);
             strcat(cfilelist, " ");
+            long modTime = GetFileModTime(file);
+            if (modTime > lastModTime)
+            {
+                lastModTime = modTime;
+            }
         }
     }
     UnloadDirectoryFiles(files);
 
 #if defined(_WIN32) || defined(_WIN64)
-    sprintf(buildCommand, "gcc -g -Wall -I../../raylib/src -L../../raylib/src -o game.dll -shared -fPIC %s -lraylib -DCJSON_HIDE_SYMBOLS",
-            cfilelist);
-
+    const char *dllName = "game.dll";
 #else
-    sprintf(buildCommand, "gcc -g -Wall -I../../raylib/src -L../../raylib/src -o game.so -shared -fPIC %s -lraylib -DCJSON_HIDE_SYMBOLS",
-            cfilelist);
+    const char *dllName = "game.so";
 #endif
 
-    printf("Building game: %s\n", buildCommand);
 
-    int result = system(buildCommand);
+    if (lastModTime > GetFileModTime(dllName))
+    {
+        sprintf(buildCommand, "gcc -g -Wall -I../../raylib/src -L../../raylib/src -o %s -shared -fPIC %s -lraylib -DCJSON_HIDE_SYMBOLS",
+                dllName, cfilelist);
 
-    printf("result : %d\n", result);
-
+        printf("Building game: %s\n", buildCommand);
+        int result = system(buildCommand);
+        printf("result : %d\n", result);
+    }
     load_game();
     init();
     printf("Game built and loaded\n");

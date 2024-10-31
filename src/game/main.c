@@ -64,8 +64,13 @@ void Game_init(void** contextData)
 
     _modelDitherShader = LoadShader("resources/dither.vs", "resources/dither.fs");
     SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "drawInnerOutlines"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "uvDitherBlockPosScale"), (float[]){16.0f}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "uvOverride"), (float[]){0.0f, 0.0f}, SHADER_UNIFORM_VEC2);
+    SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "texSize"), (float[]){128.0f, 128.0f}, SHADER_UNIFORM_VEC2);
     _modelTexturedShader = LoadShader("resources/dither.vs", "resources/dither.fs");
-    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelDitherShader, "drawInnerOutlines"), (float[]){0.0f}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "drawInnerOutlines"), (float[]){0.0f}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "uvDitherBlockPosScale"), (float[]){16.0f}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "uvOverride"), (float[]){0.0f, 0.0f}, SHADER_UNIFORM_VEC2);
 
     _outlineShader = LoadShader(0, "resources/outline.fs");
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "depthOutlineEnabled"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);

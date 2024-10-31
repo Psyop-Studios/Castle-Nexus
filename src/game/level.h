@@ -107,6 +107,7 @@ void Level_update(Level *level, float dt);
 void Level_draw(Level *level);
 void Level_unload(Level *level);
 void Level_updateInstanceTransform(LevelMeshInstance *instance);
+Texture2D Level_getTexture(Level *level, const char *filename, Texture2D fallback);
 
 // registering a new entity component class. Use a unique componentId for each component, starting with 0.
 // minimum data size is 1 byte.
