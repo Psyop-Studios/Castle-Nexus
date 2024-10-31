@@ -90,6 +90,8 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
                 TraceLog(LOG_INFO, "Loading meta file: %s", metaFileName);
                 char *data = LoadFileText(metaFileName);
                 cJSON *root = cJSON_Parse(data);
+
+
                 
                 cJSON *animations = cJSON_GetObjectItem(root, "animations");
                 if (cJSON_IsArray(animations))
@@ -643,7 +645,9 @@ void Level_update(Level *level, float dt)
 
 void Level_draw(Level *level)
 {
-    
+    int locTexSize = GetShaderLocation(_modelDitherShader, "texSize");
+    int locUvDitherBlockPosScale = GetShaderLocation(_modelDitherShader, "uvDitherBlockPosScale");
+
     for (int i = 0; i < level->meshCount; i++)
     {
         LevelMesh *mesh = &level->meshes[i];
@@ -666,6 +670,9 @@ void Level_draw(Level *level)
             {
                 material.maps[MATERIAL_MAP_ALBEDO].texture = defaultTex;
             }
+            Vector2 texSize = {material.maps[MATERIAL_MAP_ALBEDO].texture.width, material.maps[MATERIAL_MAP_ALBEDO].texture.height};
+            SetShaderValue(material.shader, locTexSize, &texSize, SHADER_UNIFORM_VEC2);
+            SetShaderValue(material.shader, locUvDitherBlockPosScale, (float[1]){texSize.x / 8.0f}, SHADER_UNIFORM_FLOAT);
             DrawMesh(mesh->model.meshes[0], material, instance->toWorldTransform);
         }
     }
