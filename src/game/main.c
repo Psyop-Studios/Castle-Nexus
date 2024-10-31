@@ -212,4 +212,17 @@ void Game_update()
     {
         _contextData->nextSceneId = _contextData->currentSceneId + 1;
     }
+    if (IsKeyReleased(KEY_T) && IsKeyDown(KEY_LEFT_CONTROL))
+    {
+        static uint32_t prevScene;
+        if (_contextData->currentSceneId != SCENE_ID_EDITOR)
+        {
+            prevScene = _contextData->currentSceneId;
+            _contextData->nextSceneId = SCENE_ID_EDITOR;
+        }
+        else
+        {
+            _contextData->nextSceneId = prevScene;
+        }
+    }
 }

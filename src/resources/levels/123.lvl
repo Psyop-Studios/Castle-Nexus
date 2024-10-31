@@ -48,6 +48,18 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}, {
+			"filename":	"resources/level_assets/decoration-candle-1.glb",
+			"instancesPX":	[0.30000019073486328],
+			"instancesPY":	[1.0499999523162842],
+			"instancesPZ":	[-0.29999992251396179],
+			"instancesRX":	[0],
+			"instancesRY":	[-118],
+			"instancesRZ":	[0],
+			"instancesSX":	[0.40000021457672119],
+			"instancesSY":	[0.40000021457672119],
+			"instancesSZ":	[0.40000021457672119],
+			"instancesTexId":	[-1]
+		}, {
 			"filename":	"resources/level_assets/decoration-candle-holder.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],

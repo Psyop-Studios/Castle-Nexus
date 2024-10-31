@@ -189,6 +189,11 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
 
 void Level_clearInstances(Level *level)
 {
+    if (level->filename)
+    {
+        free(level->filename);
+        level->filename = NULL;
+    }
     for (int i = 0; i < level->entityComponentClassCount; i++)
     {
         LevelEntityComponentClass *componentClass = &level->entityComponentClasses[i];
@@ -318,6 +323,7 @@ void Level_load(Level *level, const char *levelFile)
         return;
     }
     Level_clearInstances(level);
+    level->filename = strdup(levelFile);
     TraceLog(LOG_INFO, "Loading level from: %s", levelFile);
     char *data = LoadFileText(levelFile);
     if (!data)

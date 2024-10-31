@@ -98,6 +98,7 @@ typedef struct LevelEntity
 } LevelEntity;
 
 typedef struct Level {
+    char *filename;
     LevelMesh *meshes;
     int meshCount;
     LevelTexture *textures;

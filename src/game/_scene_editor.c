@@ -815,6 +815,30 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.fovy = 45.0f;
     _camera.projection = CAMERA_PERSPECTIVE;
 
+    Level *level = Game_getLevel();
+    if (level->filename)
+    {
+        char *lastSlash = strrchr(level->filename, '/');
+        if (lastSlash)
+        {
+            strncpy(_levelFileNameBuffer, lastSlash + 1, 256);
+        }
+        else
+        {
+            strncpy(_levelFileNameBuffer, level->filename, 256);
+        }
+        for (int i = 0; _levelFileNameBuffer[i]; i++)
+        {
+            if (_levelFileNameBuffer[i] == '.')
+            {
+                _levelFileNameBuffer[i] = '\0';
+                break;
+            }
+        }
+
+        Level_load(level, level->filename);
+    }
+
     TraceLog(LOG_INFO, "SceneInit: %d done", SceneConfig->sceneId);
 }
 
