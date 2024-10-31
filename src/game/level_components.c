@@ -26,8 +26,38 @@ void CameraFacingComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, v
     }
     Vector3 forward = Vector3Normalize(Vector3Subtract(_currentCamera.position, 
         component->useDirection ? instance->position : _currentCamera.target));
-    Vector3 up = (Vector3){0, 1, 0};
+    Vector3 lockedAxis = (Vector3){0, 1, 0};
+    Matrix m = instance->toWorldTransform;
+    int isLocked = component->lockX || component->lockY || component->lockZ;
+    if (component->lockX) {
+        lockedAxis.x = m.m0;
+        lockedAxis.y = m.m1;
+        lockedAxis.z = m.m2;
+    }
+    if (component->lockY) {
+        lockedAxis.x = m.m4;
+        lockedAxis.y = m.m5;
+        lockedAxis.z = m.m6;
+    }
+    if (component->lockZ) {
+        lockedAxis.x = m.m8;
+        lockedAxis.y = m.m9;
+        lockedAxis.z = m.m10;
+    }
 
+    Vector3 right = Vector3CrossProduct(lockedAxis, forward);
+    Vector3 up = Vector3Normalize(Vector3CrossProduct(forward, right));
+    right = Vector3CrossProduct(up, forward);
+    m.m0 = right.x;
+    m.m1 = right.y;
+    m.m2 = right.z;
+    m.m4 = up.x;
+    m.m5 = up.y;
+    m.m6 = up.z;
+    m.m8 = forward.x;
+    m.m9 = forward.y;
+    m.m10 = forward.z;
+    instance->toWorldTransform = m;
 }
 
 void CameraFacingComponent_onInit(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
@@ -536,7 +566,7 @@ void LevelComponents_register(Level *level)
             .drawFn = CameraFacingComponent_onDraw,
             .onEditorMenuFn = NULL,
         }, sizeof(CameraFacingComponent));
-        
+
     Level_registerEntityComponentClass(level, COMPONENT_TYPE_MESHRENDERER, "MeshRenderer", 
         (LevelEntityComponentClassMethods){
             .onInitFn = MeshRendererComponent_onInit,

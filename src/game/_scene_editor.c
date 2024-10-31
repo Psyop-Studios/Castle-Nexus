@@ -32,6 +32,7 @@ static Vector2 _textureMenuPos = {0};
 static LevelEntity *_selectedEntity = NULL;
 static Vector2 _componentMenu = {0};
 static LevelEntityInstanceId _selectedEntityId = {0};
+static cJSON *_clipboard = NULL;
 
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
@@ -514,6 +515,25 @@ static void SceneDrawUi_entitySelection(GameContext *gameCtx, SceneConfig *Scene
     }
 
     posY += 30.0f;
+    if (_clipboard)
+    {
+        if (DuskGui_button((DuskGuiParams) {
+            .text = "Paste Entity",
+            .rayCastTarget = 1,
+            .bounds = (Rectangle) { 10, posY, 180, 20 },
+        }))
+        {
+            LevelEntity *newEntity = Level_instantiatePrefab(level, _clipboard);
+            if (newEntity)
+            {
+                newEntity->position = _worldCursor;
+                Level_updateEntityTransform(newEntity);
+                _selectedEntityId = (LevelEntityInstanceId){newEntity->id, newEntity->generation};
+            }
+        }
+
+        posY += 30.0f;
+    }
 
     static char entityFilter[256] = {0};
     char *resultBuffer = NULL;
@@ -574,6 +594,16 @@ static void SceneDrawUi_entityInspector(GameContext *gameCtx, SceneConfig *scene
     LevelEntity *entity = Level_resolveEntity(level, _selectedEntityId);
     if (entity)
     {
+        if (DuskGui_button((DuskGuiParams) {
+            .text = "Copy",
+            .rayCastTarget = 1,
+            .bounds = (Rectangle) { 10, posY, 90, 20 },
+        }))
+        {
+            if (_clipboard) cJSON_Delete(_clipboard);
+            _clipboard = Level_serializeEntityAsPrefab(level, _selectedEntityId);
+        }
+        posY += 25.0f;
         SceneDrawUi_drawEntityUi(level, &posY, entity);
     }
 
@@ -790,6 +820,11 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    if (_clipboard)
+    {
+        cJSON_Delete(_clipboard);
+        _clipboard = NULL;
+    }
     // UnloadModel(_model);
 }
 

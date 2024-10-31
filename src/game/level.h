@@ -141,4 +141,8 @@ LevelEntityComponentInstanceId Level_addEntityComponentAtIndex(Level *level, int
     void **componentInstanceData);
 void Level_deleteEntity(Level *level, LevelEntity *entity);
 LevelEntity* Level_addEntityAtIndex(Level *level, int index, const char *name, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale);
+
+LevelEntity* Level_instantiatePrefab(Level *level, cJSON *json);
+cJSON* Level_serializeEntityAsPrefab(Level *level, LevelEntityInstanceId instanceId);
+
 #endif

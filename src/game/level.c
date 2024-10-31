@@ -841,6 +841,118 @@ void Level_updateEntityTransform(LevelEntity *entity)
     entity->toWorldTransform = MatrixMultiply(entity->toWorldTransform, MatrixTranslate(entity->position.x, entity->position.y, entity->position.z));
 }
 
+// produces a new entity using the prefab data
+LevelEntity* Level_instantiatePrefab(Level *level, cJSON *json)
+{
+    cJSON *name = cJSON_GetObjectItem(json, "name");
+    cJSON *id = cJSON_GetObjectItem(json, "id");
+    cJSON *x = cJSON_GetObjectItem(json, "x");
+    cJSON *y = cJSON_GetObjectItem(json, "y");
+    cJSON *z = cJSON_GetObjectItem(json, "z");
+    cJSON *rx = cJSON_GetObjectItem(json, "rx");
+    cJSON *ry = cJSON_GetObjectItem(json, "ry");
+    cJSON *rz = cJSON_GetObjectItem(json, "rz");
+    cJSON *sx = cJSON_GetObjectItem(json, "sx");
+    cJSON *sy = cJSON_GetObjectItem(json, "sy");
+    cJSON *sz = cJSON_GetObjectItem(json, "sz");
+    cJSON *components = cJSON_GetObjectItem(json, "components");
+
+    if (!name || !id || !x || !y || !z || !rx || !ry || !rz || !sx || !sy || !sz || !components)
+    {
+        return NULL;
+    }
+
+    LevelEntity *entity = Level_addEntity(level, name->valuestring, 
+        (Vector3){(float) x->valuedouble, (float) y->valuedouble, (float) z->valuedouble}, 
+        (Vector3){(float) rx->valuedouble, (float) ry->valuedouble, (float) rz->valuedouble}, 
+        (Vector3){(float) sx->valuedouble, (float) sy->valuedouble, (float) sz->valuedouble});
+    if (!entity)
+    {
+        return NULL;
+    }
+
+    for (int i = 0; i < cJSON_GetArraySize(components); i++)
+    {
+        cJSON *component = cJSON_GetArrayItem(components, i);
+        cJSON *componentId = cJSON_GetObjectItem(component, "componentId");
+        cJSON *componentName = cJSON_GetObjectItem(component, "name");
+        cJSON *data = cJSON_GetObjectItem(component, "data");
+        if (!componentId || !componentName || !data)
+        {
+            continue;
+        }
+        LevelEntityComponentClass *componentClass = Level_getComponentClassByName(level, componentName->valuestring);
+        if (!componentClass)
+        {
+            continue;
+        }
+
+        void *componentInstanceData = NULL;
+        LevelEntityComponentInstanceId componentInstanceId = Level_addEntityComponent(level, entity, componentClass->componentId, &componentInstanceData);
+        if (componentInstanceId.generation == 0)
+        {
+            continue;
+        }
+        if (componentClass->methods.onDeserializeFn)
+        {
+            componentClass->methods.onDeserializeFn(level, (LevelEntityInstanceId){entity->id, entity->generation}, componentInstanceData, data);
+        }
+    }
+
+    return entity;
+}
+
+// a json object representing an entity in a way so it can be used to copy the entity
+cJSON* Level_serializeEntityAsPrefab(Level *level, LevelEntityInstanceId instanceId)
+{
+    LevelEntity *entity = Level_resolveEntity(level, instanceId);
+    if (!entity)
+    {
+        return NULL;
+    }
+
+    cJSON *entityData = cJSON_CreateObject();
+    cJSON_AddStringToObject(entityData, "name", entity->name);
+    cJSON_AddNumberToObject(entityData, "id", entity->id);
+    cJSON_AddNumberToObject(entityData, "x", entity->position.x);
+    cJSON_AddNumberToObject(entityData, "y", entity->position.y);
+    cJSON_AddNumberToObject(entityData, "z", entity->position.z);
+    cJSON_AddNumberToObject(entityData, "rx", entity->eulerRotationDeg.x);
+    cJSON_AddNumberToObject(entityData, "ry", entity->eulerRotationDeg.y);
+    cJSON_AddNumberToObject(entityData, "rz", entity->eulerRotationDeg.z);
+    cJSON_AddNumberToObject(entityData, "sx", entity->scale.x);
+    cJSON_AddNumberToObject(entityData, "sy", entity->scale.y);
+    cJSON_AddNumberToObject(entityData, "sz", entity->scale.z);
+
+    cJSON *components = cJSON_CreateArray();
+    cJSON_AddItemToObject(entityData, "components", components);
+
+    for (int i = 0; i < level->entityComponentClassCount; i++)
+    {
+        LevelEntityComponentClass *componentClass = &level->entityComponentClasses[i];
+        for (int j = 0; j < componentClass->instanceCount; j++)
+        {
+            if (componentClass->generations[j] == 0 || componentClass->ownerIds[j].id != entity->id || componentClass->ownerIds[j].generation != entity->generation)
+            {
+                continue;
+            }
+            cJSON *componentData = cJSON_CreateObject();
+            cJSON_AddItemToArray(components, componentData);
+            cJSON_AddNumberToObject(componentData, "componentId", componentClass->componentId);
+            cJSON_AddStringToObject(componentData, "name", componentClass->name);
+            cJSON *data = cJSON_CreateObject();
+            cJSON_AddItemToObject(componentData, "data", data);
+            if (componentClass->methods.onSerializeFn)
+            {
+                void *componentInstanceData = (char*) componentClass->componentInstanceData + j * componentClass->componentInstanceDataSize;
+                componentClass->methods.onSerializeFn(level, componentClass->ownerIds[j], componentInstanceData, data);
+            }
+        }
+    }
+
+    return entityData;
+}
+
 LevelEntity* Level_addEntity(Level *level, const char *name, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale)
 {
     for (int i = 0; i < level->entityCount; i++)
