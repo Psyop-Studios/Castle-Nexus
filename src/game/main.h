@@ -69,6 +69,7 @@ extern Font _fntMono;
 extern Font _fntMedium;
 extern Shader _modelDitherShader;
 extern Shader _modelTexturedShader;
+extern Camera _currentCamera;
 Level *Game_getLevel();
 
 #endif

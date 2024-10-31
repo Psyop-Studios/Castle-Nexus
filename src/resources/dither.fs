@@ -23,6 +23,7 @@ uniform float drawInnerOutlines;
 uniform vec2 uvOverride;
 uniform float uvDitherBlockPosScale;
 uniform vec2 texSize;
+uniform vec4 uvTextureFrame;
 
 vec2 encode16bit(float x) {
     // Ensure the value is within the 16-bit range
@@ -38,7 +39,18 @@ vec2 encode16bit(float x) {
 void main() {
     if (drawInnerOutlines == 0.0)
     {
-        vec4 color = texture2D(texture0, fragTexCoord);
+        vec2 fragUv = fragTexCoord;
+        if (uvTextureFrame.z > 0.0)
+        {
+            fragUv = fragUv * uvTextureFrame.zw + uvTextureFrame.xy;
+        }
+        vec4 color = texture2D(texture0, fragUv);
+        if ((color.r > 0.9 && color.g < 0.5 && color.b > 0.9) || color.a < 0.1)
+        {
+            // pink transparent color
+            discard;
+        }
+
         gl_FragColor = vec4(0.0,0.0,0.0, color.g * fragColor.g);
         float z = -fragPosition.z * 32.0;
         gl_FragColor.rb = encode16bit(z);

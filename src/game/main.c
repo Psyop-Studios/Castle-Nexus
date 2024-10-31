@@ -22,6 +22,7 @@ Shader _modelDitherShader;
 Shader _modelTexturedShader;
 Font _fntMono = {0};
 Font _fntMedium = {0};
+Camera _currentCamera;
 
 void UpdateRenderTexture()
 {

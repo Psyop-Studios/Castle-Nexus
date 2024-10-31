@@ -10,6 +10,8 @@ static int _allowCameraMovement = 1;
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     BeginMode3D(_camera);
+    _currentCamera = _camera;
+    
     Level *level = Game_getLevel();
     
     Level_draw(level);

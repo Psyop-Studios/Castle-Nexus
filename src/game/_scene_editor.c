@@ -39,6 +39,7 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
     // ClearBackground(DB8_BG_DEEPPURPLE);
     // TraceLog(LOG_INFO, "SceneDraw: %d", SceneConfig->sceneId);
     BeginMode3D(_camera);
+    _currentCamera = _camera;
     
     Level *level = Game_getLevel();
     

@@ -5,6 +5,7 @@
 #include "cjson.h"
 #include <raymath.h>
 #include "main.h"
+#include <stdio.h>
 
 void Level_init(Level *level)
 {
@@ -78,6 +79,68 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
             SetTextureWrap(level->textures[textureCount].texture, TEXTURE_WRAP_REPEAT);
             SetTextureFilter(level->textures[textureCount].texture, TEXTURE_FILTER_POINT);
             level->textures[textureCount].filename = replacePathSeps(strdup(file));
+            level->textures[textureCount].index = textureCount;
+
+            // load meta file
+            char metaFileName[1024];
+            strcpy(metaFileName, file);
+            strcat(metaFileName, ".meta");
+            if (FileExists(metaFileName))
+            {
+                TraceLog(LOG_INFO, "Loading meta file: %s", metaFileName);
+                char *data = LoadFileText(metaFileName);
+                cJSON *root = cJSON_Parse(data);
+                
+                cJSON *animations = cJSON_GetObjectItem(root, "animations");
+                if (cJSON_IsArray(animations))
+                {
+                    LevelTexture* texture = &level->textures[textureCount];
+                    texture->animationCount = cJSON_GetArraySize(animations);
+                    texture->animations = (LevelTextureSpriteAnimation*)malloc(texture->animationCount * sizeof(LevelTextureSpriteAnimation));
+                    for (int i = 0; i < texture->animationCount; i++)
+                    {
+                        cJSON *anim = cJSON_GetArrayItem(animations, i);
+                        cJSON *name = cJSON_GetObjectItem(anim, "name");
+                        cJSON *frameCount = cJSON_GetObjectItem(anim, "frameCount");
+                        cJSON *frameRate = cJSON_GetObjectItem(anim, "frameRate");
+                        cJSON *offsetX = cJSON_GetObjectItem(anim, "offsetX");
+                        cJSON *offsetY = cJSON_GetObjectItem(anim, "offsetY");
+                        cJSON *frameWidth = cJSON_GetObjectItem(anim, "frameWidth");
+                        cJSON *frameHeight = cJSON_GetObjectItem(anim, "frameHeight");
+
+                        if (name && name->type == cJSON_String &&
+                            frameCount && frameCount->type == cJSON_Number &&
+                            frameRate && frameRate->type == cJSON_Number &&
+                            offsetX && offsetX->type == cJSON_Number &&
+                            offsetY && offsetY->type == cJSON_Number &&
+                            frameWidth && frameWidth->type == cJSON_Number &&
+                            frameHeight && frameHeight->type == cJSON_Number)
+                        {
+                            TraceLog(LOG_INFO, "Animation: %s", name->valuestring);
+                            texture->animations[i].name = strdup(name->valuestring);
+                            texture->animations[i].frameCount = frameCount->valueint;
+                            texture->animations[i].frameRate = frameRate->valuedouble;
+                            texture->animations[i].offset = (Vector2){offsetX->valuedouble, offsetY->valuedouble};
+                            texture->animations[i].frameSize = (Vector2){frameWidth->valuedouble, frameHeight->valuedouble};
+                        }
+                        else
+                        {
+                            TraceLog(LOG_WARNING, "Invalid animation data in meta file: %s", metaFileName);
+                            texture->animations[i].name = "<INVALID>";
+                            texture->animations[i].frameCount = 1;
+                            texture->animations[i].frameRate = 1;
+                            texture->animations[i].offset = (Vector2){0, 0};
+                            texture->animations[i].frameSize = (Vector2){256, 256};
+                        }
+                    }
+                }
+                
+                cJSON_Delete(root);
+                UnloadFileText(data);
+            } else {
+                TraceLog(LOG_INFO, "No meta file found for: %s", file);
+            }
+
             textureCount++;
         }
     }
@@ -186,6 +249,32 @@ Texture2D Level_getTexture(Level *level, const char *filename, Texture2D fallbac
     return fallback;
 }
 
+LevelTexture* Level_getLevelTexture(Level *level, const char *filename)
+{
+    for (int i = 0; i < level->textureCount; i++)
+    {
+        char *lastSlash = strrchr(level->textures[i].filename, '/');
+        if (strcmp(level->textures[i].filename, filename) == 0 || (lastSlash && strcmp(lastSlash + 1, filename) == 0))
+        {
+            return &level->textures[i];
+        }
+    }
+    return NULL;
+}
+
+LevelMesh *Level_getMesh(Level *level, const char *filename)
+{
+    for (int i = 0; i < level->meshCount; i++)
+    {
+        char *lastSlash = strrchr(level->meshes[i].filename, '/');
+        if (strcmp(level->meshes[i].filename, filename) == 0 || (lastSlash && strcmp(lastSlash + 1, filename) == 0))
+        {
+            return &level->meshes[i];
+        }
+    }
+    return NULL;
+}
+
 LevelMeshInstance* Level_addInstance(Level *level, const char *meshName, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale)
 {
     for (int i = 0; i < level->meshCount; i++)
@@ -202,6 +291,18 @@ LevelMeshInstance* Level_addInstance(Level *level, const char *meshName, Vector3
             instance->textureIndex = -1;
             Level_updateInstanceTransform(instance);
             return instance;
+        }
+    }
+    return NULL;
+}
+
+LevelEntityComponentClass* Level_getComponentClassByName(Level *level, const char *name)
+{
+    for (int i = 0; i < level->entityComponentClassCount; i++)
+    {
+        if (strcmp(level->entityComponentClasses[i].name, name) == 0)
+        {
+            return &level->entityComponentClasses[i];
         }
     }
     return NULL;
@@ -349,6 +450,12 @@ void Level_load(Level *level, const char *levelFile)
         }
 
         LevelEntityComponentClass *componentClassEntry = Level_getComponentClassById(level, componentId->valueint);
+        char *componentNameStr = componentName->valuestring;
+        if (strcmp(componentClassEntry->name, componentNameStr) != 0)
+        {
+            TraceLog(LOG_WARNING, "Component class name mismatch (%s vs %s); looking up id", componentClassEntry->name, componentNameStr);
+            componentClassEntry = Level_getComponentClassByName(level, componentNameStr);
+        }
         if (!componentClassEntry)
         {
             TraceLog(LOG_ERROR, "Component class not found; not importing component data: %s", levelFile);
@@ -620,6 +727,15 @@ void Level_unload(Level *level)
     {
         UnloadTexture(level->textures[i].texture);
         free(level->textures[i].filename);
+
+        if (level->textures[i].animationCount > 0)
+        {
+            for (int j = 0; j < level->textures[i].animationCount; j++)
+            {
+                free(level->textures[i].animations[j].name);
+            }
+            free(level->textures[i].animations);
+        }
     }
     free(level->textures);
     level->textures = NULL;

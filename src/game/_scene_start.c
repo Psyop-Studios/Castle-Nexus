@@ -10,6 +10,7 @@ static Camera _camera;
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     BeginMode3D(_camera);
+    _currentCamera = _camera;
     DrawModel(_model, (Vector3){0.0f, 0.0f, 0.0f}, 1.0f, WHITE);
     EndMode3D();
 
