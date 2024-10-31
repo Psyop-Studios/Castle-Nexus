@@ -20,6 +20,10 @@ uniform sampler2D texture0;
 uniform vec4 colDiffuse;
 uniform float time;
 uniform float drawInnerOutlines;
+uniform vec2 uvOverride;
+uniform float uvDitherBlockPosScale;
+uniform vec2 texSize;
+uniform vec4 uvTextureFrame;
 
 vec2 encode16bit(float x) {
     // Ensure the value is within the 16-bit range
@@ -35,7 +39,18 @@ vec2 encode16bit(float x) {
 void main() {
     if (drawInnerOutlines == 0.0)
     {
-        vec4 color = texture2D(texture0, fragTexCoord);
+        vec2 fragUv = fragTexCoord;
+        if (uvTextureFrame.z > 0.0)
+        {
+            fragUv = fragUv * uvTextureFrame.zw + uvTextureFrame.xy;
+        }
+        vec4 color = texture2D(texture0, fragUv);
+        if ((color.r > 0.9 && color.g < 0.5 && color.b > 0.9) || color.a < 0.1)
+        {
+            // pink transparent color
+            discard;
+        }
+
         gl_FragColor = vec4(0.0,0.0,0.0, color.g * fragColor.g);
         float z = -fragPosition.z * 32.0;
         gl_FragColor.rb = encode16bit(z);
@@ -45,15 +60,20 @@ void main() {
         return;
     }
     vec2 screenPos = gl_FragCoord.xy;
-    vec2 blockPos = floor(fract(fragTexCoord) * 16.0) / 16.0;
-    vec2 uv = screenPos / vec2(128.0, 128.0);
-    if (fragTexCoord.x > 1.0)
+    vec2 fragUv = fragTexCoord;
+    if (uvOverride.x > 0.0 || uvOverride.y > 0.0)
     {
-        uv.y += fract(time * -1.0) / 16.0;
-        // uv.x += fract(time * -2.0) / 16.0;
+        fragUv = uvOverride;
     }
-    uv.x = fract(uv.x * 16.0) / 16.0 + blockPos.x;
-    uv.y = fract(uv.y * 16.0) / 16.0 + blockPos.y;
+    vec2 blockPos = floor(fract(fragUv) * uvDitherBlockPosScale) / uvDitherBlockPosScale;
+    vec2 uv = screenPos / texSize;
+    if (fragUv.x > 1.0)
+    {
+        uv.y += fract(time * -1.0) / uvDitherBlockPosScale;
+        // uv.x += fract(time * -2.0) / uvDitherBlockPosScale;
+    }
+    uv.x = fract(uv.x * uvDitherBlockPosScale) / uvDitherBlockPosScale + blockPos.x;
+    uv.y = fract(uv.y * uvDitherBlockPosScale) / uvDitherBlockPosScale + blockPos.y;
     vec4 color = texture2D(texture0, uv);
     if (color.r > 0.9 && color.g < 0.5 && color.b > 0.9)
     {
@@ -61,8 +81,8 @@ void main() {
         discard;
     }
 
-    gl_FragColor.g = (fragTexCoord.y + (fragTexCoord.x > 1.0 ? 1.0 : 0.0));
-    float z = (-fragPosition.z + 0.0 * fragNormal.z * (1.0 + fragTexCoord.y)) * 32.0;
+    gl_FragColor.g = (fract(fragUv.y * 8.0) + (fragUv.x > 1.0 || fragUv.x < 0.0 ? 1.0 : 0.0));
+    float z = (-fragPosition.z + 0.0 * fragNormal.z * (1.0 + fragUv.y)) * 32.0;
     gl_FragColor.rb = encode16bit(z);
     // use green channel value to reconstruct red / blue via lookup
     gl_FragColor.a = color.g;

@@ -22,6 +22,7 @@ Shader _modelDitherShader;
 Shader _modelTexturedShader;
 Font _fntMono = {0};
 Font _fntMedium = {0};
+Camera _currentCamera;
 
 void UpdateRenderTexture()
 {
@@ -64,8 +65,13 @@ void Game_init(void** contextData)
 
     _modelDitherShader = LoadShader("resources/dither.vs", "resources/dither.fs");
     SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "drawInnerOutlines"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "uvDitherBlockPosScale"), (float[]){16.0f}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "uvOverride"), (float[]){0.0f, 0.0f}, SHADER_UNIFORM_VEC2);
+    SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "texSize"), (float[]){128.0f, 128.0f}, SHADER_UNIFORM_VEC2);
     _modelTexturedShader = LoadShader("resources/dither.vs", "resources/dither.fs");
-    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelDitherShader, "drawInnerOutlines"), (float[]){0.0f}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "drawInnerOutlines"), (float[]){0.0f}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "uvDitherBlockPosScale"), (float[]){16.0f}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "uvOverride"), (float[]){0.0f, 0.0f}, SHADER_UNIFORM_VEC2);
 
     _outlineShader = LoadShader(0, "resources/outline.fs");
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "depthOutlineEnabled"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
@@ -205,5 +211,18 @@ void Game_update()
     if (IsKeyReleased(KEY_E) && IsKeyDown(KEY_LEFT_CONTROL))
     {
         _contextData->nextSceneId = _contextData->currentSceneId + 1;
+    }
+    if (IsKeyReleased(KEY_T) && IsKeyDown(KEY_LEFT_CONTROL))
+    {
+        static uint32_t prevScene;
+        if (_contextData->currentSceneId != SCENE_ID_EDITOR)
+        {
+            prevScene = _contextData->currentSceneId;
+            _contextData->nextSceneId = SCENE_ID_EDITOR;
+        }
+        else
+        {
+            _contextData->nextSceneId = prevScene;
+        }
     }
 }

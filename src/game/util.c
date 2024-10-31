@@ -5,6 +5,7 @@
 #include "dusk-gui.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 int textLineSpacing = 0;
 void SetTextLineSpacingEx(int spacing)
@@ -416,6 +417,59 @@ int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Ve
     {
         euler->y -= -45.0f;
         modified = 1;
+    }
+
+    *posY += 20.0f;
+
+    // scale
+    sprintf(buffer, "%.3f##SX-%s", scale->x, uiId);
+    if (DuskGui_floatInputField((DuskGuiParams) {
+        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 },
+    }, &scale->x, 0.1f, 10.0f, 0.1f))
+    {
+        modified = 1;
+    }
+
+    sprintf(buffer, "%.3f##SY-%s", scale->y, uiId);
+    if (DuskGui_floatInputField((DuskGuiParams) {
+        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 },
+    }, &scale->y, 0.1f, 10.0f, 0.1f))
+    {
+        modified = 1;
+    }
+
+    sprintf(buffer, "%.3f##SZ-%s", scale->z, uiId);
+    if (DuskGui_floatInputField((DuskGuiParams) {
+        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 },
+    }, &scale->z, 0.1f, 10.0f, 0.1f))
+    {
+        modified = 1;
+    }
+
+    *posY += 20.0f;
+
+    if (DuskGui_button((DuskGuiParams) {
+        .text = TextFormat("Reset Scale##reset-scale-%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 }}))
+    {
+        *scale = (Vector3){1, 1, 1};
+        modified = 1;
+    }
+
+    float maxAbsScale = fmaxf(fmaxf(fabsf(scale->x), fabsf(scale->y)), fabsf(scale->z));
+    if (maxAbsScale > 0.0f)
+    {
+        float scaleFac = maxAbsScale;
+        sprintf(buffer, "%.3f##scale_xyz-%s", scaleFac, uiId);
+        if (DuskGui_floatInputField((DuskGuiParams){
+            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle){70, *posY, 60, 20},
+        }, &scaleFac, 0.0f, 50.0f, 0.025f))
+        {
+            scaleFac /= maxAbsScale;
+            scale->x *= scaleFac;
+            scale->y *= scaleFac;
+            scale->z *= scaleFac;
+            modified = 1;
+        }
     }
 
     *posY += 20.0f;

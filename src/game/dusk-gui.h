@@ -199,7 +199,7 @@ void DuskGui_init();
 void DuskGui_finalize();
 
 DuskGuiParamsEntry* DuskGui_getLastEntry();
-DuskGuiParamsEntry* DuskGui_getEntry(const char *txId);
+DuskGuiParamsEntry* DuskGui_getEntry(const char *txId, int searchPrevFrame);
 
 // style management
 void DuskGui_setDefaultFont(Font font, float fontSize, int fontSpacing);

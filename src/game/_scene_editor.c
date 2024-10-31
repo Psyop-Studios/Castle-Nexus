@@ -24,12 +24,15 @@ static Camera _camera;
 static int _updateCamera;
 static char _levelFileNameBuffer[256] = {0};
 static DuskGuiStyleGroup _editor_invisibleStyleGroup = { 0 };
+static LevelMesh* _hoveredMesh;
+static LevelMeshInstance* _hoveredMeshInstance;
 
 static LevelMeshInstance *_textureMenuInstance = NULL;
 static Vector2 _textureMenuPos = {0};
 static LevelEntity *_selectedEntity = NULL;
 static Vector2 _componentMenu = {0};
 static LevelEntityInstanceId _selectedEntityId = {0};
+static cJSON *_clipboard = NULL;
 
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
@@ -37,10 +40,42 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
     // ClearBackground(DB8_BG_DEEPPURPLE);
     // TraceLog(LOG_INFO, "SceneDraw: %d", SceneConfig->sceneId);
     BeginMode3D(_camera);
+    _currentCamera = _camera;
     
     Level *level = Game_getLevel();
     
     Level_draw(level);
+    if (_hoveredMeshInstance)
+    {
+        rlDrawRenderBatchActive();
+        rlDisableDepthTest();
+        
+        Material material = {0};
+        
+        MaterialMap maps[16] = {0};
+
+        maps[MATERIAL_MAP_ALBEDO].color = WHITE;
+        maps[MATERIAL_MAP_ALBEDO].texture = Level_getTexture(level, "db8-dither.png", (Texture2D){0});
+        // maps[MATERIAL_MAP_ALBEDO].texture = Level_getTexture(level, "dawnbringers-8-color-8x.png", (Texture2D){0});
+        material.maps = maps;
+        material.shader = _modelDitherShader;
+        int uvOverrideLoc = GetShaderLocation(_modelDitherShader, "uvOverride");
+        int uvBlockScaleLoc = GetShaderLocation(_modelDitherShader, "uvDitherBlockPosScale");
+        int texSizeLoc = GetShaderLocation(_modelDitherShader, "texSize");
+        SetShaderValue(_modelDitherShader, uvOverrideLoc, (float[]){508.0f/512.0f - 1.0f, 8.0f / 512.0f}, SHADER_UNIFORM_VEC2);
+        SetShaderValue(_modelDitherShader, texSizeLoc, (float[]){512.0f, 512.0f}, SHADER_UNIFORM_VEC2);
+        SetShaderValue(_modelDitherShader, uvBlockScaleLoc, (float[]){64.0f}, SHADER_UNIFORM_FLOAT);
+
+
+        DrawMesh(_hoveredMesh->model.meshes[0], material, _hoveredMeshInstance->toWorldTransform);
+
+        SetShaderValue(_modelDitherShader, uvOverrideLoc, (float[]){0.0f, 0.0f}, SHADER_UNIFORM_VEC2);
+        SetShaderValue(_modelDitherShader, uvBlockScaleLoc, (float[]){16.0f}, SHADER_UNIFORM_FLOAT);
+        SetShaderValue(_modelDitherShader, texSizeLoc, (float[]){128.0f, 128.0f}, SHADER_UNIFORM_VEC2);
+
+        rlDrawRenderBatchActive();
+        rlEnableDepthTest();
+    }
     
 
     // DrawModel(_model, (Vector3){0.0f, 0.0f, 0.0f}, 1.0f, WHITE);
@@ -258,6 +293,9 @@ static void SceneDrawUi_meshInspector(GameContext *gameCtx, SceneConfig *SceneCo
 
     float posY = 10.0f;
 
+    _hoveredMeshInstance = NULL;
+    _hoveredMesh = NULL;
+
     for (int i = 0; i < level->meshCount; i++)
     {
         LevelMesh *mesh = &level->meshes[i];
@@ -275,28 +313,39 @@ static void SceneDrawUi_meshInspector(GameContext *gameCtx, SceneConfig *SceneCo
             
             if (dx <= 1.0f && dz <= 1.0f)
             {
-                
+                DuskGuiParamsEntry* prev = DuskGui_getEntry(TextFormat("##Instance %d:%d", i, j), 1);
+                float height = 100.0f;
+                if (prev)
+                {
+                    height = prev->params.bounds.height;
+                }
+                DuskGuiParamsEntryId objectPanel = DuskGui_beginPanel((DuskGuiParams) {
+                    .bounds = (Rectangle) { 0, posY, DuskGui_getAvailableSpace().x, height },
+                    .rayCastTarget = 1,
+                    .text = TextFormat("##Instance %d:%d", i, j),
+                });
+                float y = 5;
                 DuskGui_horizontalLine((DuskGuiParams) {
                     .text = mesh->filename,
-                    .bounds = (Rectangle) { 10, posY, 180, 1 },
+                    .bounds = (Rectangle) { 10, y, 180, 12 },
                 });
                 
-                posY += 8.0f;
+                y += 14.0f;
                 
 
                 char buffer[128];
                 sprintf(buffer, "%d:%d", i, j);
                 
-                if (SceneDrawUi_transformUi(&posY, buffer, &instance->position, &instance->eulerRotationDeg, &instance->scale))
+                if (SceneDrawUi_transformUi(&y, buffer, &instance->position, &instance->eulerRotationDeg, &instance->scale))
                 {
                     Level_updateInstanceTransform(instance);
                 }
 
-                posY += 5.0f;
+                y += 5.0f;
 
                 DuskGui_label((DuskGuiParams) {
                     .text = "Texture",
-                    .bounds = (Rectangle) { 10, posY, 40, 20 },
+                    .bounds = (Rectangle) { 10, y, 40, 20 },
                 });
                 const char *texName = "Default";
                 if (instance->textureIndex >= 0 && instance->textureIndex < level->textureCount)
@@ -306,20 +355,20 @@ static void SceneDrawUi_meshInspector(GameContext *gameCtx, SceneConfig *SceneCo
                 if (DuskGui_button((DuskGuiParams) {
                     .text = TextFormat("%s##%d:%d", texName, i, j),
                     .rayCastTarget = 1,
-                    .bounds = (Rectangle) { 50, posY, 140, 20 },
+                    .bounds = (Rectangle) { 50, y, 140, 20 },
                 }))
                 {
                     DuskGui_openMenu("TextureMenu");
                     _textureMenuInstance = instance;
-                    _textureMenuPos = DuskGui_toScreenSpace((Vector2){50, posY});
+                    _textureMenuPos = DuskGui_toScreenSpace((Vector2){50, y});
                 }
                 
-                posY += 20.0f;
+                y += 20.0f;
 
                 if (DuskGui_button((DuskGuiParams) {
                     .text = "Delete",
                     .rayCastTarget = 1,
-                    .bounds = (Rectangle) { 10, posY, 180, 20 },
+                    .bounds = (Rectangle) { 10, y, 180, 20 },
                 }))
                 {
                     for (int k = j; k < mesh->instanceCount - 1; k++)
@@ -330,8 +379,19 @@ static void SceneDrawUi_meshInspector(GameContext *gameCtx, SceneConfig *SceneCo
                 }
                 
 
-                posY += 30.0f;
+                y += 25.0f;
+
+                DuskGuiParamsEntry *panelEntry = DuskGui_getEntryById(objectPanel);
+                panelEntry->params.bounds.height = y;
+                if (panelEntry->isMouseOver)
+                {
+                    _hoveredMesh = mesh;
+                    _hoveredMeshInstance = instance;
+                }
                 
+                DuskGui_endPanel(objectPanel);
+
+                posY += y + 5.0f;
             }
         }
     }
@@ -455,6 +515,25 @@ static void SceneDrawUi_entitySelection(GameContext *gameCtx, SceneConfig *Scene
     }
 
     posY += 30.0f;
+    if (_clipboard)
+    {
+        if (DuskGui_button((DuskGuiParams) {
+            .text = "Paste Entity",
+            .rayCastTarget = 1,
+            .bounds = (Rectangle) { 10, posY, 180, 20 },
+        }))
+        {
+            LevelEntity *newEntity = Level_instantiatePrefab(level, _clipboard);
+            if (newEntity)
+            {
+                newEntity->position = _worldCursor;
+                Level_updateEntityTransform(newEntity);
+                _selectedEntityId = (LevelEntityInstanceId){newEntity->id, newEntity->generation};
+            }
+        }
+
+        posY += 30.0f;
+    }
 
     static char entityFilter[256] = {0};
     char *resultBuffer = NULL;
@@ -515,6 +594,16 @@ static void SceneDrawUi_entityInspector(GameContext *gameCtx, SceneConfig *scene
     LevelEntity *entity = Level_resolveEntity(level, _selectedEntityId);
     if (entity)
     {
+        if (DuskGui_button((DuskGuiParams) {
+            .text = "Copy",
+            .rayCastTarget = 1,
+            .bounds = (Rectangle) { 10, posY, 90, 20 },
+        }))
+        {
+            if (_clipboard) cJSON_Delete(_clipboard);
+            _clipboard = Level_serializeEntityAsPrefab(level, _selectedEntityId);
+        }
+        posY += 25.0f;
         SceneDrawUi_drawEntityUi(level, &posY, entity);
     }
 
@@ -726,11 +815,40 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.fovy = 45.0f;
     _camera.projection = CAMERA_PERSPECTIVE;
 
+    Level *level = Game_getLevel();
+    if (level->filename)
+    {
+        char *lastSlash = strrchr(level->filename, '/');
+        if (lastSlash)
+        {
+            strncpy(_levelFileNameBuffer, lastSlash + 1, 256);
+        }
+        else
+        {
+            strncpy(_levelFileNameBuffer, level->filename, 256);
+        }
+        for (int i = 0; _levelFileNameBuffer[i]; i++)
+        {
+            if (_levelFileNameBuffer[i] == '.')
+            {
+                _levelFileNameBuffer[i] = '\0';
+                break;
+            }
+        }
+
+        Level_load(level, level->filename);
+    }
+
     TraceLog(LOG_INFO, "SceneInit: %d done", SceneConfig->sceneId);
 }
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    if (_clipboard)
+    {
+        cJSON_Delete(_clipboard);
+        _clipboard = NULL;
+    }
     // UnloadModel(_model);
 }
 

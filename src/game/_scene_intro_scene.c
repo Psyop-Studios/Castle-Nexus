@@ -10,6 +10,8 @@ static int _allowCameraMovement = 1;
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     BeginMode3D(_camera);
+    _currentCamera = _camera;
+    
     Level *level = Game_getLevel();
     
     Level_draw(level);
@@ -56,6 +58,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .action = ScriptAction_jumpStep,
         .actionData = ScriptAction_JumpStepData_new(-1, 1, 1)});
     step++;
+    
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .action = ScriptAction_setCameraMovementEnabled,

@@ -1077,11 +1077,15 @@ static DuskGuiParamsEntry* DuskGui_makeEntry(DuskGuiParams params, DuskGuiStyleG
     return added;
 }
 
-DuskGuiParamsEntry* DuskGui_getEntry(const char *txId)
+DuskGuiParamsEntry* DuskGui_getEntry(const char *txId, int searchPrevFrame)
 {
-    for (int i = 0; i < _duskGuiState.currentParams.count; i++) {
-        if (_duskGuiState.currentParams.params[i].txId && strcmp(_duskGuiState.currentParams.params[i].txId, txId) == 0) {
-            return &_duskGuiState.currentParams.params[i];
+    if (txId[0]=='#' && txId[1]=='#') {
+        txId += 2;
+    }
+    DuskGuiParamsList* paramsList = searchPrevFrame ? &_duskGuiState.prevParams : &_duskGuiState.currentParams;
+    for (int i = 0; i < paramsList->count; i++) {
+        if (paramsList->params[i].txId && strcmp(paramsList->params[i].txId, txId) == 0) {
+            return &paramsList->params[i];
         }
     }
     return NULL;

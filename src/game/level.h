@@ -26,10 +26,22 @@ typedef struct LevelMesh
     int instanceCount;
 } LevelMesh;
 
+typedef struct LevelTextureSpriteAnimation
+{
+    char *name;
+    int frameCount;
+    float frameRate;
+    Vector2 offset;
+    Vector2 frameSize;
+} LevelTextureSpriteAnimation;
+
 typedef struct LevelTexture
 {
+    int index;
     Texture2D texture;
     char *filename;
+    LevelTextureSpriteAnimation *animations;
+    int animationCount;
 } LevelTexture;
 
 // a reference to a component instance. The id is the index of the component instance.
@@ -86,6 +98,7 @@ typedef struct LevelEntity
 } LevelEntity;
 
 typedef struct Level {
+    char *filename;
     LevelMesh *meshes;
     int meshCount;
     LevelTexture *textures;
@@ -107,6 +120,9 @@ void Level_update(Level *level, float dt);
 void Level_draw(Level *level);
 void Level_unload(Level *level);
 void Level_updateInstanceTransform(LevelMeshInstance *instance);
+Texture2D Level_getTexture(Level *level, const char *filename, Texture2D fallback);
+LevelTexture* Level_getLevelTexture(Level *level, const char *filename);
+LevelMesh *Level_getMesh(Level *level, const char *filename);
 
 // registering a new entity component class. Use a unique componentId for each component, starting with 0.
 // minimum data size is 1 byte.
@@ -126,4 +142,8 @@ LevelEntityComponentInstanceId Level_addEntityComponentAtIndex(Level *level, int
     void **componentInstanceData);
 void Level_deleteEntity(Level *level, LevelEntity *entity);
 LevelEntity* Level_addEntityAtIndex(Level *level, int index, const char *name, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale);
+
+LevelEntity* Level_instantiatePrefab(Level *level, cJSON *json);
+cJSON* Level_serializeEntityAsPrefab(Level *level, LevelEntityInstanceId instanceId);
+
 #endif
