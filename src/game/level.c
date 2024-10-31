@@ -649,6 +649,22 @@ void Level_update(Level *level, float dt)
 
 }
 
+float Level_calcPenetrationDepth(Level *level, Vector3 point, float radius)
+{
+    float maxDepth = 0.0f;
+    for (int i = 0; i < level->meshCount; i++)
+    {
+        LevelMesh *mesh = &level->meshes[i];
+        for (int j = 0; j < mesh->instanceCount; j++)
+        {
+            LevelMeshInstance *instance = &mesh->instances[j];
+            Vector3 localPoint = Vector3Transform(point, MatrixInvert(instance->toWorldTransform));
+            
+        }
+    }
+    return maxDepth;
+}
+
 void Level_draw(Level *level)
 {
     int locTexSize = GetShaderLocation(_modelDitherShader, "texSize");
@@ -676,6 +692,7 @@ void Level_draw(Level *level)
             {
                 material.maps[MATERIAL_MAP_ALBEDO].texture = defaultTex;
             }
+            
             Vector2 texSize = {material.maps[MATERIAL_MAP_ALBEDO].texture.width, material.maps[MATERIAL_MAP_ALBEDO].texture.height};
             SetShaderValue(material.shader, locTexSize, &texSize, SHADER_UNIFORM_VEC2);
             SetShaderValue(material.shader, locUvDitherBlockPosScale, (float[1]){texSize.x / 8.0f}, SHADER_UNIFORM_FLOAT);

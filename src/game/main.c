@@ -15,7 +15,9 @@
 static GameContext *_contextData;
 
 static Shader _outlineShader;
+static Shader _colorReduceShader;
 static RenderTexture2D _target = {0};
+static RenderTexture2D _finalTarget = {0};
 static Level _level = {0};
 
 Shader _modelDitherShader;
@@ -34,6 +36,11 @@ void UpdateRenderTexture()
         _target = LoadRenderTexture(screenWidth>>1, screenHeight>>1);
         SetTextureFilter(_target.texture, TEXTURE_FILTER_POINT);
         SetTextureWrap(_target.texture, TEXTURE_WRAP_CLAMP);
+
+        UnloadRenderTexture(_finalTarget);
+        _finalTarget = LoadRenderTexture(screenWidth, screenHeight);
+        SetTextureFilter(_finalTarget.texture, TEXTURE_FILTER_POINT);
+        SetTextureWrap(_finalTarget.texture, TEXTURE_WRAP_CLAMP);
     }
 }
 
@@ -77,6 +84,8 @@ void Game_init(void** contextData)
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "depthOutlineEnabled"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "uvOutlineEnabled"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
     
+    _colorReduceShader = LoadShader(0, "resources/colorreduce.fs");
+
 
     _fntMedium = LoadFont("resources/fnt_medium.png");
     _fntMono = LoadFont("resources/fnt_mymono.png");
@@ -110,6 +119,7 @@ void Game_deinit()
     UnloadShader(_modelDitherShader);
     UnloadShader(_outlineShader);
     UnloadRenderTexture(_target);
+    UnloadRenderTexture(_finalTarget);
     UnloadFont(_fntMedium);
     UnloadFont(_fntMono);
     Level_unload(&_level);
@@ -181,9 +191,10 @@ void Game_update()
     
     EndTextureMode();
 
+    BeginTextureMode(_finalTarget);
     // post processing: draw render texture to screen with outlines and dithering
     rlEnableColorBlend();
-    BeginDrawing();
+    // BeginDrawing();
     BeginShaderMode(_outlineShader);
    
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "resolution"), (float[2]){(float)_target.texture.width, (float)_target.texture.height}, SHADER_UNIFORM_VEC2);
@@ -200,7 +211,16 @@ void Game_update()
     Script_draw(_contextData);
     DuskGui_finalize();
     
+    // EndDrawing();
+    EndTextureMode();
 
+    BeginDrawing();
+    BeginShaderMode(_colorReduceShader);
+    DrawTexturePro(_finalTarget.texture, 
+        (Rectangle){0.0f, 0.0f, (float)_finalTarget.texture.width, (float)-_finalTarget.texture.height}, 
+        (Rectangle){0.0f, 0.0f, (float)screenWidth, (float)screenHeight}, 
+        (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
+    EndShaderMode();
     EndDrawing();
 
 

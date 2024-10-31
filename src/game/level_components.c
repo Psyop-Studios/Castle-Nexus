@@ -184,22 +184,51 @@ void MeshRendererComponent_onEditorMenu(Level *level)
 {
     DuskGuiParamsEntry *meshSelectMenu;
     if ((meshSelectMenu = DuskGui_beginMenu((DuskGuiParams){
-        .bounds = (Rectangle){_selectedMeshRendererMenuPos.x, _selectedMeshRendererMenuPos.y, _selectedMeshRendererMenuWidth, level->meshCount * 20 + 10},
+        .bounds = (Rectangle){_selectedMeshRendererMenuPos.x, _selectedMeshRendererMenuPos.y, _selectedMeshRendererMenuWidth, level->meshCount * 20 + 30},
         .text = "MeshSelectMenu",
     })))
     {
+        static char filterBuffer[256] = {0};
+        char *filter = NULL;
+        DuskGui_textInputField((DuskGuiParams){
+            .bounds = (Rectangle){10, 5, _selectedMeshRendererMenuWidth - 20, 20},
+            .text = TextFormat("%s##MeshFilter-name", filterBuffer),
+            .rayCastTarget = 1,
+            .isFocusable = 1,
+        }, &filter);
+        
+        if (filter) {
+            strncpy(filterBuffer, filter, 256);
+        }
+
+        float yPos = 5 + 20;
         for (int i = 0; i < level->meshCount; i++)
         {
             LevelMesh *mesh = &level->meshes[i];
+            char *lastSlash = strrchr(mesh->filename, '/');
+            if (lastSlash)
+            {
+                lastSlash = lastSlash + 1;
+            }
+            else
+            {
+                lastSlash = mesh->filename;
+            }
+
+            if (filterBuffer[0] && !strstr(lastSlash, filterBuffer))
+            {
+                continue;
+            }
             if (DuskGui_menuItem(0, (DuskGuiParams){
-                .bounds = (Rectangle){10, 5 + i * 20, _selectedMeshRendererMenuWidth, 20},
-                .text = mesh->filename,
+                .bounds = (Rectangle){10, yPos, _selectedMeshRendererMenuWidth, 20},
+                .text = lastSlash,
                 .rayCastTarget = 1,
             }))
             {
                 _selectedMeshRendererComponent->meshIndex = i;
                 DuskGui_closeMenu("MeshSelectMenu");
             }
+            yPos += 20; 
         }
         DuskGui_endMenu();
     }
