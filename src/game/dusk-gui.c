@@ -47,7 +47,7 @@ static void* Dusk_realloc(void* ptr, int size)
 
 static char* Dusk_strdup(const char* str)
 {
-    if (!str) return str;
+    if (!str) return NULL;
     int len = strlen(str);
     char* newStr = Dusk_malloc(len + 1);
     strcpy(newStr, str);

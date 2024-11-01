@@ -291,6 +291,14 @@ static void SceneDrawUi_meshInspector(GameContext *gameCtx, SceneConfig *SceneCo
 
 
     float posY = 10.0f;
+    DuskGuiParamsEntryId scrollArea = DuskGui_beginScrollArea((DuskGuiParams) {
+        .text = "##MeshInspectorList",
+        .bounds = (Rectangle) { 0, posY, 200, DuskGui_getAvailableSpace().y - posY - 10},
+        .styleGroup = &_editor_invisibleStyleGroup,
+        .rayCastTarget = 1,
+    });
+    posY = 0.0f;
+
 
     _hoveredMeshInstance = NULL;
     _hoveredMesh = NULL;
@@ -394,6 +402,10 @@ static void SceneDrawUi_meshInspector(GameContext *gameCtx, SceneConfig *SceneCo
             }
         }
     }
+
+    DuskGuiParamsEntry *entry = DuskGui_getEntryById(scrollArea);
+    entry->contentSize = (Vector2){200, posY + 10};
+    DuskGui_endScrollArea(scrollArea);
 
     DuskGui_endPanel(objectEditPanel);
 }
@@ -582,7 +594,7 @@ static void SceneDrawUi_entityInspector(GameContext *gameCtx, SceneConfig *scene
     float posY = 10.0f;
 
     DuskGuiParamsEntryId scrollArea = DuskGui_beginScrollArea((DuskGuiParams) {
-        .text = "EntityList",
+        .text = "##EntityList",
         .bounds = (Rectangle) { 0, posY, 200, DuskGui_getAvailableSpace().y - posY - 10},
         .styleGroup = &_editor_invisibleStyleGroup,
         .rayCastTarget = 1,
