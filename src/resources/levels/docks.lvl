@@ -1,5 +1,41 @@
 {
 	"meshes":	[{
+			"filename":	"resources/level_assets/boat-sails.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/boat-steering-wheel.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/boat.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
 			"filename":	"resources/level_assets/castle1.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],
@@ -49,16 +85,16 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/decoration-bollard.glb",
-			"instancesPX":	[4, 4],
-			"instancesPY":	[0, 0],
-			"instancesPZ":	[2, 0],
-			"instancesRX":	[0, 0],
-			"instancesRY":	[0, 0],
-			"instancesRZ":	[0, 0],
-			"instancesSX":	[1, 1],
-			"instancesSY":	[1, 1],
-			"instancesSZ":	[1, 1],
-			"instancesTexId":	[-1, -1]
+			"instancesPX":	[4, 4, 4, 6, 8, 10, 12, 12, 12, 4, 4, 2, -1],
+			"instancesPY":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1.1920928955078125e-07, -1.1920928955078125e-07, -1.1920928955078125e-07],
+			"instancesPZ":	[2, 0, 4, 4, 4, 4, 4, 2, 0, -2, -4, -4, -4],
+			"instancesRX":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRY":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRZ":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesSX":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesSY":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesSZ":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/decoration-bookshelf.glb",
 			"instancesPX":	[],
@@ -121,16 +157,16 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/decoration-rock-1.glb",
-			"instancesPX":	[],
-			"instancesPY":	[],
-			"instancesPZ":	[],
-			"instancesRX":	[],
-			"instancesRY":	[],
-			"instancesRZ":	[],
-			"instancesSX":	[],
-			"instancesSY":	[],
-			"instancesSZ":	[],
-			"instancesTexId":	[]
+			"instancesPX":	[5.9999995231628418, 5.1250004768371582, 4.5749993324279785, 4.8999996185302734, -3.75, -7.92500114440918, -17, 4.59999942779541, -8, -9, -10, -11, -5],
+			"instancesPY":	[-1.7249996662139893, -1.9499998092651367, -1.9999997615814209, -0.999999761581421, -0.29999944567680359, 5.9604644775390625e-07, -1.999998927116394, -2.2749989032745361, 8.3446502685546875e-07, 9.5367431640625e-07, 4.76837158203125e-07, -0.49999958276748657, 0.45000001788139343],
+			"instancesPZ":	[3, 1.4249997138977051, -0.92499995231628418, 2.3999998569488525, -4, -4, -18, -4.375, -1, 0, 3, 8, 11],
+			"instancesRX":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRY":	[0, -128, 119, -219, 0, 0, 0, 153, 148, 0, 116, -221, -122],
+			"instancesRZ":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesSX":	[1, 1, 0.99999988079071045, 0.77500009536743164, 1, 1.6249996423721313, 3.1499996185302734, 1, 1, 1, 1.8500001430511475, 3.4249987602233887, 1.9749996662139893],
+			"instancesSY":	[1, 0.80000007152557373, 1.2000000476837158, 0.77500009536743164, 1, 1.6249996423721313, 3.1499996185302734, 1, 1, 1, 1.8500001430511475, 3.4249987602233887, 1.9749996662139893],
+			"instancesSZ":	[1, 1, 1.5000001192092896, 0.77500009536743164, 1, 1.6249996423721313, 3.1499996185302734, 1, 1, 1, 1.8500001430511475, 3.4249987602233887, 1.9749996662139893],
+			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/decoration-rug-1.glb",
 			"instancesPX":	[],
@@ -157,16 +193,52 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/ground-dock-wall-a.glb",
-			"instancesPX":	[4, 4, 4],
-			"instancesPY":	[2.384185791015625e-07, 2.384185791015625e-07, 2.384185791015625e-07],
-			"instancesPZ":	[2, 0, -2],
-			"instancesRX":	[0, 0, 0],
-			"instancesRY":	[0, 0, 0],
-			"instancesRZ":	[0, 0, 0],
-			"instancesSX":	[1, 1, 1],
-			"instancesSY":	[1, 1, 1],
-			"instancesSZ":	[1, 1, 1],
-			"instancesTexId":	[-1, -1, -1]
+			"instancesPX":	[4, 4, 4, 6, 8, 10, 12, 12, 12, 2, 0],
+			"instancesPY":	[2.384185791015625e-07, 2.384185791015625e-07, 2.384185791015625e-07, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesPZ":	[2, 0, -2, 4, 4, 4, 2, 0, -2, -4, -4],
+			"instancesRX":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRY":	[0, 0, 0, -270, 90, 90, -180, -180, -180, 90, 90],
+			"instancesRZ":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesSX":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesSY":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesSZ":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+		}, {
+			"filename":	"resources/level_assets/ground-dock-wall-corner-a.glb",
+			"instancesPX":	[4, -2],
+			"instancesPY":	[0, 0],
+			"instancesPZ":	[-4, -4],
+			"instancesRX":	[0, 0],
+			"instancesRY":	[0, -270],
+			"instancesRZ":	[0, 0],
+			"instancesSX":	[1, 1],
+			"instancesSY":	[1, 1],
+			"instancesSZ":	[1, 1],
+			"instancesTexId":	[-1, -1]
+		}, {
+			"filename":	"resources/level_assets/ground-dock-wall-corner-b.glb",
+			"instancesPX":	[4, 12],
+			"instancesPY":	[0, 3.5762786865234375e-07],
+			"instancesPZ":	[4, 4],
+			"instancesRX":	[0, 0],
+			"instancesRY":	[0, 90],
+			"instancesRZ":	[0, 0],
+			"instancesSX":	[1, 1],
+			"instancesSY":	[1, 1],
+			"instancesSZ":	[1, 1],
+			"instancesTexId":	[-1, -1]
+		}, {
+			"filename":	"resources/level_assets/ground-grass-patch-1.glb",
+			"instancesPX":	[-4, -5, -3.5750000476837158, -6, -4.97500228881836, -3, 2, 0, -3],
+			"instancesPY":	[1.1920928955078125e-07, 2.4214386940002441e-07, 2.123415470123291e-07, 3.5762786865234375e-07, 3.5762786865234375e-07, 3.5762786865234375e-07, 2.384185791015625e-07, 2.384185791015625e-07, 3.5762786865234375e-07],
+			"instancesPZ":	[1, -2, -1.4500006437301636, 1, 4, 5, 9, 9, 8],
+			"instancesRX":	[0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRY":	[0, 0, -91, 0, -9, 0, 0, -68, 50],
+			"instancesRZ":	[0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesSX":	[1.2749999761581421, 1.3499997854232788, 1, 1.4999996423721313, 1.5249996185302734, 1, 1, 1, 1.3749997615814209],
+			"instancesSY":	[1.2749999761581421, 1.3499997854232788, 1, 1.4999996423721313, 1.5249996185302734, 1, 1, 1, 1.3749997615814209],
+			"instancesSZ":	[1.2749999761581421, 1.3499997854232788, 1, 1.4999996423721313, 1.5249996185302734, 1, 1, 1, 1.3749997615814209],
+			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/ground-large-blocks-a.glb",
 			"instancesPX":	[],
@@ -193,16 +265,28 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/ground-medium-blocks-1.glb",
-			"instancesPX":	[],
-			"instancesPY":	[],
-			"instancesPZ":	[],
-			"instancesRX":	[],
-			"instancesRY":	[],
-			"instancesRZ":	[],
-			"instancesSX":	[],
-			"instancesSY":	[],
-			"instancesSZ":	[],
-			"instancesTexId":	[]
+			"instancesPX":	[9, 9, 11, 11, 13, 13, 9, 11, 13, 11, 9, 13],
+			"instancesPY":	[5.9604644775390625e-07, 5.9604644775390625e-07, 5.9604644775390625e-07, 5.9604644775390625e-07, 5.9604644775390625e-07, 5.9604644775390625e-07, 0, -1.1920928955078125e-07, -1.1920928955078125e-07, -1.1920928955078125e-07, -1.1920928955078125e-07, -1.1920928955078125e-07],
+			"instancesPZ":	[10, 12, 12, 10, 10, 12, 14, 14, 14, 16, 16, 16],
+			"instancesRX":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRY":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRZ":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesSX":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesSY":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesSZ":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+		}, {
+			"filename":	"resources/level_assets/ground-mud-1.glb",
+			"instancesPX":	[-4, -7, -8, -5, -3, 2, 0, -2],
+			"instancesPY":	[0, 0, 1.1920928955078125e-07, 1.1920928955078125e-07, 1.1920928955078125e-07, 2.384185791015625e-07, 2.384185791015625e-07, 2.384185791015625e-07],
+			"instancesPZ":	[6, 6, 3, -3, 2, 8, 8, 8],
+			"instancesRX":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRY":	[0, 0, 0, 0, 0, -100, 0, 0],
+			"instancesRZ":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesSX":	[1, 2.7749989032745361, 1.8749998807907104, 1, 0.77500015497207642, 1, 1, 1],
+			"instancesSY":	[1, 2.7749989032745361, 1.8749998807907104, 1, 0.77500015497207642, 1, 1, 1],
+			"instancesSZ":	[1, 2.7749989032745361, 1.8749998807907104, 1, 0.77500015497207642, 1, 1, 1],
+			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/ground-small-stairs-1.glb",
 			"instancesPX":	[],
@@ -217,16 +301,16 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/ground-stone-blocks-2.glb",
-			"instancesPX":	[0, 0, -2, -2, -2, 0, 2, 2, 2],
-			"instancesPY":	[0, 0, 0, 0, 0, 0, 0, 0, 0],
-			"instancesPZ":	[0, -2, -2, 0, 2, 2, 2, 0, -2],
-			"instancesRX":	[0, 0, 0, 0, 0, 0, 0, 0, 0],
-			"instancesRY":	[0, 0, 0, 0, 0, 0, 0, 0, 0],
-			"instancesRZ":	[0, 0, 0, 0, 0, 0, 0, 0, 0],
-			"instancesSX":	[1, 1, 1, 1, 1, 1, 1, 1, 1],
-			"instancesSY":	[1, 1, 1, 1, 1, 1, 1, 1, 1],
-			"instancesSZ":	[1, 1, 1, 1, 1, 1, 1, 1, 1],
-			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+			"instancesPX":	[0, 0, -2, -2, -2, 0, 2, 2, 2, 2, 0, -2, -2, 0, 2, 4, 6, 8, 10, 12, 14, 14, 14, 14, 14, 16, 16, 16, 16, 16, -4, 6, 4, 8, 10, 12, 14, 16],
+			"instancesPY":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1.1920928955078125e-07, 1.1920928955078125e-07, 1.1920928955078125e-07, 1.1920928955078125e-07, 1.1920928955078125e-07, 5.9604644775390625e-07, 5.9604644775390625e-07, 5.9604644775390625e-07],
+			"instancesPZ":	[0, -2, -2, 0, 2, 2, 2, 0, -2, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 2, 0, -2, -2, 0, 2, 4, 6, 1, 8, 8, 8, 8, 8, 8, 8],
+			"instancesRX":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRY":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRZ":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesSX":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesSY":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesSZ":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/ground-water.glb",
 			"instancesPX":	[0],
@@ -241,6 +325,18 @@
 			"instancesTexId":	[-1]
 		}, {
 			"filename":	"resources/level_assets/guy-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/guy-2.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],
 			"instancesPZ":	[],
@@ -312,29 +408,41 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}, {
+			"filename":	"resources/level_assets/tree-leaf-1.glb",
+			"instancesPX":	[-4.9250025749206543],
+			"instancesPY":	[-1.1920928955078125e-07],
+			"instancesPZ":	[-1],
+			"instancesRX":	[0],
+			"instancesRY":	[0],
+			"instancesRZ":	[0],
+			"instancesSX":	[1],
+			"instancesSY":	[1],
+			"instancesSZ":	[1],
+			"instancesTexId":	[-1]
+		}, {
 			"filename":	"resources/level_assets/wall-large-blocks-1000a.glb",
-			"instancesPX":	[],
-			"instancesPY":	[],
-			"instancesPZ":	[],
-			"instancesRX":	[],
-			"instancesRY":	[],
-			"instancesRZ":	[],
-			"instancesSX":	[],
-			"instancesSY":	[],
-			"instancesSZ":	[],
-			"instancesTexId":	[]
+			"instancesPX":	[7, 5, 1],
+			"instancesPY":	[4.76837158203125e-07, 4.76837158203125e-07, 4.76837158203125e-07],
+			"instancesPZ":	[10, 10, 10],
+			"instancesRX":	[0, 0, 0],
+			"instancesRY":	[0, -270, 90],
+			"instancesRZ":	[0, 0, 0],
+			"instancesSX":	[1, 1, 1],
+			"instancesSY":	[1, 1, 1],
+			"instancesSZ":	[1, 1, 1],
+			"instancesTexId":	[-1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/wall-large-blocks-1000b.glb",
-			"instancesPX":	[],
-			"instancesPY":	[],
-			"instancesPZ":	[],
-			"instancesRX":	[],
-			"instancesRY":	[],
-			"instancesRZ":	[],
-			"instancesSX":	[],
-			"instancesSY":	[],
-			"instancesSZ":	[],
-			"instancesTexId":	[]
+			"instancesPX":	[7, 3, 7],
+			"instancesPY":	[4.76837158203125e-07, 4.76837158203125e-07, 5.9604644775390625e-07],
+			"instancesPZ":	[10, 10, 12],
+			"instancesRX":	[0, 0, 0],
+			"instancesRY":	[-270, -270, 0],
+			"instancesRZ":	[0, 0, 0],
+			"instancesSX":	[1, 1, 1],
+			"instancesSY":	[1, 1, 1],
+			"instancesSZ":	[1, 1, 1],
+			"instancesTexId":	[-1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/wall-large-blocks-arch-1000a.glb",
 			"instancesPX":	[],
@@ -348,9 +456,9 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}],
-	"entityNames":	["New Entity", null, null, null, null, null, null, null],
-	"entityTRS":	[2, 4.76837158203125e-07, -1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	"entityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
+	"entityNames":	["Fisherman1", "boat", "Fisherman2", null, null, null, null, null],
+	"entityTRS":	[2, 4.76837158203125e-07, -1, 0, 0, 0, 1, 1, 1, 3.1500003337860107, 0, -7.5000038146972656, 0, 0, 0, 1, 1, 1, 1, 5.9604644775390625e-07, 0, 0, 99, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"entityIds":	[0, 1, 2, 0, 0, 0, 0, 0],
 	"components":	[{
 			"name":	"CameraFacing",
 			"componentId":	0,
@@ -359,12 +467,28 @@
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	1,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 1, 1, 2, 0, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/guy-1.glb",
 					"isDithered":	0,
 					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
-				}, null, null, null, null, null, null, null]
+				}, {
+					"mesh":	"resources/level_assets/boat.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
+				}, {
+					"mesh":	"resources/level_assets/boat-steering-wheel.glb",
+					"isDithered":	0,
+					"trs":	[0.300000011920929, 0.874999701976776, 0.55000030994415283, -18, -90, 0, 0.60000038146972656, 0.60000038146972656, 0.60000038146972656]
+				}, {
+					"mesh":	"resources/level_assets/boat-sails.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, 0, 0, 36, 0, 1, 1, 1]
+				}, {
+					"mesh":	"resources/level_assets/guy-2.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
+				}, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	2,

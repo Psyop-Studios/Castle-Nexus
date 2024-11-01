@@ -43,7 +43,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.fovy = 45.0f;
     _camera.projection = CAMERA_PERSPECTIVE;
 
-    Level_load(Game_getLevel(), "resources/levels/intro.lvl");
+    Level_load(Game_getLevel(), "resources/levels/docks.lvl");
     int step = 0;
     Script_addAction((ScriptAction){
         .actionIdStart = step,
@@ -52,7 +52,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .action = ScriptAction_setCameraMovementEnabled,
-        .actionInt = 0});
+        .actionInt = 1});
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .action = ScriptAction_jumpStep,

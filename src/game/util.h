@@ -10,5 +10,5 @@ void DrawTextRich(Font font, const char *text, Vector2 position, float fontSize,
 Rectangle DrawTextBoxAligned(Font font, const char *text, int x, int y, int w, int h, float alignX, float alignY, Color color);
 char* replacePathSeps(char *path);
 
-int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Vector3 *euler, Vector3 *scale);
+int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Vector3 *euler, Vector3 *scale, Vector3 *cursorAnchor);
 #endif

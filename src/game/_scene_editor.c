@@ -335,7 +335,7 @@ static void SceneDrawUi_meshInspector(GameContext *gameCtx, SceneConfig *SceneCo
                 char buffer[128];
                 sprintf(buffer, "%d:%d", i, j);
 
-                if (SceneDrawUi_transformUi(&y, buffer, &instance->position, &instance->eulerRotationDeg, &instance->scale))
+                if (SceneDrawUi_transformUi(&y, buffer, &instance->position, &instance->eulerRotationDeg, &instance->scale, &_worldCursor))
                 {
                     Level_updateInstanceTransform(instance);
                 }
@@ -418,7 +418,7 @@ static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* ent
 
     char buffer[128];
     sprintf(buffer, "%d-%d", entity->id, entity->generation);
-    if (SceneDrawUi_transformUi(posY, buffer, &entity->position, &entity->eulerRotationDeg, &entity->scale))
+    if (SceneDrawUi_transformUi(posY, buffer, &entity->position, &entity->eulerRotationDeg, &entity->scale, &_worldCursor))
     {
         Level_updateEntityTransform(entity);
     }

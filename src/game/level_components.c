@@ -161,7 +161,7 @@ void MeshRendererComponent_onInspectorUi(Level *level, LevelEntityInstanceId own
     float width = DuskGui_getAvailableSpace().x - 20;
     if (DuskGui_button((DuskGuiParams){
         .bounds = (Rectangle){10, *ypos, width, 20},
-        .text = TextFormat("Mesh: %s##MeshRendererMesh-%p", component->meshIndex >= 0 ? level->meshes[component->meshIndex].filename : "None", component),
+        .text = TextFormat("Mesh: %s##MeshRendererMesh-%p", component->meshIndex >= 0 ? strrchr(level->meshes[component->meshIndex].filename, '/') : "None", component),
         .rayCastTarget = 1,
     }))
     {
@@ -175,7 +175,7 @@ void MeshRendererComponent_onInspectorUi(Level *level, LevelEntityInstanceId own
 
     char buffer[128];
     sprintf(buffer, "MeshRendererTransform-%p", component);
-    if (SceneDrawUi_transformUi(ypos, buffer, &component->position, &component->eulerRotationDeg, &component->scale))
+    if (SceneDrawUi_transformUi(ypos, buffer, &component->position, &component->eulerRotationDeg, &component->scale, (&(Vector3){0,0,0})))
     {
         MeshRendererComponent_updateTransform(component);
     }
@@ -432,7 +432,7 @@ void SpriteRendererComponent_onInspectorUi(Level *level, LevelEntityInstanceId o
 
     char buffer[128];
     sprintf(buffer, "SpriteRendererTransform-%p", component);
-    if (SceneDrawUi_transformUi(ypos, buffer, &component->position, &component->eulerRotationDeg, &component->scale))
+    if (SceneDrawUi_transformUi(ypos, buffer, &component->position, &component->eulerRotationDeg, &component->scale, (&(Vector3){0,0,0})))
     {
         SpriteRendererComponent_updateTransform(component);
     }

@@ -339,7 +339,7 @@ char* replacePathSeps(char *path)
 
 extern Vector3 _worldCursor;
 
-int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Vector3 *euler, Vector3 *scale)
+int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Vector3 *euler, Vector3 *scale, Vector3 *cursorAnchor)
 {
     int modified = 0;
     char buffer[256];
@@ -348,7 +348,7 @@ int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Ve
     
     if (DuskGui_floatInputField((DuskGuiParams) {
         .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 },
-    }, &position->x, _worldCursor.x - 1.0f, _worldCursor.x + 1.0f, 0.025f))
+    }, &position->x, cursorAnchor->x - 1.0f, cursorAnchor->x + 1.0f, 0.025f))
     {
         modified = 1;
     }
@@ -356,7 +356,7 @@ int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Ve
     sprintf(buffer, "%.3f##Y-%s", position->y, uiId);
     if (DuskGui_floatInputField((DuskGuiParams) {
         .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 },
-    }, &position->y, _worldCursor.y - 2.0f, _worldCursor.y + 4.0f, 0.025f))
+    }, &position->y, cursorAnchor->y - 2.0f, cursorAnchor->y + 4.0f, 0.025f))
     {
         modified = 1;
     }
@@ -364,7 +364,7 @@ int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Ve
     sprintf(buffer, "%.3f##Z-%s", position->z, uiId);
     if (DuskGui_floatInputField((DuskGuiParams) {
         .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 },
-    }, &position->z, _worldCursor.z - 1.0f, _worldCursor.z + 1.0f, 0.025f))
+    }, &position->z, cursorAnchor->z - 1.0f, cursorAnchor->z + 1.0f, 0.025f))
     {
         modified = 1;
     }
