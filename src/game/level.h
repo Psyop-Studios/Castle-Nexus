@@ -110,6 +110,11 @@ typedef struct Level {
     int entityComponentClassCount;
 } Level;
 
+typedef struct LevelCollisionResult {
+    Vector3 direction;
+    float depth;
+} LevelCollisionResult;
+
 void Level_init(Level *level);
 void Level_loadAssets(Level *level, const char *assetsDirectory);
 LevelMeshInstance* Level_addInstance(Level *level, const char *meshName, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale);
@@ -145,5 +150,7 @@ LevelEntity* Level_addEntityAtIndex(Level *level, int index, const char *name, V
 
 LevelEntity* Level_instantiatePrefab(Level *level, cJSON *json);
 cJSON* Level_serializeEntityAsPrefab(Level *level, LevelEntityInstanceId instanceId);
+
+LevelCollisionResult Level_calcPenetrationDepth(Level *level, Vector3 point, float radius);
 
 #endif

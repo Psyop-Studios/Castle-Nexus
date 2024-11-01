@@ -92,7 +92,7 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
                 cJSON *root = cJSON_Parse(data);
 
 
-                
+
                 cJSON *animations = cJSON_GetObjectItem(root, "animations");
                 if (cJSON_IsArray(animations))
                 {
@@ -136,7 +136,7 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
                         }
                     }
                 }
-                
+
                 cJSON_Delete(root);
                 UnloadFileText(data);
             } else {
@@ -146,7 +146,7 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
             textureCount++;
         }
     }
-    
+
     for (int i = 0; i < files.count; i++)
     {
         const char *file = files.paths[i];
@@ -239,7 +239,7 @@ void Level_updateInstanceTransform(LevelMeshInstance *instance)
     instance->toWorldTransform = MatrixRotateXYZ((Vector3){DEG2RAD * eulerRotationDeg.x, DEG2RAD * eulerRotationDeg.y, DEG2RAD * eulerRotationDeg.z});
     instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, MatrixScale(scale.x, scale.y, scale.z));
     instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, MatrixTranslate(position.x, position.y, position.z));
-    
+
 }
 
 
@@ -412,16 +412,16 @@ void Level_load(Level *level, const char *levelFile)
         char *entityName = entityNameJSON->valuestring;
         cJSON *entityId = cJSON_GetArrayItem(entityIds, i);
         Vector3 position = (Vector3){
-            (float)cJSON_GetArrayItem(entityTRS, i * 9)->valuedouble, 
-            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 1)->valuedouble, 
+            (float)cJSON_GetArrayItem(entityTRS, i * 9)->valuedouble,
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 1)->valuedouble,
             (float)cJSON_GetArrayItem(entityTRS, i * 9 + 2)->valuedouble};
         Vector3 eulerRotationDeg = (Vector3){
-            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 3)->valuedouble, 
-            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 4)->valuedouble, 
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 3)->valuedouble,
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 4)->valuedouble,
             (float)cJSON_GetArrayItem(entityTRS, i * 9 + 5)->valuedouble};
         Vector3 scale = (Vector3){
-            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 6)->valuedouble, 
-            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 7)->valuedouble, 
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 6)->valuedouble,
+            (float)cJSON_GetArrayItem(entityTRS, i * 9 + 7)->valuedouble,
             (float)cJSON_GetArrayItem(entityTRS, i * 9 + 8)->valuedouble};
         LevelEntity *entity = Level_addEntityAtIndex(level, entityId->valueint, entityName, position, eulerRotationDeg, scale);
         if (!entity)
@@ -431,7 +431,7 @@ void Level_load(Level *level, const char *levelFile)
         }
         if (entity->id != entityId->valueint)
         {
-            TraceLog(LOG_ERROR, "Entity id mismatch at %d (%d vs %d); not importing entity data: %s", 
+            TraceLog(LOG_ERROR, "Entity id mismatch at %d (%d vs %d); not importing entity data: %s",
                 i, entity->id, entityId->valueint, levelFile);
             goto cleanup;
         }
@@ -586,7 +586,7 @@ void Level_save(Level *level, const char *levelFile)
             }
             continue;
         }
-        
+
         cJSON_AddItemToArray(entityNames, cJSON_CreateString(entity->name));
         cJSON_AddItemToArray(entityIds, cJSON_CreateNumber(entity->id));
         cJSON_AddItemToArray(entityTRS, cJSON_CreateNumber(entity->position.x));
@@ -649,36 +649,36 @@ void Level_update(Level *level, float dt)
 
 }
 
-
-
-
-float Level_calcPenetrationDepth(Level *level, Vector3 point, float radius)
+LevelCollisionResult Level_calcPenetrationDepth(Level *level, Vector3 point, float radius)
 {
-    float maxDepth = 0.0f;
+    LevelCollisionResult result = {0};
+
     for (int i = 0; i < level->meshCount; i++)
     {
         LevelMesh *mesh = &level->meshes[i];
-
 
         for (int j = 0; j < mesh->instanceCount; j++)
         {
             LevelMeshInstance *instance = &mesh->instances[j];
             Vector3 localPoint = Vector3Transform(point, MatrixInvert(instance->toWorldTransform));
-
-        
             float distanceToMesh = Vector3Length(localPoint);
 
-            if (distanceToMesh < radius){
+            if (distanceToMesh < radius)
+            {
                 float depth = radius - distanceToMesh;
-
-                //haikuno
-
+                if (depth > result.depth)
+                {
+                    result.depth = depth;
+                    result.direction = Vector3Subtract(localPoint, point);
+                    result.direction = Vector3Normalize(result.direction);
+                }
             }
-            
+
         }
 
     }
-    return maxDepth;
+
+    return result;
 }
 
 
@@ -693,10 +693,10 @@ void Level_draw(Level *level)
         Material material = {0};
         material.shader = mesh->isDithered ? _modelDitherShader : _modelTexturedShader;
         MaterialMap maps[16];
-        Texture2D defaultTex = maps[MATERIAL_MAP_ALBEDO].texture = 
+        Texture2D defaultTex = maps[MATERIAL_MAP_ALBEDO].texture =
             mesh->textureIndex >= 0 ? level->textures[mesh->textureIndex].texture : (Texture2D) {0};
         material.maps = maps;
-        
+
         for (int j = 0; j < mesh->instanceCount; j++)
         {
             // TraceLog(LOG_INFO, "Drawing mesh: %s", mesh->filename);
@@ -755,7 +755,7 @@ void Level_unload(Level *level)
         {
             for (int j = 0; j < componentClass->instanceCount; j++)
             {
-                componentClass->methods.onDestroyFn(level, 
+                componentClass->methods.onDestroyFn(level,
                     (LevelEntityInstanceId){0}, (void*)((char*)componentClass->componentInstanceData + j * componentClass->componentInstanceDataSize));
             }
         }
@@ -908,9 +908,9 @@ LevelEntity* Level_instantiatePrefab(Level *level, cJSON *json)
         return NULL;
     }
 
-    LevelEntity *entity = Level_addEntity(level, name->valuestring, 
-        (Vector3){(float) x->valuedouble, (float) y->valuedouble, (float) z->valuedouble}, 
-        (Vector3){(float) rx->valuedouble, (float) ry->valuedouble, (float) rz->valuedouble}, 
+    LevelEntity *entity = Level_addEntity(level, name->valuestring,
+        (Vector3){(float) x->valuedouble, (float) y->valuedouble, (float) z->valuedouble},
+        (Vector3){(float) rx->valuedouble, (float) ry->valuedouble, (float) rz->valuedouble},
         (Vector3){(float) sx->valuedouble, (float) sy->valuedouble, (float) sz->valuedouble});
     if (!entity)
     {
