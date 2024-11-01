@@ -152,6 +152,11 @@ typedef struct DuskGuiActiveMenuStats
     float firstActiveTime;
 } DuskGuiActiveMenuStats;
 
+typedef struct DuskGuiDeferredCall{
+    void (*fn)(void*);
+    void *data;
+} DuskGuiDeferredCall;
+
 typedef struct DuskGuiState {
     DuskGuiParamsList currentParams;
     DuskGuiParamsList prevParams;
@@ -169,6 +174,9 @@ typedef struct DuskGuiState {
     int menuStackCount;
 
     DuskGuiParamsEntry *lastEntry;
+
+    DuskGuiDeferredCall *deferredCalls;
+    int deferredCallCount;
 } DuskGuiState;
 
 typedef enum DuskGuiStyleType {
@@ -195,6 +203,8 @@ typedef struct DuskGuiStyleSheet {
 } DuskGuiStyleSheet;
 
 void DuskGui_init();
+// deferred calls are executed first during finalization.
+void DuskGui_addDeferredCall(void (*fn)(void*), void* data);
 // finalizes the frame operation; draws menus as a last step
 void DuskGui_finalize();
 
@@ -211,6 +221,9 @@ DuskGuiStyle* DuskGui_createGuiStyle(DuskGuiStyle* fallbackStyle);
 void DuskGui_openMenu(const char *menuName);
 int DuskGui_isMenuOpen(const char *menuName);
 int DuskGui_closeMenu(const char *menuName);
+// presents a button that opens a menu with items as menuitems. Items is a null-terminated array of strings.
+// returns the index of the selected item
+int DuskGui_comboMenu(DuskGuiParams params, const char* items[], int selectedItem);
 void DuskGui_closeAllMenus();
 
 // layouting helpers

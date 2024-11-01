@@ -90,12 +90,14 @@ typedef struct LevelEntity
 {
     uint32_t id;
     uint32_t generation;
+    uint8_t transformIsDirty;
     char *name;
     Vector3 position;
     Vector3 eulerRotationDeg;
     Vector3 scale;
     Matrix toWorldTransform;
 } LevelEntity;
+
 
 typedef struct Level {
     char *filename;
@@ -108,6 +110,10 @@ typedef struct Level {
     int entityCount;
     LevelEntityComponentClass *entityComponentClasses;
     int entityComponentClassCount;
+
+    float gameTime;
+    float renderTime;
+    uint8_t isEditor;
 } Level;
 
 typedef struct LevelCollisionResult {

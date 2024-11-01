@@ -685,6 +685,7 @@ LevelCollisionResult Level_calcPenetrationDepth(Level *level, Vector3 point, flo
 
 void Level_draw(Level *level)
 {
+    level->renderTime += GetFrameTime();
     int locTexSize = GetShaderLocation(_modelDitherShader, "texSize");
     int locUvDitherBlockPosScale = GetShaderLocation(_modelDitherShader, "uvDitherBlockPosScale");
 
@@ -715,6 +716,19 @@ void Level_draw(Level *level)
             SetShaderValue(material.shader, locUvDitherBlockPosScale, (float[1]){texSize.x / 8.0f}, SHADER_UNIFORM_FLOAT);
             Game_setFogTextures(&material);
             DrawMesh(mesh->model.meshes[0], material, instance->toWorldTransform);
+        }
+    }
+
+    for (int i = 0; i < level->entityCount; i++)
+    {
+        LevelEntity *entity = &level->entities[i];
+        if (!entity->name)
+        {
+            continue;
+        }
+        if (entity->transformIsDirty)
+        {
+            Level_updateEntityTransform(entity);
         }
     }
 
@@ -884,6 +898,7 @@ void Level_registerEntityComponentClass(Level *level, uint32_t componentId, cons
 
 void Level_updateEntityTransform(LevelEntity *entity)
 {
+    entity->transformIsDirty = 0;
     entity->toWorldTransform = MatrixRotateXYZ((Vector3){DEG2RAD * entity->eulerRotationDeg.x, DEG2RAD * entity->eulerRotationDeg.y, DEG2RAD * entity->eulerRotationDeg.z});
     entity->toWorldTransform = MatrixMultiply(entity->toWorldTransform, MatrixScale(entity->scale.x, entity->scale.y, entity->scale.z));
     entity->toWorldTransform = MatrixMultiply(entity->toWorldTransform, MatrixTranslate(entity->position.x, entity->position.y, entity->position.z));

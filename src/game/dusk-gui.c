@@ -894,8 +894,29 @@ void Rectangle_getMinMax(Rectangle* r, int* minX, int* minY, int* maxX, int* max
     *maxY = r->y + r->height;
 }
 
+void DuskGui_addDeferredCall(void (*fn)(void*), void* data)
+{
+    _duskGuiState.deferredCalls = (DuskGuiDeferredCall*)realloc(_duskGuiState.deferredCalls, sizeof(DuskGuiDeferredCall) * (_duskGuiState.deferredCallCount + 1));
+    _duskGuiState.deferredCalls[_duskGuiState.deferredCallCount++] = (DuskGuiDeferredCall) { fn, data };
+}
+
 void DuskGui_finalize()
 {
+    if (_duskGuiState.deferredCalls)
+    {
+        // just in case a deferred calls wants to defer a call, let's prepare an empty state for this;
+        // the deferred calls are executed in the next frame then.
+        DuskGuiDeferredCall *calls = _duskGuiState.deferredCalls;
+        int callCount = _duskGuiState.deferredCallCount;
+        _duskGuiState.deferredCalls = NULL;
+        _duskGuiState.deferredCallCount = 0;
+
+        for (int i = 0; i < callCount; i++) {
+            DuskGuiDeferredCall* call = &calls[i];
+            call->fn(call->data);
+        }
+        free(calls);
+    }
     // auto close behavior of menus:
     // Menus have a last trigger time
     // when a parent menu has a higher last trigger time (+ threshold) than a child menu, the child menu is closed
@@ -1040,12 +1061,11 @@ static DuskGuiParamsEntry* DuskGui_getCurrentPanel()
     return DuskGui_getParentById(_duskGuiState.currentPanelIndex, 1);
 }
 
-static DuskGuiParamsEntry* DuskGui_makeEntry(DuskGuiParams params, DuskGuiStyleGroup* initStyleGroup)
+static DuskGuiParamsEntry* DuskGui_makeEntryWithParent(DuskGuiParams params, DuskGuiStyleGroup* initStyleGroup, DuskGuiParamsEntry* parent)
 {
-    if (params.styleGroup != NULL) {
+if (params.styleGroup != NULL) {
         initStyleGroup = params.styleGroup;
     }
-    DuskGuiParamsEntry* parent = DuskGui_getCurrentPanel();
     Rectangle origBounds = params.bounds;
     params.bounds.x += parent->params.bounds.x;
     params.bounds.y += parent->params.bounds.y;
@@ -1075,6 +1095,11 @@ static DuskGuiParamsEntry* DuskGui_makeEntry(DuskGuiParams params, DuskGuiStyleG
     DuskGui_update(added, initStyleGroup);
     _duskGuiState.lastEntry = added;
     return added;
+}
+static DuskGuiParamsEntry* DuskGui_makeEntry(DuskGuiParams params, DuskGuiStyleGroup* initStyleGroup)
+{
+    DuskGuiParamsEntry* parent = DuskGui_getCurrentPanel();
+    return DuskGui_makeEntryWithParent(params, initStyleGroup, parent);
 }
 
 DuskGuiParamsEntry* DuskGui_getEntry(const char *txId, int searchPrevFrame)
@@ -1328,11 +1353,48 @@ int DuskGui_menuItem(int opensSubmenu, DuskGuiParams params)
     return opensSubmenu ? entry->isHovered : entry->isTriggered;
 }
 
+int DuskGui_comboMenu(DuskGuiParams params, const char* items[], int selectedItem)
+{
+    const char *menuId = params.text;
+    params.text = TextFormat("%s##comboMenuButton-%s", items[selectedItem], menuId);
+    if (DuskGui_button(params)) {
+        DuskGui_openMenu(menuId);
+    }
+    params.text = menuId;
+
+    int itemCount = 0;
+    for (int i = 0; items[i] != NULL; i++) {
+        itemCount++;
+    }
+
+    Vector2 pos = DuskGui_toScreenSpace((Vector2){ params.bounds.x, params.bounds.y });
+    params.bounds.x = pos.x;
+    params.bounds.y = pos.y;
+    params.bounds.height = itemCount * 20.0f + 10.0f;
+
+    DuskGuiParamsEntry* entry = DuskGui_beginMenu(params);
+    if (entry != NULL) {
+        for (int i = 0; items[i] != NULL; i++) {
+            if (DuskGui_menuItem(0, (DuskGuiParams) { 
+                    .rayCastTarget = 1,
+                    .bounds = (Rectangle) { 5.0f, 20 * i + 5.0f, params.bounds.width - 10.0f, 20.0f },
+                    .text = items[i] })) {
+                selectedItem = i;
+                DuskGui_closeMenu(params.text);
+            }
+        }
+        DuskGui_endMenu();
+    }
+    
+    return selectedItem;
+}
+
 DuskGuiParamsEntry* DuskGui_beginMenu(DuskGuiParams params)
 {
     int isOpen = DuskGui_isMenuOpen(params.text) != 0;
     params.rayCastTarget = isOpen;
-    DuskGuiParamsEntry* entry = DuskGui_makeEntry(params, &_defaultStyles.groups[DUSKGUI_STYLE_MENU]);
+    DuskGuiParamsEntry* entry = DuskGui_makeEntryWithParent(params, &_defaultStyles.groups[DUSKGUI_STYLE_MENU], 
+        &_duskGuiState.root);
 
     entry->isMenu = 1;
     entry->isOpen = isOpen;

@@ -440,7 +440,7 @@
 			"instancesRY":	[0, -135, 0],
 			"instancesRZ":	[0, 0, 0],
 			"instancesSX":	[1, 1, 1],
-			"instancesSY":	[1, 1, 1],
+			"instancesSY":	[1, 1.1000000238418579, 1],
 			"instancesSZ":	[1, 1, 1],
 			"instancesTexId":	[-1, -1, -1]
 		}, {
@@ -489,8 +489,33 @@
 			"ownerEntityIds":	[],
 			"entityData":	[]
 		}, {
-			"name":	"MeshRenderer",
+			"name":	"Wobbler",
 			"componentId":	1,
+			"ownerEntityIds":	[1, 1, 0, 0, 0, 0, 0, 0],
+			"entityData":	[{
+					"type":	0,
+					"argument":	0,
+					"useGameTime":	0,
+					"amplitude":	0.082500018179416656,
+					"frequency":	0.56748968362808228,
+					"phase":	0,
+					"pivotX":	0,
+					"pivotY":	0,
+					"pivotZ":	0
+				}, {
+					"type":	5,
+					"argument":	0,
+					"useGameTime":	0,
+					"amplitude":	0.697214663028717,
+					"frequency":	0.731326401233673,
+					"phase":	0,
+					"pivotX":	0,
+					"pivotY":	-2.5118534564971924,
+					"pivotZ":	0
+				}, null, null, null, null, null, null]
+		}, {
+			"name":	"MeshRenderer",
+			"componentId":	2,
 			"ownerEntityIds":	[0, 1, 1, 1, 2, 0, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/guy-1.glb",
@@ -515,7 +540,7 @@
 				}, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
-			"componentId":	2,
+			"componentId":	3,
 			"ownerEntityIds":	[],
 			"entityData":	[]
 		}]

@@ -5,10 +5,12 @@
 #include <raymath.h>
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 
 #define COMPONENT_TYPE_CAMERAFACING 0
-#define COMPONENT_TYPE_MESHRENDERER 1
-#define COMPONENT_TYPE_SPRITERENDERER 2
+#define COMPONENT_TYPE_WOBBLER 1
+#define COMPONENT_TYPE_MESHRENDERER 2
+#define COMPONENT_TYPE_SPRITERENDERER 3
 
 //# CameraFacingComponent
 typedef struct CameraFacingComponent
@@ -58,6 +60,7 @@ void CameraFacingComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, v
     m.m9 = forward.y;
     m.m10 = forward.z;
     instance->toWorldTransform = m;
+    instance->transformIsDirty = 1;
 }
 
 void CameraFacingComponent_onInit(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
@@ -96,6 +99,238 @@ void CameraFacingComponent_onDeserialize(Level *level, LevelEntityInstanceId own
     if (lockY) component->lockY = lockY->valueint;
     if (lockZ) component->lockZ = lockZ->valueint;
     if (useDirection) component->useDirection = useDirection->valueint;
+}
+
+//# WobblerComponent
+
+#define WOBBLE_TYPE_POSITION_X 0
+#define WOBBLE_TYPE_POSITION_Y 1
+#define WOBBLE_TYPE_POSITION_Z 2
+#define WOBBLE_TYPE_ROTATION_X 3
+#define WOBBLE_TYPE_ROTATION_Y 4
+#define WOBBLE_TYPE_ROTATION_Z 5
+#define WOBBLE_TYPE_SCALE_X 6
+#define WOBBLE_TYPE_SCALE_Y 7
+#define WOBBLE_TYPE_SCALE_Z 8
+#define WOBBLE_TYPE_SCALE_UNIFORM 9
+
+#define WOBBLE_ARGUMENT_TIME 0
+#define WOBBLE_ARGUMENT_POSITION_X 1
+#define WOBBLE_ARGUMENT_POSITION_Y 2
+#define WOBBLE_ARGUMENT_POSITION_Z 3
+
+const char *_wobbleTypes[] = {"Position.x", "Position.y", "Position.z", "Rotation.x", "Rotation.y", "Rotation.z", "Scale.x", "Scale.y", "Scale.z", "Scale.uniform", NULL};
+const char *_wobbleArguments[] = {"Time", "Position.x", "Position.y", "Position.z", NULL};
+typedef struct WobblerComponent
+{
+    uint8_t type;
+    uint8_t argument;
+    uint8_t useGameTime;
+    float amplitude;
+    float frequency;
+    float phase;
+    Vector3 pivot;
+} WobblerComponent;
+
+void WobblerComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    WobblerComponent *component = (WobblerComponent*)componentInstanceData;
+    LevelEntity *instance = Level_resolveEntity(level, ownerId);
+    if (!instance)
+    {
+        return;
+    }
+    float t = component->useGameTime ? level->gameTime : level->renderTime;
+    float arg = 0;
+    Vector3 position = (Vector3){0};
+    Vector3 rotation = (Vector3){0};
+    Vector3 scale = (Vector3){1.0f,1.0f,1.0f};
+    switch (component->argument)
+    {
+    case WOBBLE_ARGUMENT_TIME:
+        arg = t;
+        break;
+    case WOBBLE_ARGUMENT_POSITION_X:
+        arg = position.x;
+        break;
+    case WOBBLE_ARGUMENT_POSITION_Y:
+        arg = position.y;
+        break;
+    case WOBBLE_ARGUMENT_POSITION_Z:
+        arg = position.z;
+        break;
+    }
+    float amplitude = component->amplitude;
+    // if (component->type == WOBBLE_TYPE_ROTATION_X || component->type == WOBBLE_TYPE_ROTATION_Y || component->type == WOBBLE_TYPE_ROTATION_Z)
+    // {
+    //     amplitude = RAD2DEG * amplitude;
+    // }
+    float wobble = amplitude * sinf(component->frequency * arg + component->phase);
+    switch (component->type)
+    {
+    case WOBBLE_TYPE_POSITION_X:
+        position.x += wobble;
+        break;
+    case WOBBLE_TYPE_POSITION_Y:
+        position.y += wobble;
+        break;
+    case WOBBLE_TYPE_POSITION_Z:
+        position.z += wobble;
+        break;
+    case WOBBLE_TYPE_ROTATION_X:
+        rotation.x += wobble;
+        break;
+    case WOBBLE_TYPE_ROTATION_Y:
+        rotation.y += wobble;
+        break;
+    case WOBBLE_TYPE_ROTATION_Z:
+        rotation.z += wobble;
+        break;
+    case WOBBLE_TYPE_SCALE_X:
+        scale.x += wobble;
+        break;
+    case WOBBLE_TYPE_SCALE_Y:
+        scale.y += wobble;
+        break;
+    case WOBBLE_TYPE_SCALE_Z:
+        scale.z += wobble;
+        break;
+    case WOBBLE_TYPE_SCALE_UNIFORM:
+        scale.x += wobble;
+        scale.y += wobble;
+        scale.z += wobble;
+        break;
+    }
+
+    Matrix m = MatrixRotateXYZ((Vector3){DEG2RAD * rotation.x, DEG2RAD * rotation.y, DEG2RAD * rotation.z});
+    m = MatrixMultiply(m, MatrixScale(scale.x, scale.y, scale.z));
+    m = MatrixMultiply(m, MatrixTranslate(position.x, position.y, position.z));
+    instance->toWorldTransform.m12 -= component->pivot.x;
+    instance->toWorldTransform.m13 -= component->pivot.y;
+    instance->toWorldTransform.m14 -= component->pivot.z;
+    instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, m);
+    instance->toWorldTransform.m12 += component->pivot.x;
+    instance->toWorldTransform.m13 += component->pivot.y;
+    instance->toWorldTransform.m14 += component->pivot.z;
+    instance->transformIsDirty = 1;
+}
+
+void WobblerComponent_onInit(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    WobblerComponent *component = (WobblerComponent*)componentInstanceData;
+    component->type = 0;
+    component->argument = 0;
+    component->useGameTime = 0;
+    component->amplitude = 0.1f;
+    component->frequency = 1.0f;
+    component->phase = 0.0f;
+}
+
+void WobblerComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos)
+{
+    WobblerComponent *component = (WobblerComponent*)componentInstanceData;
+    component->type = DuskGui_comboMenu((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = TextFormat("WobblerType-%p", component),
+        .rayCastTarget = 1,
+    }, _wobbleTypes, component->type);
+    *ypos += 20.0f;
+    component->argument = DuskGui_comboMenu((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = TextFormat("WobblerArgument-%p", component),
+        .rayCastTarget = 1,
+    }, _wobbleArguments, component->argument);
+
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = TextFormat("%.2f (Amplitude)##wobler-amplitude-%p", component->amplitude, component),
+        .rayCastTarget = 1,
+    }, &component->amplitude, -400.0f, 400.0f, fmaxf(fabsf(component->amplitude * 0.01f), 0.0025));
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = TextFormat("%.2f (Frequency)##wobler-frequency-%p", component->frequency, component),
+        .rayCastTarget = 1,
+    }, &component->frequency, -400.0f, 400.0f, fmaxf(fabsf(component->frequency * 0.01f), 0.0025f));
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = TextFormat("%.2f (Phase)##wobler-phase-%p", component->phase, component),
+        .rayCastTarget = 1,
+    }, &component->phase, -400.0f, 400.0f, fmaxf(fabsf(component->phase * 0.01f), 0.0025f));
+    *ypos += 20.0f;
+
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Pivot",
+    });
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 60, 20},
+        .text = TextFormat("%.2f##wobler-pivot-x-%p", component->pivot.x, component),
+        .rayCastTarget = 1,
+    }, &component->pivot.x, -400.0f, 400.0f, fmaxf(fabsf(component->pivot.x * 0.01f), 0.0025f));
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){70, *ypos, 60, 20},
+        .text = TextFormat("%.2f##wobler-pivot-y-%p", component->pivot.y, component),
+        .rayCastTarget = 1,
+    }, &component->pivot.y, -400.0f, 400.0f, fmaxf(fabsf(component->pivot.y * 0.01f), 0.0025f));
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){130, *ypos, 60, 20},
+        .text = TextFormat("%.2f##wobler-pivot-z-%p", component->pivot.z, component),
+        .rayCastTarget = 1,
+    }, &component->pivot.z, -400.0f, 400.0f, fmaxf(fabsf(component->pivot.z * 0.01f), 0.0025f));
+    *ypos += 20.0f;
+
+    if (DuskGui_button((DuskGuiParams){
+        .text = TextFormat("Reset pivot##reset-wobbler-%p", component),
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .rayCastTarget = 1,
+    }))
+    {
+        component->pivot = (Vector3){0};
+    }
+    *ypos += 20.0f;
+}
+
+void WobblerComponent_onSerialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
+{
+    WobblerComponent *component = (WobblerComponent*)componentInstanceData;
+    cJSON_AddNumberToObject(json, "type", component->type);
+    cJSON_AddNumberToObject(json, "argument", component->argument);
+    cJSON_AddNumberToObject(json, "useGameTime", component->useGameTime);
+    cJSON_AddNumberToObject(json, "amplitude", component->amplitude);
+    cJSON_AddNumberToObject(json, "frequency", component->frequency);
+    cJSON_AddNumberToObject(json, "phase", component->phase);
+    cJSON_AddNumberToObject(json, "pivotX", component->pivot.x);
+    cJSON_AddNumberToObject(json, "pivotY", component->pivot.y);
+    cJSON_AddNumberToObject(json, "pivotZ", component->pivot.z);
+}
+
+void WobblerComponent_onDeserialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
+{
+    WobblerComponent *component = (WobblerComponent*)componentInstanceData;
+    cJSON *type = cJSON_GetObjectItem(json, "type");
+    cJSON *argument = cJSON_GetObjectItem(json, "argument");
+    cJSON *useGameTime = cJSON_GetObjectItem(json, "useGameTime");
+    cJSON *amplitude = cJSON_GetObjectItem(json, "amplitude");
+    cJSON *frequency = cJSON_GetObjectItem(json, "frequency");
+    cJSON *phase = cJSON_GetObjectItem(json, "phase");
+    cJSON *pivotX = cJSON_GetObjectItem(json, "pivotX");
+    cJSON *pivotY = cJSON_GetObjectItem(json, "pivotY");
+    cJSON *pivotZ = cJSON_GetObjectItem(json, "pivotZ");
+    if (type) component->type = type->valueint;
+    if (argument) component->argument = argument->valueint;
+    if (useGameTime) component->useGameTime = useGameTime->valueint;
+    if (amplitude) component->amplitude = amplitude->valuedouble;
+    if (frequency) component->frequency = frequency->valuedouble;
+    if (phase) component->phase = phase->valuedouble;
+    if (pivotX && pivotY && pivotZ) component->pivot = (Vector3){pivotX->valuedouble, pivotY->valuedouble, pivotZ->valuedouble};
 }
 
 //# MeshRendererComponent
@@ -597,6 +832,20 @@ void LevelComponents_register(Level *level)
             .drawFn = CameraFacingComponent_onDraw,
             .onEditorMenuFn = NULL,
         }, sizeof(CameraFacingComponent));
+
+    Level_registerEntityComponentClass(level, COMPONENT_TYPE_WOBBLER, "Wobbler",
+        (LevelEntityComponentClassMethods){
+            .onInitFn = WobblerComponent_onInit,
+            .onDestroyFn = NULL,
+            .onDisableFn = NULL,
+            .onEnableFn = NULL,
+            .onSerializeFn = WobblerComponent_onSerialize,
+            .onDeserializeFn = WobblerComponent_onDeserialize,
+            .onEditorInspectFn = WobblerComponent_onInspectorUi,
+            .updateFn = NULL,
+            .drawFn = WobblerComponent_onDraw,
+            .onEditorMenuFn = NULL,
+        }, sizeof(WobblerComponent));
 
     Level_registerEntityComponentClass(level, COMPONENT_TYPE_MESHRENDERER, "MeshRenderer", 
         (LevelEntityComponentClassMethods){

@@ -458,7 +458,7 @@ static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* ent
                     {
                         componentClass->generations[j] = 0;
                     }
-                    *posY += 20.0f;
+                    *posY += 25.0f;
                 }
             }
         }

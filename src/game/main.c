@@ -31,10 +31,11 @@ void UpdateRenderTexture()
 {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
-    if ((screenWidth >> 1) != _target.texture.width || (screenHeight >> 1) != _target.texture.height)
+    int downScaleFac = 1;
+    if ((screenWidth >> downScaleFac) != _target.texture.width || (screenHeight >> downScaleFac) != _target.texture.height)
     {
         UnloadRenderTexture(_target);
-        _target = LoadRenderTexture(screenWidth>>1, screenHeight>>1);
+        _target = LoadRenderTexture(screenWidth>>downScaleFac, screenHeight>>downScaleFac);
         SetTextureFilter(_target.texture, TEXTURE_FILTER_POINT);
         SetTextureWrap(_target.texture, TEXTURE_WRAP_CLAMP);
 
