@@ -584,8 +584,8 @@ static void SceneDrawUi_entityInspector(GameContext *gameCtx, SceneConfig *scene
     DuskGuiParamsEntryId scrollArea = DuskGui_beginScrollArea((DuskGuiParams) {
         .text = "EntityList",
         .bounds = (Rectangle) { 0, posY, 200, DuskGui_getAvailableSpace().y - posY - 10},
-        .isFocusable = 1,
         .styleGroup = &_editor_invisibleStyleGroup,
+        .rayCastTarget = 1,
     });
 
     posY = 10.0f;
