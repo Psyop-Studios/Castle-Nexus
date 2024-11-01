@@ -29,7 +29,7 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     // if (IsMouseButtonDown(0) && _allowCameraMovement)
     // {
-    //     UpdateCamera(&_camera, CAMERA_FIRST_PERSON);
+        // UpdateCamera(&_camera, CAMERA_FIRST_PERSON);
     // }
 }
 
@@ -68,7 +68,7 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
         }
 
         Vector2 mouseDelta = GetMouseDelta();
-        SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
+        // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
         _camera.rotation.y -= mouseDelta.x * 0.002f;
         _camera.rotation.x += mouseDelta.y * 0.002f;
         // Matrix yaw = MatrixRotateY(-mouseDelta.x * 0.002f);
@@ -94,7 +94,8 @@ static void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
-    SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
+    DisableCursor();
+    // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
     _camera.camera = (Camera){0};
     _camera.camera.position = (Vector3){ 3.0f, 1.70f, 4.0f };
     _camera.camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
@@ -128,6 +129,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    EnableCursor();
 }
 
 SceneConfig _scene_intro_scene = {
