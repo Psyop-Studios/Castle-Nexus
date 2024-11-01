@@ -15,6 +15,59 @@ static int hexToInt(char chr)
     return -1;
 }
 
+typedef struct DuskAllocation
+{
+    int size;
+    int wasFreed;
+} DuskAllocation;
+
+static void* Dusk_malloc(int size)
+{
+    DuskAllocation *ptr = malloc(size + sizeof(DuskAllocation));
+    ptr->size = size;
+    ptr->wasFreed = 0;
+    return (void*) &ptr[1];
+}
+
+static void* Dusk_realloc(void* ptr, int size)
+{
+    if (ptr)
+    {
+        DuskAllocation *alloc = &((DuskAllocation*)ptr)[-1];
+        if (alloc->wasFreed)
+        {
+            TraceLog(LOG_WARNING, "Reallocating freed memory");
+        }
+        alloc->size = size;
+        alloc = (DuskAllocation*) realloc(alloc, size + sizeof(DuskAllocation));
+        return (void*) &alloc[1];
+    }
+    return Dusk_malloc(size);
+}
+
+static char* Dusk_strdup(const char* str)
+{
+    if (!str) return str;
+    int len = strlen(str);
+    char* newStr = Dusk_malloc(len + 1);
+    strcpy(newStr, str);
+    return newStr;
+}
+
+static void Dusk_free(void* ptr)
+{
+    if (ptr)
+    {
+        DuskAllocation *alloc = &((DuskAllocation*)ptr)[-1];
+        // if (alloc->wasFreed)
+        // {
+        //     TraceLog(LOG_WARNING, "Double free detected");
+        // }
+        // alloc->wasFreed = 1;
+        free(alloc);
+    }
+}
+
 // Measure string size for Font
 static Vector2 MeasureTextRich(Font font, const char *text, float fontSize, float spacing)
 {
@@ -355,7 +408,7 @@ void DuskGui_openMenu(const char* menuName)
             if (strcmp(_duskGuiState.activeMenus[i].menuName, currentMenu->txId) == 0) {
                 i++;
                 while (i < DUSKGUI_MAX_ACTIVE_MENU_COUNT && _duskGuiState.activeMenus[i].menuName) {
-                    free(_duskGuiState.activeMenus[i].menuName);
+                    Dusk_free(_duskGuiState.activeMenus[i].menuName);
                     _duskGuiState.activeMenus[i].menuName = NULL;
                     i++;
                 }
@@ -368,7 +421,7 @@ void DuskGui_openMenu(const char* menuName)
     while (openMenuCount < DUSKGUI_MAX_ACTIVE_MENU_COUNT && _duskGuiState.activeMenus[openMenuCount].menuName) {
         openMenuCount++;
     }
-    _duskGuiState.activeMenus[openMenuCount].menuName = strdup(menuName);
+    _duskGuiState.activeMenus[openMenuCount].menuName = Dusk_strdup(menuName);
     _duskGuiState.activeMenus[openMenuCount].firstActiveTime = GetTime();
     _duskGuiState.activeMenus[openMenuCount].lastTriggerTime = GetTime();
     _duskGuiState.activeMenus[openMenuCount + 1].menuName = NULL;
@@ -387,7 +440,7 @@ int DuskGui_isMenuOpen(const char* menuName)
 void DuskGui_closeAllMenus()
 {
     for (int i = 0; i < DUSKGUI_MAX_ACTIVE_MENU_COUNT && _duskGuiState.activeMenus[i].menuName; i++) {
-        free(_duskGuiState.activeMenus[i].menuName);
+        Dusk_free(_duskGuiState.activeMenus[i].menuName);
         _duskGuiState.activeMenus[i].menuName = NULL;
     }
 }
@@ -398,7 +451,7 @@ int DuskGui_closeMenu(const char* menuName)
     for (int i = 0; i < DUSKGUI_MAX_ACTIVE_MENU_COUNT && _duskGuiState.activeMenus[i].menuName; i++) {
         if (strcmp(_duskGuiState.activeMenus[i].menuName, menuName) == 0) {
             while (i < DUSKGUI_MAX_ACTIVE_MENU_COUNT && _duskGuiState.activeMenus[i].menuName) {
-                free(_duskGuiState.activeMenus[i].menuName);
+                Dusk_free(_duskGuiState.activeMenus[i].menuName);
                 _duskGuiState.activeMenus[i].menuName = NULL;
                 i++;
             }
@@ -433,12 +486,12 @@ void DuskGui_init()
     _duskGuiState.currentPanelIndex = 0;
 
     _duskGuiState.currentParams = (DuskGuiParamsList) {
-        .params = (DuskGuiParamsEntry*)malloc(sizeof(DuskGuiParamsEntry) * 256),
+        .params = (DuskGuiParamsEntry*)Dusk_malloc(sizeof(DuskGuiParamsEntry) * 256),
         .count = 0,
         .capacity = 256
     };
     _duskGuiState.prevParams = (DuskGuiParamsList) {
-        .params = (DuskGuiParamsEntry*)malloc(sizeof(DuskGuiParamsEntry) * 256),
+        .params = (DuskGuiParamsEntry*)Dusk_malloc(sizeof(DuskGuiParamsEntry) * 256),
         .count = 0,
         .capacity = 256
     };
@@ -840,10 +893,10 @@ int DuskGui_tryLock(DuskGuiParamsEntry* params, int x, int y, int relX, int relY
     }
 
     if (_duskGuiState.locked.txId) {
-        free(_duskGuiState.locked.txId);
+        Dusk_free(_duskGuiState.locked.txId);
     }
     _duskGuiState.locked = *params;
-    _duskGuiState.locked.txId = strdup(params->txId);
+    _duskGuiState.locked.txId = Dusk_strdup(params->txId);
     _duskGuiState.lockScreenPos = (Vector2) { x, y };
     _duskGuiState.lockRelativePos = (Vector2) { relX, relY };
     return 1;
@@ -852,7 +905,7 @@ int DuskGui_tryLock(DuskGuiParamsEntry* params, int x, int y, int relX, int relY
 void DuskGui_unlock()
 {
     if (_duskGuiState.locked.txId) {
-        free(_duskGuiState.locked.txId);
+        Dusk_free(_duskGuiState.locked.txId);
     }
     _duskGuiState.locked.txId = NULL;
 }
@@ -863,7 +916,7 @@ static DuskGuiParamsEntry* DuskGui_addParams(DuskGuiParamsList* paramsList, Dusk
 
     if (index >= paramsList->capacity) {
         paramsList->capacity *= 2;
-        paramsList->params = (DuskGuiParamsEntry*)realloc(paramsList->params, sizeof(DuskGuiParamsEntry) * paramsList->capacity);
+        paramsList->params = (DuskGuiParamsEntry*)Dusk_realloc(paramsList->params, sizeof(DuskGuiParamsEntry) * paramsList->capacity);
     }
     if (index >= paramsList->count) {
         // memset 0 empty entries
@@ -896,7 +949,7 @@ void Rectangle_getMinMax(Rectangle* r, int* minX, int* minY, int* maxX, int* max
 
 void DuskGui_addDeferredCall(void (*fn)(void*), void* data)
 {
-    _duskGuiState.deferredCalls = (DuskGuiDeferredCall*)realloc(_duskGuiState.deferredCalls, sizeof(DuskGuiDeferredCall) * (_duskGuiState.deferredCallCount + 1));
+    _duskGuiState.deferredCalls = (DuskGuiDeferredCall*)Dusk_realloc(_duskGuiState.deferredCalls, sizeof(DuskGuiDeferredCall) * (_duskGuiState.deferredCallCount + 1));
     _duskGuiState.deferredCalls[_duskGuiState.deferredCallCount++] = (DuskGuiDeferredCall) { fn, data };
 }
 
@@ -915,7 +968,7 @@ void DuskGui_finalize()
             DuskGuiDeferredCall* call = &calls[i];
             call->fn(call->data);
         }
-        free(calls);
+        Dusk_free(calls);
     }
     // auto close behavior of menus:
     // Menus have a last trigger time
@@ -941,7 +994,7 @@ void DuskGui_finalize()
         if (entry->drawFn) {
             entry->drawFn(entry, &_duskGuiState, entry->drawStyleGroup);
             // it's a dupped string, so we can free it
-            free((char*)entry->params.text);
+            Dusk_free((char*)entry->params.text);
         }
     }
 
@@ -1037,13 +1090,13 @@ void DuskGui_finalize()
     for (int i = 0; i < _duskGuiState.currentParams.count; i++) {
         if (_duskGuiState.currentParams.params[i].txId) {
             // printf5("%d %p\n",i,_duskGuiState.currentParams.params[i].txId);
-            free(_duskGuiState.currentParams.params[i].txId);
+            Dusk_free(_duskGuiState.currentParams.params[i].txId);
         }
         if (_duskGuiState.currentParams.params[i].textBuffer) {
             _duskGuiState.currentParams.params[i].textBuffer->refCount--;
             if (_duskGuiState.currentParams.params[i].textBuffer->refCount <= 0) {
-                free(_duskGuiState.currentParams.params[i].textBuffer->buffer);
-                free(_duskGuiState.currentParams.params[i].textBuffer);
+                Dusk_free(_duskGuiState.currentParams.params[i].textBuffer->buffer);
+                Dusk_free(_duskGuiState.currentParams.params[i].textBuffer);
             }
         }
     }
@@ -1088,7 +1141,7 @@ if (params.styleGroup != NULL) {
                 break;
             }
         }
-        entry.txId = strdup(text);
+        entry.txId = Dusk_strdup(text);
     }
 
     DuskGuiParamsEntry* added = DuskGui_addParams(&_duskGuiState.currentParams, &entry);
@@ -1196,7 +1249,7 @@ static void DuskGui_drawStyle(DuskGuiParamsEntry* params, DuskGuiState* state, D
         // we have a menu open, draw the content in the deferred
         if (params->drawStyleGroup == NULL)
             params->drawStyleGroup = styleGroup;
-        params->params.text = strdup(params->params.text);
+        params->params.text = Dusk_strdup(params->params.text);
         params->drawFn = DuskGui_drawStyle;
     } else if (params->params.styleGroup && params->params.styleGroup->draw) {
         params->params.styleGroup->draw(params, state, styleGroup);
@@ -1339,7 +1392,7 @@ int DuskGui_fullScreenBlocker()
 {
     char id[64];
     sprintf(id, "blocker_%i", _duskGuiState.idCounter);
-    DuskGuiParamsEntry* entry = DuskGui_makeEntry((DuskGuiParams) { .text = strdup(id) }, NULL);
+    DuskGuiParamsEntry* entry = DuskGui_makeEntry((DuskGuiParams) { .text = Dusk_strdup(id) }, NULL);
     entry->params.bounds = (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() };
     entry->params.rayCastTarget = 1;
     entry->drawFn = DuskGui_drawStyleNop;
@@ -1385,7 +1438,7 @@ int DuskGui_comboMenu(DuskGuiParams params, const char* items[], int selectedIte
         }
         DuskGui_endMenu();
     }
-    
+
     return selectedItem;
 }
 
@@ -1531,8 +1584,8 @@ static int GetCharacterIndexByPixel(float x, float y, Font font, const char* tex
 DuskGuiTextBuffer* DuskGui_getTextBuffer(DuskGuiParamsEntry* entry, int createIfNull)
 {
     if (entry->textBuffer == NULL && createIfNull) {
-        entry->textBuffer = (DuskGuiTextBuffer*)malloc(sizeof(DuskGuiTextBuffer));
-        entry->textBuffer->buffer = strdup(entry->params.text);
+        entry->textBuffer = (DuskGuiTextBuffer*)Dusk_malloc(sizeof(DuskGuiTextBuffer));
+        entry->textBuffer->buffer = Dusk_strdup(entry->params.text);
         entry->textBuffer->capacity = strlen(entry->params.text);
         for (int i = 0; entry->textBuffer->buffer[i]; i++) {
             if (entry->textBuffer->buffer[i] == '#' && entry->textBuffer->buffer[i + 1] == '#') {
@@ -1557,7 +1610,7 @@ void DuskGuiTextBuffer_insert(DuskGuiTextBuffer* buffer, int index, const char* 
     }
     if (txLen + len >= buffer->capacity) {
         buffer->capacity = (txLen + len) * 2;
-        buffer->buffer = (char*)realloc(buffer->buffer, buffer->capacity + 1);
+        buffer->buffer = (char*)Dusk_realloc(buffer->buffer, buffer->capacity + 1);
     }
     for (int i = len; i >= index; i--) {
         buffer->buffer[i + txLen] = buffer->buffer[i];
@@ -1695,7 +1748,7 @@ int DuskGui_textInputField(DuskGuiParams params, char** buffer)
         if (_IsKeyPressedRepeated(KEY_ENTER)) {
             entry->isTriggered = 1;
             if (buffer) {
-                *buffer = strdup(DuskGui_getText(entry));
+                *buffer = Dusk_strdup(DuskGui_getText(entry));
             }
         }
     }
