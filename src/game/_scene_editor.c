@@ -829,6 +829,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.projection = CAMERA_PERSPECTIVE;
 
     Level *level = Game_getLevel();
+    level->isEditor = 1;
     if (level->filename)
     {
         char *lastSlash = strrchr(level->filename, '/');

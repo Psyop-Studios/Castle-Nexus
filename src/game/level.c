@@ -13,6 +13,12 @@ void Level_init(Level *level)
     level->meshes = NULL;
     level->textureCount = 0;
     level->textures = NULL;
+    level->entityCount = 0;
+    level->entities = NULL;
+    level->entityComponentClassCount = 0;
+    level->entityComponentClasses = NULL;
+    level->colliderCount = 0;
+    level->colliders = NULL;
 }
 
 static int Level_getTextureIndexByName(Level *level, const char *name)
@@ -221,6 +227,7 @@ void Level_clearInstances(Level *level)
         free(level->entities[i].name);
         level->entities[i].name = NULL;
     }
+    level->entityCount = 0;
 
     for (int i = 0; i < level->meshCount; i++)
     {
@@ -228,7 +235,149 @@ void Level_clearInstances(Level *level)
         level->meshes[i].instances = NULL;
         level->meshes[i].instanceCount = 0;
     }
+    
+    level->colliderCount = 0;
+}
 
+LevelCollider* Level_addCollider(Level *level, uint8_t type, Vector3 position, int isTrigger)
+{
+    level->colliderCount++;
+    level->colliders = (LevelCollider*)realloc(level->colliders, level->colliderCount * sizeof(LevelCollider));
+    LevelCollider *collider = &level->colliders[level->colliderCount - 1];
+    *collider = (LevelCollider){
+        .type = type,
+        .position = position,
+        .isTrigger = isTrigger,
+        .id = level->colliderCount,
+    };
+    return collider;
+}
+
+void Level_addColliderSphere(Level *level, Vector3 position, float radius, int isTrigger)
+{
+    LevelCollider *collider = Level_addCollider(level, LEVEL_COLLIDER_TYPE_SPHERE, position, isTrigger);
+    collider->sphere.radius = radius;
+}
+
+void Level_addColliderBox(Level *level, Vector3 position, Vector3 size, int isTrigger)
+{
+    LevelCollider *collider = Level_addCollider(level, LEVEL_COLLIDER_TYPE_AABOX, position, isTrigger);
+    collider->aabox.size = size;
+}
+
+Vector3 AABB_closestPoint(Vector3 min, Vector3 max, Vector3 point, Vector3 *normal)
+{
+    Vector3 result = point;
+    int matchedXYZ = 0;
+    if (point.x < min.x)
+    {
+        matchedXYZ |= 1;
+        result.x = min.x;
+    }
+    if (point.y < min.y)
+    {
+        matchedXYZ |= 2;
+        result.y = min.y;
+    }
+    if (point.z < min.z)
+    {
+        matchedXYZ |= 4;
+        result.z = min.z;
+    }
+    if (point.x > max.x)
+    {
+        matchedXYZ |= 1;
+        result.x = max.x;
+    }
+    if (point.y > max.y)
+    {
+        matchedXYZ |= 2;
+        result.y = max.y;
+    }
+    if (point.z > max.z)
+    {
+        matchedXYZ |= 4;
+        result.z = max.z;
+    }
+    if (normal)
+    {
+        *normal = (Vector3){0};
+        int n = 0;
+        if (matchedXYZ & 1)
+        {
+            normal->x = point.x < min.x ? -1 : 1;
+            n++;
+        }
+        if (matchedXYZ & 2)
+        {
+            normal->y = point.y < min.y ? -1 : 1;
+            n++;
+        }
+        if (matchedXYZ & 4)
+        {
+            normal->z = point.z < min.z ? -1 : 1;
+            n++;
+        }
+        if (n > 1)
+        {
+            *normal = Vector3Normalize(*normal);
+        }
+    }
+    return result;
+}
+
+int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t matchNormal, uint8_t matchTrigger,
+    LevelCollisionResult *results, int maxResults)
+{
+    int resultIndex = 0;
+    float r2 = radius * radius;
+    for (int i = 0; i < level->colliderCount && resultIndex < maxResults; i++)
+    {
+        LevelCollider *collider = &level->colliders[i];
+        if ((!matchNormal && collider->isTrigger) || (!matchTrigger && !collider->isTrigger))
+        {
+            continue;
+        }
+
+        if (collider->type == LEVEL_COLLIDER_TYPE_SPHERE)
+        {
+            float dist = Vector3DistanceSqr(position, collider->position);
+            float maxR2 = radius + collider->sphere.radius;
+            maxR2 *= maxR2;
+            if (dist < maxR2)
+            {
+                Vector3 normal = Vector3Normalize(Vector3Subtract(position, collider->position));
+                results[resultIndex] = (LevelCollisionResult){
+                    .colliderId = collider->id,
+                    .depth = collider->sphere.radius - sqrtf(dist),
+                    .normal = normal,
+                    .direction = Vector3Scale(normal, -1),
+                };
+            }
+            continue;
+        }
+
+        if (collider->type == LEVEL_COLLIDER_TYPE_AABOX)
+        {
+            Vector3 min = Vector3Subtract(collider->position, Vector3Scale(collider->aabox.size, 0.5f));
+            Vector3 max = Vector3Add(collider->position, Vector3Scale(collider->aabox.size, 0.5f));
+            Vector3 normal;
+            Vector3 closest = AABB_closestPoint(min, max, position, &normal);
+            float dist = Vector3DistanceSqr(position, closest);
+            if (dist < r2)
+            {
+                Vector3 direction = Vector3Normalize(Vector3Subtract(position, closest));
+                results[resultIndex] = (LevelCollisionResult){
+                    .colliderId = collider->id,
+                    .depth = radius - sqrtf(dist),
+                    .normal = normal,
+                    .direction = Vector3Scale(direction, -1),
+                };
+            }
+            continue;
+        }
+    }
+    return resultIndex;
 }
 
 void Level_updateInstanceTransform(LevelMeshInstance *instance)

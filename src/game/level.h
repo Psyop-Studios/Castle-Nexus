@@ -98,6 +98,27 @@ typedef struct LevelEntity
     Matrix toWorldTransform;
 } LevelEntity;
 
+#define LEVEL_COLLIDER_TYPE_SPHERE 0
+#define LEVEL_COLLIDER_TYPE_AABOX 1
+
+typedef struct LevelCollider LevelCollider;
+typedef struct LevelCollider {
+    uint8_t type;
+    uint8_t isTrigger;
+    uint16_t id;
+    Vector3 position;
+    union
+    {
+        struct
+        {
+            float radius;
+        } sphere;
+        struct
+        {
+            Vector3 size;
+        } aabox;
+    };
+} LevelCollider;
 
 typedef struct Level {
     char *filename;
@@ -111,14 +132,20 @@ typedef struct Level {
     LevelEntityComponentClass *entityComponentClasses;
     int entityComponentClassCount;
 
+    LevelCollider *colliders;
+    int colliderCount;
+
     float gameTime;
     float renderTime;
     uint8_t isEditor;
 } Level;
 
+
 typedef struct LevelCollisionResult {
     Vector3 direction;
+    Vector3 normal;
     float depth;
+    int colliderId;
 } LevelCollisionResult;
 
 void Level_init(Level *level);
@@ -134,6 +161,9 @@ void Level_updateInstanceTransform(LevelMeshInstance *instance);
 Texture2D Level_getTexture(Level *level, const char *filename, Texture2D fallback);
 LevelTexture* Level_getLevelTexture(Level *level, const char *filename);
 LevelMesh *Level_getMesh(Level *level, const char *filename);
+
+void Level_addColliderSphere(Level *level, Vector3 position, float radius, int isTrigger);
+void Level_addColliderBox(Level *level, Vector3 position, Vector3 size, int isTrigger);
 
 // registering a new entity component class. Use a unique componentId for each component, starting with 0.
 // minimum data size is 1 byte.
