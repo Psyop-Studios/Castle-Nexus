@@ -13,6 +13,7 @@ SceneConfig* Scene_getConfig(uint32_t sceneId)
         &_scene_editor,
         &_scene_start,
         &_scene_intro_scene,
+        &_scene_island, 
     };
 
     for (int i = 0; i < sizeof(_scenes) / sizeof(SceneConfig*); i++)
