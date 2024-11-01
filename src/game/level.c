@@ -649,18 +649,34 @@ void Level_update(Level *level, float dt)
 
 }
 
+
+
+
 float Level_calcPenetrationDepth(Level *level, Vector3 point, float radius)
 {
     float maxDepth = 0.0f;
     for (int i = 0; i < level->meshCount; i++)
     {
         LevelMesh *mesh = &level->meshes[i];
+
+
         for (int j = 0; j < mesh->instanceCount; j++)
         {
             LevelMeshInstance *instance = &mesh->instances[j];
             Vector3 localPoint = Vector3Transform(point, MatrixInvert(instance->toWorldTransform));
 
+        
+            float distanceToMesh = Vector3Length(localPoint);
+
+            if (distanceToMesh < radius){
+                float depth = radius - distanceToMesh;
+
+                //haikuno
+
+            }
+            
         }
+
     }
     return maxDepth;
 }
