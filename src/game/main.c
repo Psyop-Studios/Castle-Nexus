@@ -19,6 +19,7 @@ static Shader _colorReduceShader;
 static RenderTexture2D _target = {0};
 static RenderTexture2D _finalTarget = {0};
 static Level _level = {0};
+static Texture2D _fogTex = {0};
 
 Shader _modelDitherShader;
 Shader _modelTexturedShader;
@@ -86,7 +87,6 @@ void Game_init(void** contextData)
     
     _colorReduceShader = LoadShader(0, "resources/colorreduce.fs");
 
-
     _fntMedium = LoadFont("resources/fnt_medium.png");
     _fntMono = LoadFont("resources/fnt_mymono.png");
 
@@ -98,7 +98,16 @@ void Game_init(void** contextData)
     
     Level_loadAssets(&_level, "resources/level_assets");
 
+    _fogTex = Level_getTexture(&_level, "db8-dither.png", (Texture2D){0});
     DuskGui_setDefaultFont(_fntMedium, _fntMedium.baseSize, -1);
+}
+
+void Game_setFogTextures(Material *mtl)
+{
+    // printf("Fog texture: %s %d %d\n", fogTex->filename, fogTex->texture.width, fogTex->texture.height);
+    // for (int i = 0; i < 4; i++) rlActiveTextureSlot(i);
+    mtl->maps[MATERIAL_MAP_METALNESS].texture = _fogTex;
+    mtl->maps[MATERIAL_MAP_METALNESS].color = WHITE;
 }
 
 Level *Game_getLevel()

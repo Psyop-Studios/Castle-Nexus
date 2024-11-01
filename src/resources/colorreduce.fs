@@ -16,6 +16,13 @@ bool mapGreenToRedBlue(float green, float match, vec2 rg, float delta, out vec3 
 
 void main() {
     vec4 texelColor = texture2D(texture0, fragTexCoord.xy);
+
+    // if (true)
+    // {
+    //     gl_FragColor = vec4(texelColor.rgb,1.0);
+    //     return;
+    // }
+
     vec3 color = vec3(0.0);
     float green = texelColor.g * 255.0;
     vec3 result;

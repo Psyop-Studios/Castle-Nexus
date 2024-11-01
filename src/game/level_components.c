@@ -135,6 +135,7 @@ void MeshRendererComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, v
         mesh->textureIndex >= 0 ? level->textures[mesh->textureIndex].texture : (Texture2D) {0};
     material.maps = maps;
     Matrix m = MatrixMultiply(component->transform, instance->toWorldTransform);
+    Game_setFogTextures(&material);
     DrawMesh(mesh->model.meshes[0], material, m);
 }
 
@@ -375,6 +376,7 @@ void SpriteRendererComponent_onDraw(Level *level, LevelEntityInstanceId ownerId,
     srcRect.width /= texture->texture.width;
     srcRect.height /= texture->texture.height;
     SetShaderValue(shader, uvTextureFrameLoc, (float[4]){srcRect.x, srcRect.y, srcRect.width, srcRect.height}, SHADER_UNIFORM_VEC4);
+    Game_setFogTextures(&material);
     DrawMesh(mesh->model.meshes[0], material, m);
     SetShaderValue(shader, uvTextureFrameLoc, (float[4]){0, 0, 0, 0}, SHADER_UNIFORM_VEC4);
 }

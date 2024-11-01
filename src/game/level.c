@@ -266,6 +266,7 @@ LevelTexture* Level_getLevelTexture(Level *level, const char *filename)
             return &level->textures[i];
         }
     }
+    TraceLog(LOG_WARNING, "Texture not found: %s", filename);
     return NULL;
 }
 
@@ -712,6 +713,7 @@ void Level_draw(Level *level)
             Vector2 texSize = {material.maps[MATERIAL_MAP_ALBEDO].texture.width, material.maps[MATERIAL_MAP_ALBEDO].texture.height};
             SetShaderValue(material.shader, locTexSize, &texSize, SHADER_UNIFORM_VEC2);
             SetShaderValue(material.shader, locUvDitherBlockPosScale, (float[1]){texSize.x / 8.0f}, SHADER_UNIFORM_FLOAT);
+            Game_setFogTextures(&material);
             DrawMesh(mesh->model.meshes[0], material, instance->toWorldTransform);
         }
     }

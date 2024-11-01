@@ -17,14 +17,14 @@
 #define DB8_BLACK (Color){0, 0, 0, 255}
 
 // the dithering shader uses the green value of the DB8 colors in alpha to translate it to a color value
-#define DB8_BG_WHITE (Color){0, 0, 0, 245}
-#define DB8_BG_DEEPPURPLE (Color){0, 0, 0, 65}
-#define DB8_BG_GREY (Color){0, 0, 0, 105}
-#define DB8_BG_RED (Color){0, 0, 0, 115}
-#define DB8_BG_BLUE (Color){0, 0, 0, 140}
-#define DB8_BG_GREEN (Color){0, 0, 0, 185}
-#define DB8_BG_YELLOW (Color){0, 0, 0, 200}
-#define DB8_BG_BLACK (Color){0, 0, 0, 0}
+#define DB8_BG_WHITE (Color){255, 0, 255, 245}
+#define DB8_BG_DEEPPURPLE (Color){255, 0, 255, 65}
+#define DB8_BG_GREY (Color){255, 0, 255, 105}
+#define DB8_BG_RED (Color){255, 0, 255, 115}
+#define DB8_BG_BLUE (Color){255, 0, 255, 140}
+#define DB8_BG_GREEN (Color){255, 0, 255, 185}
+#define DB8_BG_YELLOW (Color){255, 0, 255, 200}
+#define DB8_BG_BLACK (Color){255, 0, 255, 0}
 
 typedef struct Script Script;
 typedef struct ScriptAction ScriptAction;
@@ -71,5 +71,6 @@ extern Shader _modelDitherShader;
 extern Shader _modelTexturedShader;
 extern Camera _currentCamera;
 Level *Game_getLevel();
+void Game_setFogTextures(Material *mtl);
 
 #endif

@@ -17,6 +17,7 @@ varying vec3 fragPosition;
 varying vec3 fragNormal;
 
 uniform sampler2D texture0;
+uniform sampler2D texture1;
 uniform vec4 colDiffuse;
 uniform float time;
 uniform float drawInnerOutlines;
@@ -37,6 +38,20 @@ vec2 encode16bit(float x) {
 }
 
 void main() {
+    vec2 fogPoint = vec2(174.0/512.0, 200.0/512.0);
+    float dist = length(fragPosition.xyz);
+    float fogDist = max(0.0, pow(dist,0.4) - 1.5);
+    float fogLevel = min(1.0,fogDist * 0.125);
+    fogLevel = floor(fogLevel *64.0)/64.0;
+    // gl_FragColor = vec4(fogLevel,0.0,0.0,1.0);
+    // return;
+
+    vec2 screenPos = gl_FragCoord.xy;
+    vec2 uv = screenPos / texSize;
+    vec2 fogBlockPos = mod(screenPos, 8.0) / 512.0;
+    vec4 fogColor = texture2D(texture1,max(vec2(0,0), fogBlockPos + fogPoint - vec2(fogLevel, 0.0)));
+    const float fogOutlineCutoff = 0.4;
+
     if (drawInnerOutlines == 0.0)
     {
         vec2 fragUv = fragTexCoord;
@@ -51,22 +66,27 @@ void main() {
             discard;
         }
 
-        gl_FragColor = vec4(0.0,0.0,0.0, color.g * fragColor.g);
+
+        gl_FragColor = vec4(0.0,0.0,0.0, color.g);
         float z = -fragPosition.z * 32.0;
         gl_FragColor.rb = encode16bit(z);
+        if (fogColor.a > 0.5)
+        {
+            if (fogLevel > fogPoint.x * fogOutlineCutoff)
+                gl_FragColor.g = 1.0;
+            gl_FragColor.a = fogColor.g;
+        }
 
         // gl_FragColor = fragColor;
 
         return;
     }
-    vec2 screenPos = gl_FragCoord.xy;
     vec2 fragUv = fragTexCoord;
     if (uvOverride.x > 0.0 || uvOverride.y > 0.0)
     {
         fragUv = uvOverride;
     }
     vec2 blockPos = floor(fract(fragUv) * uvDitherBlockPosScale) / uvDitherBlockPosScale;
-    vec2 uv = screenPos / texSize;
     if (fragUv.x > 1.0)
     {
         uv.y += fract(time * -1.0) / uvDitherBlockPosScale;
@@ -86,4 +106,11 @@ void main() {
     gl_FragColor.rb = encode16bit(z);
     // use green channel value to reconstruct red / blue via lookup
     gl_FragColor.a = color.g;
+    if (fogColor.a > 0.5)
+    {
+        if (fogLevel > fogPoint.x * fogOutlineCutoff)
+                gl_FragColor.g = 1.0;
+        gl_FragColor.a = fogColor.g;
+        // gl_FragColor.g = 1.0;
+    }
 }

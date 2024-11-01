@@ -325,7 +325,7 @@ static void SceneDrawUi_meshInspector(GameContext *gameCtx, SceneConfig *SceneCo
                 });
                 float y = 5;
                 DuskGui_horizontalLine((DuskGuiParams) {
-                    .text = mesh->filename,
+                    .text = strrchr(mesh->filename, '/') + 1,
                     .bounds = (Rectangle) { 10, y, 180, 12 },
                 });
 
@@ -779,12 +779,26 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
 
     if (IsKeyReleased(KEY_UP))
     {
-        _worldCursor = Vector3Add(_worldCursor, forward);
+        if (IsKeyDown(KEY_LEFT_SHIFT))
+        {
+            _worldCursor = Vector3Add(_worldCursor, (Vector3){0, 1, 0});
+        }
+        else
+        {
+            _worldCursor = Vector3Add(_worldCursor, forward);
+        }
     }
 
     if (IsKeyReleased(KEY_DOWN))
     {
-        _worldCursor = Vector3Subtract(_worldCursor, forward);
+        if (IsKeyDown(KEY_LEFT_SHIFT))
+        {
+            _worldCursor = Vector3Subtract(_worldCursor, (Vector3){0, 1, 0});
+        }
+        else
+        {
+            _worldCursor = Vector3Subtract(_worldCursor, forward);
+        }
     }
 
     if (IsKeyReleased(KEY_LEFT))

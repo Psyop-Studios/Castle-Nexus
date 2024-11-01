@@ -1,5 +1,17 @@
 {
 	"meshes":	[{
+			"filename":	"resources/level_assets/castle1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
 			"filename":	"resources/level_assets/ceiling-large-blocks-a.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],
@@ -49,6 +61,18 @@
 			"instancesTexId":	[-1, -1]
 		}, {
 			"filename":	"resources/level_assets/decoration-bookshelf.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-bottle-1.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],
 			"instancesPZ":	[],
@@ -204,7 +228,31 @@
 			"instancesSZ":	[1, 1, 1, 1, 1, 1, 1, 1, 1],
 			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1, -1]
 		}, {
+			"filename":	"resources/level_assets/ground-water.glb",
+			"instancesPX":	[0],
+			"instancesPY":	[-2],
+			"instancesPZ":	[0],
+			"instancesRX":	[0],
+			"instancesRY":	[0],
+			"instancesRZ":	[0],
+			"instancesSX":	[50],
+			"instancesSY":	[50],
+			"instancesSZ":	[50],
+			"instancesTexId":	[-1]
+		}, {
 			"filename":	"resources/level_assets/guy-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/outside-castle-1.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],
 			"instancesPZ":	[],
@@ -229,6 +277,18 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/outside-tree-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/outside-water-1.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],
 			"instancesPZ":	[],
