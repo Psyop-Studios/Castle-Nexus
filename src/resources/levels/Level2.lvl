@@ -528,9 +528,9 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}],
-	"entityNames":	["Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", null, null, null],
-	"entityTRS":	[10, 3.9999997615814209, -2, 0, 0, 0, 1, 1, 1, 8, 0, 2, 0, 0, 0, 1, 1, 1, 8, 0, 6, 0, 0, 0, 1, 1, 1.4617187976837158, -4, -4.76837158203125e-07, 7, 0, 180, 0, 1, 1, 1, -5, 4, 8, 0, -90, 0, 1, 1, 1, 5, 1.1920928955078125e-07, 13, 0, -90, 0, 1, 1, 1, -1, 1.1920928955078125e-07, 13, 0, -90, 0, 1, 1, 1, 6, -2.384185791015625e-07, 0, 0, 90, 0, 1, 1, 1, 7, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, 2, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, -3, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, -6, 3.9999997615814209, -2, 0, 180, 0, 1, 1, 1, 9, 4, 7, 0, -90, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0],
+	"entityNames":	["Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Candle", "Painting-Castle-1", "Painting-Tree-1", null],
+	"entityTRS":	[10, 3.9999997615814209, -2, 0, 0, 0, 1, 1, 1, 8, 0, 2, 0, 0, 0, 1, 1, 1, 8, 0, 6, 0, 0, 0, 1, 1, 1.4617187976837158, -4, -4.76837158203125e-07, 7, 0, 180, 0, 1, 1, 1, -5, 4, 8, 0, -90, 0, 1, 1, 1, 5, 1.1920928955078125e-07, 13, 0, -90, 0, 1, 1, 1, -1, 1.1920928955078125e-07, 13, 0, -90, 0, 1, 1, 1, 6, -2.384185791015625e-07, 0, 0, 90, 0, 1, 1, 1, 7, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, 2, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, -3, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, -6, 3.9999997615814209, -2, 0, 180, 0, 1, 1, 1, 9, 4, 7, 0, -90, 0, 1, 1, 1, 5, 4.0000009536743164, 2, 0, 180, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -1, 3.5866208076477051, 2, 0, -180, 0, 1.0750001668930054, 1.3328126668930054, 0.60937517881393433, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0],
 	"components":	[{
 			"name":	"CameraFacing",
 			"componentId":	0,
@@ -544,7 +544,7 @@
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/decoration-candle-holder.glb",
 					"isDithered":	0,
@@ -597,11 +597,19 @@
 					"mesh":	"resources/level_assets/decoration-candle-holder.glb",
 					"isDithered":	0,
 					"trs":	[0.977246105670929, -1.1730469465255737, 0, 0, 180, 0, 1, 1, 1]
-				}, null, null, null, null, null, null, null, null, null, null, null]
+				}, {
+					"mesh":	"resources/level_assets/decoration-picture-frame-1.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, -1, 0, 0, 0, 1, 1, 1]
+				}, {
+					"mesh":	"resources/level_assets/decoration-picture-frame-1.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, -1, 0, 0, 0, 1, 1, 1]
+				}, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"texture":	"resources/level_assets/anim_flame.png",
 					"sprite":	"resources/level_assets/anim_flame.png",
@@ -667,6 +675,14 @@
 					"sprite":	"resources/level_assets/anim_flame.png",
 					"animation":	"red_flame",
 					"trs":	[-0.23046873509883881, 2.62939453125, -0.020605482161045074, 0, 89.9609375, 0, 0.36308583617210388, 0.36308583617210388, 0.36308583617210388]
-				}, null, null, null, null, null, null, null, null, null, null, null]
+				}, {
+					"texture":	"resources/level_assets/portraitCastle.png",
+					"sprite":	"resources/level_assets/portraitCastle.png",
+					"trs":	[0, 2.1024410724639893, 0.11816415190696716, 0, 0, 0, 0.82763653993606567, 0.82763653993606567, 0.82763653993606567]
+				}, {
+					"texture":	"resources/level_assets/portraitTrees.png",
+					"sprite":	"resources/level_assets/portraitTrees.png",
+					"trs":	[0, 2.1024410724639893, 0.11816415190696716, 0, 0, 0, 0.98076164722442627, 0.85654282569885254, 0.82763653993606567]
+				}, null, null, null, null, null, null, null, null, null]
 		}]
 }
