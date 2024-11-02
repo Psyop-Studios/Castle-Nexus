@@ -10,7 +10,9 @@
 //          If UV.x is > 1.0, we add 1.0 to UV.y to indicate that the pixel belongs to FX (transparent)
 // - Blue: Z value from the vertex position, used to prioritize the outline.
 // - Alpha: Not used atm.
-// precision highp float;                // Precision required for OpenGL ES2 (WebGL)
+#ifdef GL_ES
+precision highp float;                // Precision required for OpenGL ES2 (WebGL)
+#endif
 varying vec2 fragTexCoord;
 varying vec4 fragColor;
 varying vec3 fragPosition;

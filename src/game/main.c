@@ -60,7 +60,7 @@ void Game_init(void** contextData)
 
         _contextData = (GameContext*) *contextData;
         _contextData->currentSceneId = SCENE_ID_INVALID;
-        _contextData->nextSceneId = SCENE_ID_START;
+        _contextData->nextSceneId = SCENE_ID_START_INTRO;
     }
     else
     {
@@ -313,7 +313,7 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
         }
 
     }
-    
+
     Vector3 rotatedForward = Vector3Transform((Vector3){0,0,1.0f}, MatrixRotateZYX(camera->rotation));
     camera->camera.target = Vector3Add(camera->camera.position, rotatedForward);
 

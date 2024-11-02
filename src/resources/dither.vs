@@ -1,6 +1,6 @@
-
-
-//precision highp float;                // Precision required for OpenGL ES2 (WebGL) (on some browsers)
+#ifdef GL_ES
+precision highp float;                // Precision required for OpenGL ES2 (WebGL) (on some browsers)
+#endif
 attribute vec3 vertexPosition;
 attribute vec3 vertexNormal;
 attribute vec2 vertexTexCoord;

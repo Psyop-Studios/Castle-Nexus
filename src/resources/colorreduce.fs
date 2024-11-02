@@ -1,4 +1,6 @@
-//precision highp float;                // Precision required for OpenGL ES2 (WebGL)
+#ifdef GL_ES
+precision highp float;                // Precision required for OpenGL ES2 (WebGL)
+#endif
 varying vec2 fragTexCoord;
 uniform sampler2D texture0;
 

@@ -7,7 +7,9 @@
 // - if the uv.y value is greater than 1.0, no edge detection is run, IF the current pixel is behind it.
 //   This is done to have no outline behind FX objects but still having the outline when in front.
 // The texture is 32bit float, which allows us to store the color in a single float.
-//precision highp float;                // Precision required for OpenGL ES2 (WebGL)
+#ifdef GL_ES
+precision highp float;                // Precision required for OpenGL ES2 (WebGL)
+#endif
 varying vec2 fragTexCoord;
 varying vec4 fragColor;
 uniform sampler2D texture0;
