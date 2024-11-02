@@ -442,7 +442,7 @@
 			"instancesSX":	[1, 1, 1],
 			"instancesSY":	[1, 1, 1],
 			"instancesSZ":	[1, 1, 1],
-			"instancesTexId":	[5, -1, -1]
+			"instancesTexId":	[12, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/wall-half-b.glb",
 			"instancesPX":	[-2, 0, 4],
