@@ -260,3 +260,104 @@ void Game_update()
         }
     }
 }
+
+// handles collision detection and movement for a first person camera
+void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement, float dt)
+{
+    if (allowCameraMovement)
+    {
+        Vector3 move = {0};
+        if (IsKeyDown(KEY_W))
+        {
+            move.z = 1;
+        }
+        if (IsKeyDown(KEY_S))
+        {
+            move.z = -1;
+        }
+        if (IsKeyDown(KEY_A))
+        {
+            move.x = -1;
+        }
+        if (IsKeyDown(KEY_D))
+        {
+            move.x = 1;
+        }
+
+        Vector3 forwardXZ = Vector3Normalize((Vector3){camera->camera.target.x - camera->camera.position.x, 0, camera->camera.target.z - camera->camera.position.z});
+        Vector3 right = Vector3CrossProduct(forwardXZ, (Vector3){0, 1, 0});
+        if (Vector3Length(move) > 0.0f)
+        {
+            move = Vector3Normalize(move);
+            move = Vector3Add(Vector3Scale(right, move.x), Vector3Scale(forwardXZ, move.z));
+
+            camera->velocity = Vector3Add(camera->velocity, Vector3Scale(move, camera->acceleration * dt));
+        }
+
+        Vector2 mouseDelta = GetMouseDelta();
+        // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
+        camera->rotation.y -= mouseDelta.x * 0.002f;
+        camera->rotation.x += mouseDelta.y * 0.002f;
+        if (camera->rotation.x > PI / 2 * .9f)
+        {
+            camera->rotation.x = PI / 2 * .9f;
+        }
+        if (camera->rotation.x < -PI / 2 * .9f)
+        {
+            camera->rotation.x = -PI / 2 * .9f;
+        }
+        Vector3 rotatedForward = Vector3Transform((Vector3){0,0,1.0f}, MatrixRotateZYX(camera->rotation));
+        camera->camera.target = Vector3Add(camera->camera.position, rotatedForward);
+    }
+
+    Vector3 moveDelta = Vector3Scale(camera->velocity, dt);
+    camera->camera.position = Vector3Add(camera->camera.position, moveDelta);
+    camera->camera.target = Vector3Add(camera->camera.target, moveDelta);
+    float decay = 1.0f - camera->velocityDecayRate * dt;
+    camera->velocity.x *= decay;
+    camera->velocity.z *= decay;
+
+    LevelCollisionResult results[4] = {0};
+    int resultCount = Level_findCollisions(level, 
+        Vector3Add(camera->camera.position, (Vector3){0,-1.25f,0}), 0.5f, 1, 0, results, 4);
+    
+    // gravity
+    camera->velocity = Vector3Add(camera->velocity, (Vector3) {0, -24.0f * dt, 0});
+    
+    Vector3 totalShift = {0};
+    for (int i = 0; i < resultCount; i++)
+    {
+        Vector3 normal = results[i].normal;
+
+        if (normal.y > 0.25f)
+        {
+            // lets assume upward facing normals are flat floors to avoid glitches
+            normal = (Vector3){0,1.0f,0};
+        }
+        Vector3 shift = Vector3Scale(normal, results[i].depth);
+        if (fabsf(shift.y) > fabsf(totalShift.y))
+        {
+            totalShift.y = shift.y;
+        }
+        if (fabsf(shift.x) > fabsf(totalShift.x))
+        {
+            totalShift.x = shift.x;
+        }
+        if (fabsf(shift.z) > fabsf(totalShift.z))
+        {
+            totalShift.z = shift.z;
+        }
+        // cancel velocity in direction of normal
+        // printf("velocity: %f %f %f -> ", camera->velocity.x, camera->velocity.y, camera->velocity.z);
+        if (normal.y > 0.25f)
+        {
+            camera->velocity.y = 0;
+        }
+        // camera->velocity = Vector3Subtract(camera->velocity, Vector3Scale(normal, Vector3DotProduct(camera->velocity, results[i].normal)));
+        // printf(" %f %f %f\n", camera->velocity.x, camera->velocity.y, camera->velocity.z);
+    }
+
+    camera->camera.position = Vector3Add(camera->camera.position, totalShift);
+    camera->camera.target = Vector3Add(camera->camera.target, totalShift);
+        
+}

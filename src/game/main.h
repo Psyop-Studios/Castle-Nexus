@@ -64,6 +64,15 @@ typedef struct GameContext {
     int currentScriptActionId;
 } GameContext;
 
+
+typedef struct FPSCameraZ {
+    Camera camera;
+    Vector3 rotation;
+    Vector3 velocity;
+    float velocityDecayRate;
+    float acceleration;
+} FPSCameraZ;
+
 extern Script _script;
 extern Font _fntMono;
 extern Font _fntMedium;
@@ -72,5 +81,6 @@ extern Shader _modelTexturedShader;
 extern Camera _currentCamera;
 Level *Game_getLevel();
 void Game_setFogTextures(Material *mtl);
+void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement, float dt);
 
 #endif

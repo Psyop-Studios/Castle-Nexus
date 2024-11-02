@@ -264,6 +264,30 @@
 			"instancesSZ":	[1.2749999761581421, 1.3499997854232788, 1, 1.4999996423721313, 1.5249996185302734, 1, 1, 1, 1.3749997615814209],
 			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1, -1]
 		}, {
+			"filename":	"resources/level_assets/ground-half-blocks-a.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/ground-half-blocks-b.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
 			"filename":	"resources/level_assets/ground-large-blocks-a.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],
@@ -313,16 +337,16 @@
 			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/ground-small-stairs-1.glb",
-			"instancesPX":	[],
-			"instancesPY":	[],
-			"instancesPZ":	[],
-			"instancesRX":	[],
-			"instancesRY":	[],
-			"instancesRZ":	[],
-			"instancesSX":	[],
-			"instancesSY":	[],
-			"instancesSZ":	[],
-			"instancesTexId":	[]
+			"instancesPX":	[6],
+			"instancesPY":	[0],
+			"instancesPZ":	[7],
+			"instancesRX":	[0],
+			"instancesRY":	[0],
+			"instancesRZ":	[0],
+			"instancesSX":	[1],
+			"instancesSY":	[1],
+			"instancesSZ":	[1],
+			"instancesTexId":	[-1]
 		}, {
 			"filename":	"resources/level_assets/ground-stone-blocks-2.glb",
 			"instancesPX":	[0, 0, -2, -2, -2, 0, 2, 2, 2, 2, 0, -2, -2, 0, 2, 4, 6, 8, 10, 12, 14, 14, 14, 14, 16, 16, 16, 16, -4, 6, 4, 8, 10, 12, 14, 16],
@@ -443,6 +467,30 @@
 			"instancesSY":	[1, 1.1000000238418579, 1],
 			"instancesSZ":	[1, 1, 1],
 			"instancesTexId":	[-1, -1, -1]
+		}, {
+			"filename":	"resources/level_assets/wall-half-a.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/wall-half-b.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/wall-large-blocks-1000a.glb",
 			"instancesPX":	[7, 5, 1, 15, 17, 15, 1, 1, 13, 9],

@@ -6,16 +6,9 @@
 #include <raymath.h>
 #include <stdio.h>
 
-typedef struct FPSCamera {
-    Camera camera;
-    Vector3 rotation;
-    Vector3 velocity;
-    float velocityDecayRate;
-    float acceleration;
-} FPSCamera;
 
-static FPSCamera _camera;
-static int _allowCameraMovement = 0;
+static FPSCameraZ _camera;
+static int _allowCameraMovement = 1;
 
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
@@ -34,109 +27,15 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
     // }
 }
 
+
+
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
 {
     dt = fminf(dt, 0.1f);
     Level *level = Game_getLevel();
     level->isEditor = 0;
     
-    if (_allowCameraMovement)
-    {
-        Vector3 move = {0};
-        if (IsKeyDown(KEY_W))
-        {
-            move.z = 1;
-        }
-        if (IsKeyDown(KEY_S))
-        {
-            move.z = -1;
-        }
-        if (IsKeyDown(KEY_A))
-        {
-            move.x = -1;
-        }
-        if (IsKeyDown(KEY_D))
-        {
-            move.x = 1;
-        }
-
-        Vector3 forwardXZ = Vector3Normalize((Vector3){_camera.camera.target.x - _camera.camera.position.x, 0, _camera.camera.target.z - _camera.camera.position.z});
-        Vector3 right = Vector3CrossProduct(forwardXZ, (Vector3){0, 1, 0});
-        if (Vector3Length(move) > 0.0f)
-        {
-            move = Vector3Normalize(move);
-            move = Vector3Add(Vector3Scale(right, move.x), Vector3Scale(forwardXZ, move.z));
-
-            _camera.velocity = Vector3Add(_camera.velocity, Vector3Scale(move, _camera.acceleration * dt));
-        }
-
-        Vector2 mouseDelta = GetMouseDelta();
-        // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
-        _camera.rotation.y -= mouseDelta.x * 0.002f;
-        _camera.rotation.x += mouseDelta.y * 0.002f;
-        if (_camera.rotation.x > PI / 2 * .9f)
-        {
-            _camera.rotation.x = PI / 2 * .9f;
-        }
-        if (_camera.rotation.x < -PI / 2 * .9f)
-        {
-            _camera.rotation.x = -PI / 2 * .9f;
-        }
-        Vector3 rotatedForward = Vector3Transform((Vector3){0,0,1.0f}, MatrixRotateZYX(_camera.rotation));
-        _camera.camera.target = Vector3Add(_camera.camera.position, rotatedForward);
-    }
-
-    Vector3 moveDelta = Vector3Scale(_camera.velocity, dt);
-    _camera.camera.position = Vector3Add(_camera.camera.position, moveDelta);
-    _camera.camera.target = Vector3Add(_camera.camera.target, moveDelta);
-    float decay = 1.0f - _camera.velocityDecayRate * dt;
-    _camera.velocity.x *= decay;
-    _camera.velocity.z *= decay;
-
-    LevelCollisionResult results[4] = {0};
-    int resultCount = Level_findCollisions(level, 
-        Vector3Add(_camera.camera.position, (Vector3){0,-1.25f,0}), 0.5f, 1, 0, results, 4);
-    
-    // gravity
-    _camera.velocity = Vector3Add(_camera.velocity, (Vector3) {0, -24.0f * dt, 0});
-    
-    Vector3 totalShift = {0};
-    for (int i = 0; i < resultCount; i++)
-    {
-        Vector3 normal = results[i].normal;
-
-        if (normal.y > 0.25f)
-        {
-            // lets assume upward facing normals are flat floors to avoid glitches
-            normal = (Vector3){0,1.0f,0};
-        }
-        Vector3 shift = Vector3Scale(normal, results[i].depth);
-        if (fabsf(shift.y) > fabsf(totalShift.y))
-        {
-            totalShift.y = shift.y;
-        }
-        if (fabsf(shift.x) > fabsf(totalShift.x))
-        {
-            totalShift.x = shift.x;
-        }
-        if (fabsf(shift.z) > fabsf(totalShift.z))
-        {
-            totalShift.z = shift.z;
-        }
-        // cancel velocity in direction of normal
-        // printf("velocity: %f %f %f -> ", _camera.velocity.x, _camera.velocity.y, _camera.velocity.z);
-        if (normal.y > 0.25f)
-        {
-            _camera.velocity.y = 0;
-        }
-        // _camera.velocity = Vector3Subtract(_camera.velocity, Vector3Scale(normal, Vector3DotProduct(_camera.velocity, results[i].normal)));
-        // printf(" %f %f %f\n", _camera.velocity.x, _camera.velocity.y, _camera.velocity.z);
-    }
-
-    _camera.camera.position = Vector3Add(_camera.camera.position, totalShift);
-    _camera.camera.target = Vector3Add(_camera.camera.target, totalShift);
-        
-
+    FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
 
     Level_update(level, dt);
 }
