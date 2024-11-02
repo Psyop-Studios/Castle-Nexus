@@ -136,8 +136,8 @@ void WobblerComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *
     {
         return;
     }
-    float t = component->useGameTime ? level->gameTime : level->renderTime;
-    float arg = 0;
+    double t = component->useGameTime ? level->gameTime : level->renderTime;
+    double arg = 0;
     Vector3 position = (Vector3){0};
     Vector3 rotation = (Vector3){0};
     Vector3 scale = (Vector3){1.0f,1.0f,1.0f};
@@ -156,12 +156,14 @@ void WobblerComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *
         arg = position.z;
         break;
     }
-    float amplitude = component->amplitude;
+    double amplitude = component->amplitude;
     // if (component->type == WOBBLE_TYPE_ROTATION_X || component->type == WOBBLE_TYPE_ROTATION_Y || component->type == WOBBLE_TYPE_ROTATION_Z)
     // {
     //     amplitude = RAD2DEG * amplitude;
     // }
-    float wobble = amplitude * sinf(component->frequency * arg + component->phase);
+    double sinfreq = component->frequency * arg + component->phase;
+    sinfreq = fmod(sinfreq, 2.0 * PI);
+    float wobble = amplitude * sin(sinfreq);
     switch (component->type)
     {
     case WOBBLE_TYPE_POSITION_X:

@@ -139,8 +139,8 @@ typedef struct Level {
     LevelCollider *colliders;
     int colliderCount;
 
-    float gameTime;
-    float renderTime;
+    double gameTime;
+    double renderTime;
     uint8_t isEditor;
 
     const char *previousTriggerIds[16];
