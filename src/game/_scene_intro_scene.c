@@ -113,6 +113,11 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "It was a [color=red_]dark and stormy night[/color] ...", (Rectangle){10, 10, 200, 100})});
     Script_addAction((ScriptAction){
         .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "It was a [color=red_]dark and stormy night[/color] ...", (Rectangle){10, 10, 200, 100})});
+        
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
         .action = ScriptAction_setCameraMovementEnabled,
         .actionInt = 1});
     Script_addAction((ScriptAction){
