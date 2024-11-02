@@ -1,0 +1,11 @@
+{
+    "texture": "db8-dither.png",
+    "dithered": true,
+    "colliders": [
+        {
+            "type": "aabox",
+            "position": [0,0,0],
+            "size": [2,0.05,2]
+        }
+    ]
+}
