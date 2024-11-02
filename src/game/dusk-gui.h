@@ -153,9 +153,12 @@ typedef struct DuskGuiActiveMenuStats
 } DuskGuiActiveMenuStats;
 
 typedef struct DuskGuiDeferredCall{
-    void (*fn)(void*);
+    void* (*fn)(void*);
     void *data;
+    void *result;
+    char *id;
 } DuskGuiDeferredCall;
+
 
 typedef struct DuskGuiState {
     DuskGuiParamsList currentParams;
@@ -175,6 +178,8 @@ typedef struct DuskGuiState {
 
     DuskGuiParamsEntry *lastEntry;
 
+    DuskGuiDeferredCall *previousDeferredCalls;
+    int previousDeferredCallCount;
     DuskGuiDeferredCall *deferredCalls;
     int deferredCallCount;
 } DuskGuiState;
@@ -203,8 +208,13 @@ typedef struct DuskGuiStyleSheet {
 } DuskGuiStyleSheet;
 
 void DuskGui_init();
-// deferred calls are executed first during finalization.
-void DuskGui_addDeferredCall(void (*fn)(void*), void* data);
+// deferred calls are executed first during finalization. 
+// There is a backchannel communication: if an id is passed and the call is deferred again,
+// the result of the callback is stored in the entry with the given id and returned as a result
+// by this function call. This is useful when the result of a deferred operation is important to 
+// the caller, even if it's one frame delayed. The result is only stored for one frame.
+void* DuskGui_addDeferredCall(void* (*fn)(void*), const char *id, void* data);
+void* DuskGui_getDeferredCallResult(const char *id);
 // finalizes the frame operation; draws menus as a last step
 void DuskGui_finalize();
 
@@ -224,6 +234,8 @@ int DuskGui_closeMenu(const char *menuName);
 // presents a button that opens a menu with items as menuitems. Items is a null-terminated array of strings.
 // returns the index of the selected item
 int DuskGui_comboMenu(DuskGuiParams params, const char* items[], int selectedItem);
+// when a right click is detected, this function can be used to present a context menu
+int DuskGui_contextMenuItemsPopup(DuskGuiParams params, int open, const char* items[], int *selectedItem);
 void DuskGui_closeAllMenus();
 
 // layouting helpers

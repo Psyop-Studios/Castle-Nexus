@@ -206,7 +206,7 @@ void WobblerComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *
     instance->toWorldTransform.m12 -= component->pivot.x;
     instance->toWorldTransform.m13 -= component->pivot.y;
     instance->toWorldTransform.m14 -= component->pivot.z;
-    instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, m);
+    instance->toWorldTransform = MatrixMultiply(m, instance->toWorldTransform);
     instance->toWorldTransform.m12 += component->pivot.x;
     instance->toWorldTransform.m13 += component->pivot.y;
     instance->toWorldTransform.m14 += component->pivot.z;

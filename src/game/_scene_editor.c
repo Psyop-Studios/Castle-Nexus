@@ -636,6 +636,7 @@ static void SceneDrawUi_entitySelection(GameContext *gameCtx, SceneConfig *Scene
             }))
             {
                 _selectedEntityId = (LevelEntityInstanceId){entity->id, entity->generation};
+                _worldCursor = entity->position;
             }
             posY += 20.0f;
         }

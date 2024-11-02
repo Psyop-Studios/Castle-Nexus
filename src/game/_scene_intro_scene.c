@@ -96,6 +96,8 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.velocityDecayRate = 14.0f;
     _camera.acceleration = 25.0f;
 
+    _allowCameraMovement = 1;
+
     Level_load(Game_getLevel(), "resources/levels/docks.lvl");
     int step = 0;
     // message to player to get started

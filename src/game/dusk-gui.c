@@ -947,14 +947,39 @@ void Rectangle_getMinMax(Rectangle* r, int* minX, int* minY, int* maxX, int* max
     *maxY = r->y + r->height;
 }
 
-void DuskGui_addDeferredCall(void (*fn)(void*), void* data)
+void* DuskGui_addDeferredCall(void* (*fn)(void*), const char *id, void* data)
 {
     _duskGuiState.deferredCalls = (DuskGuiDeferredCall*)Dusk_realloc(_duskGuiState.deferredCalls, sizeof(DuskGuiDeferredCall) * (_duskGuiState.deferredCallCount + 1));
-    _duskGuiState.deferredCalls[_duskGuiState.deferredCallCount++] = (DuskGuiDeferredCall) { fn, data };
+    _duskGuiState.deferredCalls[_duskGuiState.deferredCallCount++] = (DuskGuiDeferredCall) { 
+        .fn = fn, 
+        .data = data,
+        .id = id ? Dusk_strdup(id) : NULL,
+        .result = NULL
+    };
+
+    return id ? DuskGui_getDeferredCallResult(id) : NULL;
+}
+
+void* DuskGui_getDeferredCallResult(const char* id)
+{
+    for (int i = 0; i < _duskGuiState.previousDeferredCallCount; i++) {
+        if (strcmp(_duskGuiState.previousDeferredCalls[i].id, id) == 0) {
+            return _duskGuiState.previousDeferredCalls[i].result;
+        }
+    }
+    return NULL;
 }
 
 void DuskGui_finalize()
 {
+    if (_duskGuiState.previousDeferredCalls) {
+        for (int i = 0; i < _duskGuiState.previousDeferredCallCount; i++) {
+            Dusk_free(_duskGuiState.previousDeferredCalls[i].id);
+        }
+        Dusk_free(_duskGuiState.previousDeferredCalls);
+        _duskGuiState.previousDeferredCalls = NULL;
+        _duskGuiState.previousDeferredCallCount = 0;
+    }
     if (_duskGuiState.deferredCalls)
     {
         // just in case a deferred calls wants to defer a call, let's prepare an empty state for this;
@@ -966,9 +991,11 @@ void DuskGui_finalize()
 
         for (int i = 0; i < callCount; i++) {
             DuskGuiDeferredCall* call = &calls[i];
-            call->fn(call->data);
+            call->result = call->fn(call->data);
         }
-        Dusk_free(calls);
+        
+        _duskGuiState.previousDeferredCalls = calls;
+        _duskGuiState.previousDeferredCallCount = callCount;
     }
     // auto close behavior of menus:
     // Menus have a last trigger time
@@ -1363,6 +1390,18 @@ int DuskGui_floatInputField(DuskGuiParams params, float* value, float min, float
         *value = *value < min ? min : (*value > max ? max : *value);
         modified = 1;
     }
+    static const char *items[] = {"Copy", "Paste", NULL};
+    int selectedItem = 0;
+    if (DuskGui_contextMenuItemsPopup(params, entry->isMouseOver, items, &selectedItem)) {
+        if (selectedItem == 0) {
+            SetClipboardText(TextFormat("%f", *value));
+        } else if (selectedItem == 1) {
+            const char* text = GetClipboardText();
+            if (text) {
+                *value = atof(text);
+            }
+        }
+    }
     return modified;
 }
 
@@ -1406,6 +1445,71 @@ int DuskGui_menuItem(int opensSubmenu, DuskGuiParams params)
     return opensSubmenu ? entry->isHovered : entry->isTriggered;
 }
 
+typedef struct ComboMenuDeferredData {
+    DuskGuiParams params;
+    char* menuId;
+    const char** items;
+    int selectedItem;
+} ComboMenuDeferredData;
+
+static void* DuskGui_comboMenuDeferred(void* data)
+{
+    ComboMenuDeferredData* deferredData = (ComboMenuDeferredData*)data;
+    DuskGuiParamsEntry* entry = DuskGui_beginMenu(deferredData->params);
+    int selectedItem;
+    int *result = NULL;
+    if (entry != NULL) {
+        for (int i = 0; deferredData->items[i] != NULL; i++) {
+            if (DuskGui_menuItem(0, (DuskGuiParams) { 
+                    .rayCastTarget = 1,
+                    .bounds = (Rectangle) { 5.0f, 20 * i + 5.0f, deferredData->params.bounds.width - 10.0f, 20.0f },
+                    .text = deferredData->items[i] })) {
+                selectedItem = i;
+                result = (int*)Dusk_malloc(sizeof(int));
+                *result = selectedItem;
+                DuskGui_closeMenu(deferredData->params.text);
+            }
+        }
+        DuskGui_endMenu();
+    }
+    Dusk_free(deferredData->menuId);
+    Dusk_free(deferredData);
+
+    return result;
+}
+
+int DuskGui_contextMenuItemsPopup(DuskGuiParams params, int open, const char* items[], int *selectedItem)
+{
+    if (open && IsMouseButtonReleased(MOUSE_RIGHT_BUTTON)) {
+        DuskGui_openMenu(params.text);
+    }
+
+    int itemCount = 0;
+    for (int i = 0; items[i] != NULL; i++) {
+        itemCount++;
+    }
+
+    const char *menuId = params.text;
+    Vector2 pos = DuskGui_toScreenSpace((Vector2){ params.bounds.x, params.bounds.y });
+    params.bounds.x = pos.x;
+    params.bounds.y = pos.y;
+    params.bounds.height = itemCount * 20.0f + 10.0f;
+    ComboMenuDeferredData* deferredData = (ComboMenuDeferredData*)Dusk_malloc(sizeof(ComboMenuDeferredData));
+    deferredData->params = params;
+    deferredData->menuId = Dusk_strdup(menuId);
+    deferredData->params.text = deferredData->menuId;
+    deferredData->items = items;
+    deferredData->selectedItem = *selectedItem;
+    int *result = (int*) DuskGui_addDeferredCall(DuskGui_comboMenuDeferred, menuId, deferredData);
+    if (result != NULL) {
+        *selectedItem = *result;
+        Dusk_free(result);
+        return 1;
+    }
+
+    return 0;
+}
+
 int DuskGui_comboMenu(DuskGuiParams params, const char* items[], int selectedItem)
 {
     const char *menuId = params.text;
@@ -1424,19 +1528,16 @@ int DuskGui_comboMenu(DuskGuiParams params, const char* items[], int selectedIte
     params.bounds.x = pos.x;
     params.bounds.y = pos.y;
     params.bounds.height = itemCount * 20.0f + 10.0f;
-
-    DuskGuiParamsEntry* entry = DuskGui_beginMenu(params);
-    if (entry != NULL) {
-        for (int i = 0; items[i] != NULL; i++) {
-            if (DuskGui_menuItem(0, (DuskGuiParams) { 
-                    .rayCastTarget = 1,
-                    .bounds = (Rectangle) { 5.0f, 20 * i + 5.0f, params.bounds.width - 10.0f, 20.0f },
-                    .text = items[i] })) {
-                selectedItem = i;
-                DuskGui_closeMenu(params.text);
-            }
-        }
-        DuskGui_endMenu();
+    ComboMenuDeferredData* deferredData = (ComboMenuDeferredData*)Dusk_malloc(sizeof(ComboMenuDeferredData));
+    deferredData->params = params;
+    deferredData->menuId = Dusk_strdup(menuId);
+    deferredData->params.text = deferredData->menuId;
+    deferredData->items = items;
+    deferredData->selectedItem = selectedItem;
+    int *result = (int*) DuskGui_addDeferredCall(DuskGui_comboMenuDeferred, menuId, deferredData);
+    if (result != NULL) {
+        selectedItem = *result;
+        Dusk_free(result);
     }
 
     return selectedItem;

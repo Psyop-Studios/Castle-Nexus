@@ -204,6 +204,18 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}, {
+			"filename":	"resources/level_assets/decoration-wave-circle.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
 			"filename":	"resources/level_assets/decoration-wooden-pole.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],
@@ -588,9 +600,9 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}],
-	"entityNames":	["Fisherman1", "boat", "Fisherman2", "WorldBoundaryBlocker", "TriggerExitZone", "TriggerExplorationMessageZone_1", "TriggerFishermenZone", "Water", "Box", "Box", null, null, null, null, null, null],
-	"entityTRS":	[2, 4.76837158203125e-07, -1, 0, 0, 0, 1, 1, 1, 1, 0, -7.5000038146972656, 0, 0, 0, 1, 1, 1, 1, 5.9604644775390625e-07, 0, 0, 99, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 11.025003433227539, 0, 13, 0, 0, 0, 1, 1, 1, 14, 0, 1, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1.475000262260437, 0, 0, 0, 0, 1, 1, 1, 7.125, 2.0749993324279785, 6, 0, 0, 0, 1, 1, 1, 7, 0.90000057220459, 6, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0],
+	"entityNames":	["Fisherman1", "boat", "Fisherman2", "WorldBoundaryBlocker", "TriggerExitZone", "TriggerExplorationMessageZone_1", "TriggerFishermenZone", "Water", "Box", "Box", "FoamCircle", null, null, null, null, null],
+	"entityTRS":	[2, 4.76837158203125e-07, -1, 0, 0, 0, 1, 1, 1, 1, 0, -7.5000038146972656, 0, 0, 0, 1, 1, 1, 1, 5.9604644775390625e-07, 0, 0, 99, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 11.025003433227539, 0, 13, 0, 0, 0, 1, 1, 1, 14, 0, 1, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1.475000262260437, 0, 0, 0, 0, 1, 1, 1, 7.125, 2.0749993324279785, 6, 0, 0, 0, 1, 1, 1, 7, 0.90000057220459, 6, 0, 0, 0, 1, 1, 1, 5.0749979019165039, -1.4249997138977051, -4, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0],
 	"components":	[{
 			"name":	"CameraFacing",
 			"componentId":	0,
@@ -599,7 +611,7 @@
 		}, {
 			"name":	"Wobbler",
 			"componentId":	1,
-			"ownerEntityIds":	[1, 1, 7, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[1, 1, 7, 10, 10, 0, 0, 0],
 			"entityData":	[{
 					"type":	0,
 					"argument":	0,
@@ -630,11 +642,31 @@
 					"pivotX":	0.71584057807922363,
 					"pivotY":	0.891594171524048,
 					"pivotZ":	-0.22077739238739014
-				}, null, null, null, null, null]
+				}, {
+					"type":	9,
+					"argument":	0,
+					"useGameTime":	0,
+					"amplitude":	0.50839477777481079,
+					"frequency":	1.9989780187606812,
+					"phase":	0,
+					"pivotX":	0,
+					"pivotY":	0,
+					"pivotZ":	0
+				}, {
+					"type":	1,
+					"argument":	0,
+					"useGameTime":	0,
+					"amplitude":	0.33780017495155334,
+					"frequency":	1.9989780187606812,
+					"phase":	1.5611584186553955,
+					"pivotX":	0,
+					"pivotY":	0,
+					"pivotZ":	0
+				}, null, null, null]
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[0, 1, 1, 1, 2, 7, 8, 9],
+			"ownerEntityIds":	[0, 1, 1, 1, 2, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/guy-1.glb",
 					"isDithered":	0,
@@ -667,7 +699,11 @@
 					"mesh":	"resources/level_assets/crate.glb",
 					"isDithered":	0,
 					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
-				}]
+				}, {
+					"mesh":	"resources/level_assets/decoration-wave-circle.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, 0, 0, 0, 0, 1.3249996900558472, 1.3249996900558472, 1.3249996900558472]
+				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
