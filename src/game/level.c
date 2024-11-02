@@ -162,6 +162,10 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
             char metaFileName[1024];
             strcpy(metaFileName, file);
             strcat(metaFileName, ".meta");
+            LevelMesh *mesh = &level->meshes[meshIndex++];
+            mesh->colliderCount = 0;
+            mesh->colliders = NULL;
+
             if (FileExists(metaFileName))
             {
                 TraceLog(LOG_INFO, "Loading meta file: %s", metaFileName);
@@ -171,24 +175,102 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
                 cJSON *dithered = cJSON_GetObjectItem(root, "dithered");
                 if (textureName && textureName->type == cJSON_String)
                 {
-                    level->meshes[meshIndex].textureIndex = Level_getTextureIndexByName(level, textureName->valuestring);
+                    mesh->textureIndex = Level_getTextureIndexByName(level, textureName->valuestring);
                 }
                 if (dithered && dithered->type == cJSON_True)
                 {
-                    level->meshes[meshIndex].isDithered = 1;
+                    mesh->isDithered = 1;
                 }
+
+                cJSON *colliders = cJSON_GetObjectItem(root, "colliders");
+                if (colliders && cJSON_IsArray(colliders))
+                {
+                    mesh->colliderCount = cJSON_GetArraySize(colliders);
+                    mesh->colliders = (LevelCollider*)malloc(mesh->colliderCount * sizeof(LevelCollider));
+                    for (int i = 0; i < mesh->colliderCount; i++)
+                    {
+                        cJSON *collider = cJSON_GetArrayItem(colliders, i);
+                        cJSON *position = cJSON_GetObjectItem(collider, "position");
+                        if (position && position->type == cJSON_Array &&
+                            cJSON_GetArraySize(position) == 3)
+                        {
+                            mesh->colliders[i].position = (Vector3){
+                                cJSON_GetArrayItem(position, 0)->valuedouble,
+                                cJSON_GetArrayItem(position, 1)->valuedouble,
+                                cJSON_GetArrayItem(position, 2)->valuedouble,
+                            };
+                        }
+                        else
+                        {
+                            TraceLog(LOG_WARNING, "Invalid collider position data in meta file: %s", metaFileName);
+                            mesh->colliders[i] = (LevelCollider){ 0 };
+                            continue;
+                        }
+                        cJSON *isTrigger = cJSON_GetObjectItem(collider, "isTrigger");
+                        mesh->colliders[i].isTrigger = isTrigger && isTrigger->type == cJSON_True;
+                        cJSON *type = cJSON_GetObjectItem(collider, "type");
+                        if (!cJSON_IsString(type))
+                        {
+                            TraceLog(LOG_WARNING, "Invalid collider type data in meta file: %s", metaFileName);
+                            mesh->colliders[i] = (LevelCollider){ 0 };
+                            continue;
+                        }
+
+                        if (strcmp(type->valuestring, "sphere") == 0)
+                        {
+                            mesh->colliders[i].type = LEVEL_COLLIDER_TYPE_SPHERE;
+                            cJSON *radius = cJSON_GetObjectItem(collider, "radius");
+                            if (radius && radius->type == cJSON_Number)
+                            {
+                                mesh->colliders[i].sphere.radius = radius->valuedouble;
+                            }
+                            else
+                            {
+                                TraceLog(LOG_WARNING, "Invalid collider radius data in meta file: %s", metaFileName);
+                                mesh->colliders[i].sphere.radius = 1;
+                            }
+                        }
+                        else if (strcmp(type->valuestring, "aabox") == 0)
+                        {
+                            mesh->colliders[i].type = LEVEL_COLLIDER_TYPE_AABOX;
+                            cJSON *size = cJSON_GetObjectItem(collider, "size");
+                            if (size && size->type == cJSON_Array &&
+                                cJSON_GetArraySize(size) == 3)
+                            {
+                                mesh->colliders[i].aabox.size = (Vector3){
+                                    cJSON_GetArrayItem(size, 0)->valuedouble,
+                                    cJSON_GetArrayItem(size, 1)->valuedouble,
+                                    cJSON_GetArrayItem(size, 2)->valuedouble,
+                                };
+                            }
+                            else
+                            {
+                                TraceLog(LOG_WARNING, "Invalid collider size data in meta file: %s", metaFileName);
+                                mesh->colliders[i].aabox.size = (Vector3){1, 1, 1};
+                            }
+                        }
+                        else
+                        {
+                            TraceLog(LOG_WARNING, "Invalid collider type (%s) in meta file: %s", type->valuestring, metaFileName);
+                            mesh->colliders[i].type = LEVEL_COLLIDER_TYPE_SPHERE;
+                            mesh->colliders[i].position = (Vector3){0};
+                            mesh->colliders[i].isTrigger = 0;
+                        }
+                    }
+                }
+
                 cJSON_Delete(root);
                 UnloadFileText(data);
             } else {
                 TraceLog(LOG_INFO, "No meta file found for: %s", file);
+                mesh->textureIndex = -1;
             }
 
             TraceLog(LOG_INFO, "Loading mesh: %s", file);
-            level->meshes[meshIndex].model = LoadModel(file);
-            level->meshes[meshIndex].filename = replacePathSeps(strdup(file));
-            level->meshes[meshIndex].instances = NULL;
-            level->meshes[meshIndex].instanceCount = 0;
-            meshIndex++;
+            mesh->model = LoadModel(file);
+            mesh->filename = replacePathSeps(strdup(file));
+            mesh->instances = NULL;
+            mesh->instanceCount = 0;
         }
     }
 }
@@ -326,11 +408,58 @@ Vector3 AABB_closestPoint(Vector3 min, Vector3 max, Vector3 point, Vector3 *norm
     return result;
 }
 
+int Level_testCollider(LevelCollider *collider, LevelCollisionResult *result, Vector3 position, float r)
+{
+    if (collider->type == LEVEL_COLLIDER_TYPE_SPHERE)
+    {
+        float dist = Vector3DistanceSqr(position, collider->position);
+        float maxR2 = r + collider->sphere.radius;
+        maxR2 *= maxR2;
+        if (dist < maxR2)
+        {
+            Vector3 normal = Vector3Normalize(Vector3Subtract(position, collider->position));
+            *result = (LevelCollisionResult){
+                .colliderId = collider->id,
+                .surfaceContact = Vector3Add(collider->position, Vector3Scale(normal, collider->sphere.radius)),
+                .depth = collider->sphere.radius - sqrtf(dist),
+                .normal = normal,
+                .direction = Vector3Scale(normal, -1),
+            };
+            return 1;
+        }
+        return 0;
+    }
+    if (collider->type == LEVEL_COLLIDER_TYPE_AABOX)
+    {
+        Vector3 min = Vector3Subtract(collider->position, Vector3Scale(collider->aabox.size, 0.5f));
+        Vector3 max = Vector3Add(collider->position, Vector3Scale(collider->aabox.size, 0.5f));
+        Vector3 normal;
+        Vector3 closest = AABB_closestPoint(min, max, position, &normal);
+        // DrawSphereWires(position, r, 5, 5, DB8_RED);
+        // DrawLine3D(position, closest, DB8_RED);
+        // DrawCubeWires(collider->position, collider->aabox.size.x, collider->aabox.size.y, collider->aabox.size.z, DB8_RED);
+        float dist = Vector3DistanceSqr(position, closest);
+        if (dist < r * r)
+        {
+            Vector3 direction = Vector3Normalize(Vector3Subtract(position, closest));
+            *result = (LevelCollisionResult){
+                .colliderId = collider->id,
+                .depth = r - sqrtf(dist),
+                .surfaceContact = closest,
+                .normal = normal,
+                .direction = Vector3Scale(direction, -1),
+            };
+            return 1;
+        }
+        return 0;
+    }
+    return 0;
+}
+
 int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t matchNormal, uint8_t matchTrigger,
     LevelCollisionResult *results, int maxResults)
 {
     int resultIndex = 0;
-    float r2 = radius * radius;
     for (int i = 0; i < level->colliderCount && resultIndex < maxResults; i++)
     {
         LevelCollider *collider = &level->colliders[i];
@@ -339,42 +468,41 @@ int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t m
             continue;
         }
 
-        if (collider->type == LEVEL_COLLIDER_TYPE_SPHERE)
+        LevelCollisionResult result;
+        if (Level_testCollider(collider, &result, position, radius))
         {
-            float dist = Vector3DistanceSqr(position, collider->position);
-            float maxR2 = radius + collider->sphere.radius;
-            maxR2 *= maxR2;
-            if (dist < maxR2)
-            {
-                Vector3 normal = Vector3Normalize(Vector3Subtract(position, collider->position));
-                results[resultIndex] = (LevelCollisionResult){
-                    .colliderId = collider->id,
-                    .depth = collider->sphere.radius - sqrtf(dist),
-                    .normal = normal,
-                    .direction = Vector3Scale(normal, -1),
-                };
-            }
-            continue;
+            results[resultIndex++] = result;
         }
-
-        if (collider->type == LEVEL_COLLIDER_TYPE_AABOX)
+    }
+    for (int i = 0; i < level->meshCount; i++)
+    {
+        LevelMesh *mesh = &level->meshes[i];
+        for (int j = 0; j < mesh->instanceCount && resultIndex < maxResults; j++)
         {
-            Vector3 min = Vector3Subtract(collider->position, Vector3Scale(collider->aabox.size, 0.5f));
-            Vector3 max = Vector3Add(collider->position, Vector3Scale(collider->aabox.size, 0.5f));
-            Vector3 normal;
-            Vector3 closest = AABB_closestPoint(min, max, position, &normal);
-            float dist = Vector3DistanceSqr(position, closest);
-            if (dist < r2)
+            LevelMeshInstance *instance = &mesh->instances[j];
+
+            for (int k = 0; k < mesh->colliderCount && resultIndex < maxResults; k++)
             {
-                Vector3 direction = Vector3Normalize(Vector3Subtract(position, closest));
-                results[resultIndex] = (LevelCollisionResult){
-                    .colliderId = collider->id,
-                    .depth = radius - sqrtf(dist),
-                    .normal = normal,
-                    .direction = Vector3Scale(direction, -1),
-                };
+                LevelCollider *collider = &mesh->colliders[k];
+                if ((matchNormal && collider->isTrigger) || (matchTrigger && !collider->isTrigger))
+                {
+                    continue;
+                }
+                Matrix invTransform = MatrixInvert(instance->toWorldTransform);
+                Vector3 localPosition = Vector3Transform(position, invTransform);
+                LevelCollisionResult result;
+                if (Level_testCollider(collider, &result, localPosition, radius))
+                {
+                    Matrix rotTransform = instance->toWorldTransform;
+                    rotTransform.m12 = 0;
+                    rotTransform.m13 = 0;
+                    rotTransform.m14 = 0;
+                    result.surfaceContact = Vector3Transform(result.surfaceContact, instance->toWorldTransform);
+                    result.direction = Vector3Transform(result.direction, rotTransform);
+                    result.normal = Vector3Transform(result.normal, rotTransform);
+                    results[resultIndex++] = result;
+                }
             }
-            continue;
         }
     }
     return resultIndex;

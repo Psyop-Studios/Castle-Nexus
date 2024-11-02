@@ -34,6 +34,24 @@ static Vector2 _componentMenu = {0};
 static LevelEntityInstanceId _selectedEntityId = {0};
 static cJSON *_clipboard = NULL;
 
+static void _drawCollider(Matrix instanceMatrix, LevelCollider *collider)
+{
+    Vector3 position = collider->position;
+    rlPushMatrix();
+    rlMultMatrixf(MatrixToFloat(instanceMatrix));
+    
+    if (collider->type == LEVEL_COLLIDER_TYPE_AABOX)
+    {
+        Vector3 size = collider->aabox.size;
+        DrawCubeWires(position, size.x, size.y, size.z, DB8_RED);
+    }
+    else if (collider->type == LEVEL_COLLIDER_TYPE_SPHERE)
+    {
+        DrawSphereWires(position, collider->sphere.radius, 16, 16, DB8_RED);
+    }
+    rlPopMatrix();
+}
+
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
 
@@ -45,6 +63,32 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
     Level *level = Game_getLevel();
 
     Level_draw(level);
+    // LevelCollisionResult results[16] = {0};
+    // int resultCount = Level_findCollisions(level, Vector3Add(_worldCursor, (Vector3){0,0.5f,0}), 0.5f, 1, 0, results, 16);
+    // for (int i = 0; i < resultCount; i++)
+    // {
+    //     // printf("Collision: %f %f %f\n", results[i].surfaceContact.x, results[i].surfaceContact.y, results[i].surfaceContact.z);
+    //     DrawLine3D(results[i].surfaceContact, _worldCursor, DB8_RED);
+    // }
+    Matrix m = MatrixIdentity();
+    for (int i = 0; i < level->colliderCount; i++)
+    {
+        LevelCollider *collider = &level->colliders[i];
+        _drawCollider(m, collider);
+    }
+    for (int i = 0; i < level->meshCount; i++)
+    {
+        LevelMesh *mesh = &level->meshes[i];
+        for (int j = 0; j < mesh->instanceCount; j++)
+        {
+            LevelMeshInstance *instance = &mesh->instances[j];
+            for (int k = 0; k < mesh->colliderCount; k++)
+            {
+                LevelCollider *collider = &mesh->colliders[k];
+                _drawCollider(instance->toWorldTransform, collider);
+            }
+        }
+    }
     if (_hoveredMeshInstance)
     {
         rlDrawRenderBatchActive();

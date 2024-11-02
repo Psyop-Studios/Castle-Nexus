@@ -6,6 +6,7 @@
 #include "cjson.h"
 
 typedef struct Level Level;
+typedef struct LevelCollider LevelCollider;
 
 typedef struct LevelMeshInstance
 {
@@ -24,6 +25,8 @@ typedef struct LevelMesh
     char *filename;
     LevelMeshInstance *instances;
     int instanceCount;
+    LevelCollider *colliders;
+    int colliderCount;
 } LevelMesh;
 
 typedef struct LevelTextureSpriteAnimation
@@ -101,7 +104,6 @@ typedef struct LevelEntity
 #define LEVEL_COLLIDER_TYPE_SPHERE 0
 #define LEVEL_COLLIDER_TYPE_AABOX 1
 
-typedef struct LevelCollider LevelCollider;
 typedef struct LevelCollider {
     uint8_t type;
     uint8_t isTrigger;
@@ -142,6 +144,7 @@ typedef struct Level {
 
 
 typedef struct LevelCollisionResult {
+    Vector3 surfaceContact;
     Vector3 direction;
     Vector3 normal;
     float depth;
@@ -164,6 +167,9 @@ LevelMesh *Level_getMesh(Level *level, const char *filename);
 
 void Level_addColliderSphere(Level *level, Vector3 position, float radius, int isTrigger);
 void Level_addColliderBox(Level *level, Vector3 position, Vector3 size, int isTrigger);
+int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t matchNormal, uint8_t matchTrigger,
+    LevelCollisionResult *results, int maxResults);
+int Level_testCollider(LevelCollider *collider, LevelCollisionResult *result, Vector3 position, float r);
 
 // registering a new entity component class. Use a unique componentId for each component, starting with 0.
 // minimum data size is 1 byte.

@@ -217,7 +217,11 @@ void Game_update()
     rlEnableColorBlend();
 
     DrawUi();
-    Script_update(_contextData, GetFrameTime());
+    float dt = GetFrameTime();
+    // cap dt to 100ms to prevent physics explosions
+    dt = fminf(dt, 0.1f);
+
+    Script_update(_contextData, dt);
     Script_draw(_contextData);
     DuskGui_finalize();
     
