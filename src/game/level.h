@@ -124,6 +124,8 @@ typedef struct LevelCollider {
 
 typedef struct Level {
     char *filename;
+    char *assetDirectory;
+
     LevelMesh *meshes;
     int meshCount;
     LevelTexture *textures;
@@ -160,6 +162,7 @@ typedef struct LevelCollisionResult {
 } LevelCollisionResult;
 
 void Level_init(Level *level);
+void Level_reloadAssets(Level *level);
 void Level_loadAssets(Level *level, const char *assetsDirectory);
 LevelMeshInstance* Level_addInstance(Level *level, const char *meshName, Vector3 position, Vector3 eulerRotationDeg, Vector3 scale);
 void Level_clearInstances(Level *level);

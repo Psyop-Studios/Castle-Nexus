@@ -48,9 +48,41 @@ static int Level_getTextureIndexByName(Level *level, const char *name)
     return -1;
 }
 
+
+void Level_reloadAssets(Level *level)
+{
+    if (!level->assetDirectory)
+    {
+        TraceLog(LOG_WARNING, "Level_reloadAssets: no asset directory set");
+        return;
+    }
+
+    if (!level->filename)
+    {
+        Level_loadAssets(level, level->assetDirectory);
+        return;
+    }
+
+    printf("Reloading level assets\n");
+
+    char assetDirectory[1024];
+    char levelFilename[1024];
+    strcpy(assetDirectory, level->assetDirectory);
+    strcpy(levelFilename, level->filename);
+    Level_clearInstances(level);
+    Level_loadAssets(level, assetDirectory);
+    Level_load(level, levelFilename);
+}
+
 void Level_loadAssets(Level *level, const char *assetDirectory)
 {
-    TraceLog(LOG_INFO, "Loading level assets from: %s", assetDirectory);
+    if (level->assetDirectory)
+    {
+        free(level->assetDirectory);
+    }
+    level->assetDirectory = strdup(assetDirectory);
+
+    printf("Loading level assets from: %s\n", assetDirectory);
     FilePathList files = LoadDirectoryFiles(assetDirectory);
     level->textureCount = 0;
     level->meshCount = 0;

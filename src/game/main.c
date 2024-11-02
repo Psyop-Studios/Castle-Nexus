@@ -259,6 +259,10 @@ void Game_update()
             _contextData->nextSceneId = prevScene;
         }
     }
+    if (IsKeyReleased(KEY_U) && IsKeyDown(KEY_LEFT_CONTROL))
+    {
+        Level_reloadAssets(&_level);
+    }
 }
 
 void Game_setNextScene(int sceneId)
