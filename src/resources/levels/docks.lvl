@@ -552,9 +552,9 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}],
-	"entityNames":	["Fisherman1", "boat", "Fisherman2", "WorldBoundaryBlocker", "TriggerExitZone", "TriggerExplorationMessageZone_1", "TriggerFishermenZone", null],
-	"entityTRS":	[2, 4.76837158203125e-07, -1, 0, 0, 0, 1, 1, 1, 1, 0, -7.5000038146972656, 0, 0, 0, 1, 1, 1, 1, 5.9604644775390625e-07, 0, 0, 99, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 11.025003433227539, 0, 13, 0, 0, 0, 1, 1, 1, 14, 0, 1, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 0],
+	"entityNames":	["Fisherman1", "boat", "Fisherman2", "WorldBoundaryBlocker", "TriggerExitZone", "TriggerExplorationMessageZone_1", "TriggerFishermenZone", "Water"],
+	"entityTRS":	[2, 4.76837158203125e-07, -1, 0, 0, 0, 1, 1, 1, 1, 0, -7.5000038146972656, 0, 0, 0, 1, 1, 1, 1, 5.9604644775390625e-07, 0, 0, 99, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 11.025003433227539, 0, 13, 0, 0, 0, 1, 1, 1, 14, 0, 1, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1.475000262260437, 0, 0, 0, 0, 1, 1, 1],
+	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7],
 	"components":	[{
 			"name":	"CameraFacing",
 			"componentId":	0,
@@ -563,7 +563,7 @@
 		}, {
 			"name":	"Wobbler",
 			"componentId":	1,
-			"ownerEntityIds":	[1, 1, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[1, 1, 7, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"type":	0,
 					"argument":	0,
@@ -584,11 +584,21 @@
 					"pivotX":	0,
 					"pivotY":	-2.5118534564971924,
 					"pivotZ":	0
-				}, null, null, null, null, null, null]
+				}, {
+					"type":	1,
+					"argument":	0,
+					"useGameTime":	0,
+					"amplitude":	0.072209984064102173,
+					"frequency":	1.6931302547454834,
+					"phase":	2.0139534473419189,
+					"pivotX":	0.71584057807922363,
+					"pivotY":	0.891594171524048,
+					"pivotZ":	-0.22077739238739014
+				}, null, null, null, null, null]
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[0, 1, 1, 1, 2, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 1, 1, 2, 7, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/guy-1.glb",
 					"isDithered":	0,
@@ -609,7 +619,11 @@
 					"mesh":	"resources/level_assets/guy-2.glb",
 					"isDithered":	0,
 					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
-				}, null, null, null]
+				}, {
+					"mesh":	"resources/level_assets/outside-water-1.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
+				}, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
