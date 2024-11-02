@@ -902,6 +902,7 @@ void ColliderBoxComponent_onSerialize(Level *level, LevelEntityInstanceId ownerI
     cJSON_AddItemToArray(offset, cJSON_CreateNumber(component->offset.x));
     cJSON_AddItemToArray(offset, cJSON_CreateNumber(component->offset.y));
     cJSON_AddItemToArray(offset, cJSON_CreateNumber(component->offset.z));
+    cJSON_AddNumberToObject(json, "isTrigger", component->isTrigger);
 }
 
 void ColliderBoxComponent_onDeserialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
@@ -915,13 +916,17 @@ void ColliderBoxComponent_onDeserialize(Level *level, LevelEntityInstanceId owne
     component->offset.x = (float) cJSON_GetArrayItem(offset, 0)->valuedouble;
     component->offset.y = (float) cJSON_GetArrayItem(offset, 1)->valuedouble;
     component->offset.z = (float) cJSON_GetArrayItem(offset, 2)->valuedouble;
+    if (cJSON_HasObjectItem(json, "isTrigger"))
+    {
+        component->isTrigger = (int8_t) cJSON_GetObjectItem(json, "isTrigger")->valueint;
+    }
 }
 
 void ColliderBoxComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
 {
     if (!level->isEditor)
     {
-        // return;
+        return;
     }
     ColliderBoxComponent *component = (ColliderBoxComponent*)componentInstanceData;
     LevelEntity *instance = Level_resolveEntity(level, ownerId);

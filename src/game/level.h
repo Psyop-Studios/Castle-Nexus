@@ -140,6 +140,13 @@ typedef struct Level {
     float gameTime;
     float renderTime;
     uint8_t isEditor;
+
+    const char *previousTriggerIds[16];
+    int previousTriggerCount;
+    const char *activeTriggerIds[16];
+    int activeTriggerCount;
+
+    float playerDistanceWalked;
 } Level;
 
 
@@ -149,6 +156,7 @@ typedef struct LevelCollisionResult {
     Vector3 normal;
     float depth;
     int colliderId;
+    const char *triggerId;
 } LevelCollisionResult;
 
 void Level_init(Level *level);
@@ -164,6 +172,10 @@ void Level_updateInstanceTransform(LevelMeshInstance *instance);
 Texture2D Level_getTexture(Level *level, const char *filename, Texture2D fallback);
 LevelTexture* Level_getLevelTexture(Level *level, const char *filename);
 LevelMesh *Level_getMesh(Level *level, const char *filename);
+
+int Level_isTriggerActive(Level *level, const char *name);
+int Level_isTriggeredOn(Level *level, const char *name);
+int Level_isTriggeredOff(Level *level, const char *name);
 
 void Level_addColliderSphere(Level *level, Vector3 position, float radius, int isTrigger);
 void Level_addColliderBox(Level *level, Vector3 position, Vector3 size, int isTrigger);

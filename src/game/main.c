@@ -311,28 +311,42 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
         {
             camera->rotation.x = -PI / 2 * .9f;
         }
-        Vector3 rotatedForward = Vector3Transform((Vector3){0,0,1.0f}, MatrixRotateZYX(camera->rotation));
-        camera->camera.target = Vector3Add(camera->camera.position, rotatedForward);
+
     }
+    
+    Vector3 rotatedForward = Vector3Transform((Vector3){0,0,1.0f}, MatrixRotateZYX(camera->rotation));
+    camera->camera.target = Vector3Add(camera->camera.position, rotatedForward);
+
 
     Vector3 moveDelta = Vector3Scale(camera->velocity, dt);
+    level->playerDistanceWalked += Vector3Length((Vector3){moveDelta.x, 0, moveDelta.z});
     camera->camera.position = Vector3Add(camera->camera.position, moveDelta);
     camera->camera.target = Vector3Add(camera->camera.target, moveDelta);
     float decay = 1.0f - camera->velocityDecayRate * dt;
     camera->velocity.x *= decay;
     camera->velocity.z *= decay;
 
-    LevelCollisionResult results[4] = {0};
+#define COLLIDE_RESULT_COUNT 16
+    LevelCollisionResult results[COLLIDE_RESULT_COUNT] = {0};
     int resultCount = Level_findCollisions(level, 
-        Vector3Add(camera->camera.position, (Vector3){0,-1.25f,0}), 0.5f, 1, 0, results, 4);
+        Vector3Add(camera->camera.position, (Vector3){0,-1.25f,0}), 0.5f, 1, 1, results, COLLIDE_RESULT_COUNT);
     
     // gravity
     camera->velocity = Vector3Add(camera->velocity, (Vector3) {0, -24.0f * dt, 0});
     
     Vector3 totalShift = {0};
     camera->hasGroundContact = 0;
+
+    memcpy(level->previousTriggerIds, level->activeTriggerIds, sizeof(level->activeTriggerIds));
+    level->previousTriggerCount = level->activeTriggerCount;
+    level->activeTriggerCount = 0;
     for (int i = 0; i < resultCount; i++)
     {
+        if (results[i].triggerId)
+        {
+            level->activeTriggerIds[level->activeTriggerCount++] = results[i].triggerId;
+            continue;
+        }
         Vector3 normal = results[i].normal;
 
         if (normal.y > 0.25f)

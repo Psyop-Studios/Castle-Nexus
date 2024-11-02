@@ -278,6 +278,7 @@ void Level_loadAssets(Level *level, const char *assetDirectory)
 
 void Level_clearInstances(Level *level)
 {
+    level->playerDistanceWalked = 0;
     if (level->filename)
     {
         free(level->filename);
@@ -457,24 +458,53 @@ int Level_testCollider(LevelCollider *collider, LevelCollisionResult *result, Ve
     return 0;
 }
 
+static int isInList(const char *list[], int count, const char *name)
+{
+    for (int i = 0; i < count; i++)
+    {
+        if (strcmp(list[i], name) == 0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int Level_isTriggerActive(Level *level, const char *name)
+{
+    return isInList(level->activeTriggerIds, level->activeTriggerCount, name);
+}
+
+int Level_isTriggeredOn(Level *level, const char *name)
+{
+    return !isInList(level->previousTriggerIds, level->previousTriggerCount, name) && isInList(level->activeTriggerIds, level->activeTriggerCount, name);
+}
+
+int Level_isTriggeredOff(Level *level, const char *name)
+{
+    return isInList(level->previousTriggerIds, level->previousTriggerCount, name) && !isInList(level->activeTriggerIds, level->activeTriggerCount, name);
+}
+
 int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t matchNormal, uint8_t matchTrigger,
     LevelCollisionResult *results, int maxResults)
 {
     int resultIndex = 0;
+    // this here might be useless; not using the level colliders due to management issues (who owns it?)
     for (int i = 0; i < level->colliderCount && resultIndex < maxResults; i++)
     {
         LevelCollider *collider = &level->colliders[i];
-        if ((!matchNormal && collider->isTrigger) || (!matchTrigger && !collider->isTrigger))
+        if (matchNormal != matchTrigger && ((matchNormal && collider->isTrigger) || (matchTrigger && !collider->isTrigger)))
         {
             continue;
         }
 
-        LevelCollisionResult result;
+        LevelCollisionResult result = {0};
         if (Level_testCollider(collider, &result, position, radius))
         {
             results[resultIndex++] = result;
         }
     }
+
     for (int i = 0; i < level->meshCount; i++)
     {
         LevelMesh *mesh = &level->meshes[i];
@@ -485,13 +515,13 @@ int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t m
             for (int k = 0; k < mesh->colliderCount && resultIndex < maxResults; k++)
             {
                 LevelCollider *collider = &mesh->colliders[k];
-                if ((matchNormal && collider->isTrigger) || (matchTrigger && !collider->isTrigger))
+                if (matchNormal != matchTrigger && ((matchNormal && collider->isTrigger) || (matchTrigger && !collider->isTrigger)))
                 {
                     continue;
                 }
                 Matrix invTransform = MatrixInvert(instance->toWorldTransform);
                 Vector3 localPosition = Vector3Transform(position, invTransform);
-                LevelCollisionResult result;
+                LevelCollisionResult result = {0};
                 if (Level_testCollider(collider, &result, localPosition, radius))
                 {
                     Matrix rotTransform = instance->toWorldTransform;
@@ -501,6 +531,10 @@ int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t m
                     result.surfaceContact = Vector3Transform(result.surfaceContact, instance->toWorldTransform);
                     result.direction = Vector3Transform(result.direction, rotTransform);
                     result.normal = Vector3Transform(result.normal, rotTransform);
+                    if (collider->isTrigger)
+                    {
+                        result.triggerId = mesh->filename;
+                    }
                     results[resultIndex++] = result;
                 }
             }
@@ -521,6 +555,12 @@ int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t m
         }
 
         ColliderBoxComponent *boxCollider = &((ColliderBoxComponent*)boxColliderClass->componentInstanceData)[i];
+
+        if (matchNormal != matchTrigger && ((matchNormal && boxCollider->isTrigger) || (matchTrigger && !boxCollider->isTrigger)))
+        {
+            continue;
+        }
+
         Matrix inv = MatrixInvert(entity->toWorldTransform);
         Vector3 localPosition = Vector3Transform(position, inv);
 
@@ -532,6 +572,10 @@ int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t m
             .isTrigger = boxCollider->isTrigger,
         }, &result, localPosition, radius))
         {
+            if (boxCollider->isTrigger)
+            {
+                result.triggerId = entity->name;
+            }
             results[resultIndex++] = result;
         }
     }
@@ -955,7 +999,7 @@ void Level_save(Level *level, const char *levelFile)
 
 void Level_update(Level *level, float dt)
 {
-
+    level->gameTime += dt;
 }
 
 LevelCollisionResult Level_calcPenetrationDepth(Level *level, Vector3 point, float radius)

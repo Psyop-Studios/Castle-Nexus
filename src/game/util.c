@@ -14,6 +14,7 @@ void SetTextLineSpacingEx(int spacing)
     textLineSpacing = spacing;
 }
 
+static float CalcNextRichtextWordWidth(Font font, const char *text, float fontSize, float spacing);
 
 
 
@@ -23,95 +24,6 @@ static int hexToInt(char chr)
     if (chr >= 'a' && chr <= 'f') return chr - 'a' + 10;
     if (chr >= 'A' && chr <= 'F') return chr - 'A' + 10;
     return -1;
-}
-
-// Measure string size for Font
-static Vector2 MeasureTextRich(Font font, const char *text, float fontSize, float spacing, int wrapWidth)
-{
-    Vector2 textSize = { 0 };
-
-    if ((font.texture.id == 0) || (text == NULL)) return textSize; // Security check
-
-    int size = TextLength(text);    // Get size in bytes of text
-    int tempByteCounter = 0;        // Used to count longer text line num chars
-    int byteCounter = 0;
-
-    float textWidth = 0.0f;
-    float tempTextWidth = 0.0f;     // Used to count longer text line width
-
-    float textHeight = fontSize;
-    float scaleFactor = fontSize/(float)font.baseSize;
-
-    int letter = 0;                 // Current character
-    int index = 0;                  // Index position in sprite font
-
-    for (int i = 0; i < size;)
-    {
-        byteCounter++;
-
-        int next = 0;
-        letter = GetCodepointNext(&text[i], &next);
-        index = GetGlyphIndex(font, letter);
-
-        if (letter == '[')
-        {
-            // check for color tag
-            if (strncmp(&text[i], "[color=", 7) == 0 && size - i >= 11 && text[i+11] == ']')
-            {
-                char word[5] = {text[i + 7], text[i + 8], text[i + 9], text[i + 10], '\0'};
-                if (strcmp(word, "blac") == 0) {i+=12; continue; }
-                else if (strcmp(word, "whit") == 0) {i+=12; continue; }
-                else if (strcmp(word, "red_") == 0) {i+=12; continue; }
-                else if (strcmp(word, "blue") == 0) {i+=12; continue; }
-                else if (strcmp(word, "gree") == 0) {i+=12; continue; }
-                else if (strcmp(word, "yell") == 0) {i+=12; continue; }
-                else if (strcmp(word, "grey") == 0) {i+=12; continue; }
-                else if (strcmp(word, "purp") == 0) {i+=12; continue; }
-                else {
-                    int r = hexToInt(text[i + 7]);
-                    int g = hexToInt(text[i + 8]);
-                    int b = hexToInt(text[i + 9]);
-                    int a = hexToInt(text[i + 10]);
-                    if (r >= 0 && g >= 0 && b >= 0 && a >= 0)
-                    {
-                        i+= 12;
-                        continue;
-                    }
-                }
-            }
-            if (strncmp(&text[i], "[/color]", 8) == 0)
-            {
-                i += 8;
-                continue;
-            }
-        }
-
-        i += next;
-
-        if (letter != '\n')
-        {
-            if (font.glyphs[index].advanceX != 0) textWidth += font.glyphs[index].advanceX;
-            else textWidth += (font.recs[index].width + font.glyphs[index].offsetX);
-        }
-        else
-        {
-            if (tempTextWidth < textWidth) tempTextWidth = textWidth;
-            byteCounter = 0;
-            textWidth = 0;
-
-            // NOTE: Line spacing is a global variable, use SetTextLineSpacing() to setup
-            textHeight += (fontSize + textLineSpacing);
-        }
-
-        if (tempByteCounter < byteCounter) tempByteCounter = byteCounter;
-    }
-
-    if (tempTextWidth < textWidth) tempTextWidth = textWidth;
-
-    textSize.x = tempTextWidth*scaleFactor + (float)((tempByteCounter - 1)*spacing);
-    textSize.y = textHeight;
-
-    return textSize;
 }
 
 static float CalcNextRichtextWordWidth(Font font, const char *text, float fontSize, float spacing)
@@ -173,7 +85,7 @@ static float CalcNextRichtextWordWidth(Font font, const char *text, float fontSi
 
 // Draw text using Font
 // NOTE: chars spacing is NOT proportional to fontSize
-void DrawTextRich(Font font, const char *text, Vector2 position, float fontSize, float spacing, int wrapWidth, Color tint)
+Vector2 DrawTextRich(Font font, const char *text, Vector2 position, float fontSize, float spacing, int wrapWidth, Color tint, int noDraw)
 {
     if (font.texture.id == 0) font = GetFontDefault();  // Safety check in case of not valid font
 
@@ -186,6 +98,9 @@ void DrawTextRich(Font font, const char *text, Vector2 position, float fontSize,
     int alpha = tint.a;
     Color colorStack[16];
     int colorStackIndex = 0;
+    Color startColor = tint;
+
+    float maxWidth = 0.0f;
 
     for (int i = 0; i < size;)
     {
@@ -228,7 +143,7 @@ void DrawTextRich(Font font, const char *text, Vector2 position, float fontSize,
                 {
                     i+= 12;
                     if (colorStackIndex < 16)
-                        colorStack[colorStackIndex++] = color;
+                        colorStack[colorStackIndex++] = tint;
                     else TraceLog(LOG_WARNING, "Color stack overflow");
                     tint = color;
                     continue;
@@ -240,6 +155,10 @@ void DrawTextRich(Font font, const char *text, Vector2 position, float fontSize,
                 {
                     tint = colorStack[--colorStackIndex];
                 }
+                else
+                {
+                    tint = startColor;
+                }
                 i += 8;
                 continue;
             }
@@ -248,6 +167,7 @@ void DrawTextRich(Font font, const char *text, Vector2 position, float fontSize,
         if (codepoint == '\n')
         {
             // NOTE: Line spacing is a global variable, use SetTextLineSpacing() to setup
+            maxWidth = fmaxf(maxWidth, textOffsetX);
             textOffsetY += (fontSize + textLineSpacing);
             textOffsetX = 0.0f;
         }
@@ -258,13 +178,14 @@ void DrawTextRich(Font font, const char *text, Vector2 position, float fontSize,
             else textOffsetX += ((float)font.glyphs[index].advanceX*scaleFactor + spacing);
             if ((codepoint != ' ') && (codepoint != '\t'))
             {
-                DrawTextCodepoint(font, codepoint, (Vector2){ posX, position.y + textOffsetY }, fontSize, tint);
+                if (!noDraw) DrawTextCodepoint(font, codepoint, (Vector2){ posX, position.y + textOffsetY }, fontSize, tint);
             }
             else {
                 // check next word, measure width, check if it would fit. If not, start new line.
                 float nextWordWidth = CalcNextRichtextWordWidth(font, &text[i + codepointByteCount], fontSize, spacing);
                 if (nextWordWidth + textOffsetX > wrapWidth)
                 {
+                    maxWidth = fmaxf(maxWidth, textOffsetX);
                     textOffsetY += (fontSize + textLineSpacing);
                     textOffsetX = 0.0f;
                     i += codepointByteCount;
@@ -276,16 +197,19 @@ void DrawTextRich(Font font, const char *text, Vector2 position, float fontSize,
 
         i += codepointByteCount;   // Move text bytes counter to next codepoint
     }
+
+    maxWidth = fmaxf(maxWidth, textOffsetX);
+    return (Vector2){ maxWidth, textOffsetY + fontSize };
 }
 
 Rectangle DrawTextBoxAligned(Font font, const char *text, int x, int y, int w, int h, float alignX, float alignY, Color color)
 {
     float fontSpacing = -2.0f;
     float fontSize = font.baseSize * 2.0f;
-    Vector2 textSize = MeasureTextRich(font, text, fontSize, fontSpacing, w);
+    Vector2 textSize = DrawTextRich(font, text, (Vector2){0, 0}, fontSize, fontSpacing, w, color, 1);
     int posX = x + (int)((w - textSize.x) * alignX);
     int posY = y + (int)((h - textSize.y) * alignY);
-    DrawTextRich(font, text, (Vector2){posX, posY}, fontSize, fontSpacing, w, color);
+    DrawTextRich(font, text, (Vector2){posX, posY}, fontSize, fontSpacing, w, color, 0);
 
     return (Rectangle) {
         .x = posX, .y = posY, .width = textSize.x, .height = textSize.y
@@ -475,4 +399,11 @@ int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Ve
     *posY += 20.0f;
     
     return modified;
+}
+
+float EaseInOutSine(float t, float from, float to)
+{
+    if (t < 0.0f) return from;
+    if (t > 1.0f) return to;
+    return sinf(t * PI * 0.5f) * (to - from) + from;
 }

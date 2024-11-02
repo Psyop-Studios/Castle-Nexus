@@ -1,6 +1,9 @@
 #include "main.h"
 #include "scene.h"
-
+#include <raylib.h>
+#include <raymath.h>
+#include <stdio.h>
+#include <math.h>
 
 typedef struct ScriptAction_DrawRectData {
     const char *title;
@@ -214,4 +217,127 @@ void ScriptAction_drawTexture(Script *script, ScriptAction *action)
 {
     ScriptAction_DrawTextureData *data = action->actionData;
     DrawTexturePro(*data->texture, data->srcRect, data->dstRect, (Vector2){0, 0}, 0.0f, DB8_WHITE);
+}
+
+void ScriptAction_progressNextOnTriggeredOn(Script *script, ScriptAction *action)
+{
+    Level *level = Game_getLevel();
+    if (Level_isTriggeredOn(level, (char*) action->actionData))
+    {
+        script->nextActionId = script->currentActionId + 1;
+    }
+}
+
+typedef struct LookCameraAtData {
+    Vector3 position;
+    FPSCameraZ *camera;
+    float transitionTime;
+
+    float actionStartTime;
+    float targetYaw;
+    float targetPitch;
+    float startYaw;
+    float startPitch;
+} LookCameraAtData;
+
+float LerpAngle(float a, float b, float t)
+{
+    float delta = b - a;
+    if (delta > PI) delta -= 2 * PI;
+    if (delta < -PI) delta += 2 * PI;
+    return a + delta * t;
+}
+
+void ScriptAction_lookCameraAt(Script *script, ScriptAction *action)
+{
+    LookCameraAtData *data = action->actionData;
+    FPSCameraZ *camera = data->camera;
+    Level *level = Game_getLevel();
+    if (data->actionStartTime == 0.0f)
+    {
+        data->actionStartTime = level->gameTime;
+        data->startYaw = camera->rotation.y;
+        data->startPitch = camera->rotation.x;
+        Vector3 dir = Vector3Subtract(data->position, camera->camera.position);
+        data->targetYaw = atan2f(dir.x, dir.z);
+        data->targetPitch = atan2f(-dir.y, sqrtf(dir.x * dir.x + dir.z * dir.z));
+    }
+    float t = (level->gameTime - data->actionStartTime) / data->transitionTime;
+    t = EaseInOutSine(t, 0.0f, 1.0f);
+    
+    camera->rotation.y = LerpAngle(data->startYaw, data->targetYaw, t);
+    camera->rotation.x = LerpAngle(data->startPitch, data->targetPitch, t);
+
+    // printf("dy: %.2f\n", data->position.y - camera->camera.position.y);
+
+    // printf("t: %.2f %.2f %.2f; %.2f %.2f %.2f -> %.2f %.2f %.2f\n", t, camera->rotation.y, camera->rotation.x,
+    //     data->camera->camera.position.x, data->camera->camera.position.y, data->camera->camera.position.z,
+    //     data->position.x, data->position.y, data->position.z);
+    // Vector3 dir = Vector3Subtract(position, camera->camera.position);
+    // float angle = atan2f(dir.z, dir.x);
+    // camera->rotation.y = angle;
+}
+
+void* ScriptAction_LookCameraAtData_new(FPSCameraZ *camera, float transitionTime, Vector3 position)
+{
+    LookCameraAtData *data = Scene_alloc(sizeof(LookCameraAtData), 
+        &(LookCameraAtData){
+            .camera = camera,
+            .position = position,
+            .transitionTime = transitionTime,
+        });
+    return data;
+}
+
+void DrawNarrationBottomBox(const char *narrator, const char *text, const char *proceedText)
+{
+    Rectangle rect = {30, GetScreenHeight() - 120, GetScreenWidth() - 60, 78};
+
+    DrawRectangleRec(rect, DB8_WHITE);
+    DrawRectangleLinesEx(rect, 2, DB8_BLACK);
+    
+    DrawTextBoxAligned(_fntMedium, text,
+        rect.x + 12, rect.y + 10, rect.width - 24, rect.height - 20, 0.5f, 0.5f, DB8_WHITE);
+    
+    Rectangle narratorBox = {rect.x + 10, rect.y - 24, 160, 32};
+    Rectangle shadowBox = {narratorBox.x + 2, narratorBox.y + 2, narratorBox.width, narratorBox.height};
+    DrawRectangleRec(shadowBox, (Color){0, 0, 0, 180});
+    DrawRectangleRec(narratorBox, DB8_BLUE);
+    DrawRectangleLinesEx(narratorBox, 2, DB8_BLACK);
+    DrawTextBoxAligned(_fntMedium, narrator, narratorBox.x + 6, narratorBox.y + 6, narratorBox.width - 12, narratorBox.height - 12, 0.0f, 0.5f, DB8_WHITE);
+
+    if (!proceedText) return;
+    Rectangle proceedBox = {rect.x + rect.width - 270, rect.y + rect.height - 10, 280, 36};
+    shadowBox = (Rectangle){proceedBox.x + 2, proceedBox.y + 2, proceedBox.width, proceedBox.height};
+    DrawRectangleRec(shadowBox, (Color){0, 0, 0, 180});
+    DrawRectangleRec(proceedBox, DB8_YELLOW);
+    DrawRectangleLinesEx(proceedBox, 2, DB8_BLACK);
+    DrawTextBoxAligned(_fntMedium, proceedText, proceedBox.x + 6, proceedBox.y + 6, proceedBox.width - 12, proceedBox.height - 12, 0.5f, 0.5f, DB8_WHITE);
+}
+
+typedef struct ScriptAction_DrawNarrationBottomBoxData {
+    const char *narrator;
+    const char *text;
+    int proceedOnEnter;
+} ScriptAction_DrawNarrationBottomBoxData;
+
+void ScriptAction_drawNarrationBottomBox(Script *script, ScriptAction *action)
+{
+    ScriptAction_DrawNarrationBottomBoxData *data = action->actionData;
+    DrawNarrationBottomBox(data->narrator, data->text, data->proceedOnEnter ? "Press [color=red_]ENTER[/color] to continue" : NULL);
+    if (data->proceedOnEnter && IsKeyPressed(KEY_ENTER))
+    {
+        script->nextActionId = script->currentActionId + 1;
+    }
+}
+
+void* ScriptAction_DrawNarrationBottomBoxData_new(const char *narrator, const char *text, int proceedOnEnter)
+{
+    ScriptAction_DrawNarrationBottomBoxData *data = Scene_alloc(sizeof(ScriptAction_DrawNarrationBottomBoxData), 
+        &(ScriptAction_DrawNarrationBottomBoxData){
+            .narrator = narrator,
+            .text = text,
+            .proceedOnEnter = proceedOnEnter,
+        });
+    return data;
 }

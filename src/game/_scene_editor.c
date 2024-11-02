@@ -501,7 +501,7 @@ static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* ent
 
                     if (componentClass->methods.onEditorInspectFn)
                     {
-                        char *panelId = TextFormat("##component-ui-%d-%d", i, j);
+                        const char *panelId = TextFormat("##component-ui-%d-%d", i, j);
                         DuskGuiParamsEntry *prevPanel = DuskGui_getEntry(panelId, 1);
                         DuskGuiParamsEntryId panel = DuskGui_beginPanel((DuskGuiParams) {
                             .bounds = (Rectangle) { 0, *posY, DuskGui_getAvailableSpace().x, 

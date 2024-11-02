@@ -27,7 +27,9 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
     // }
 }
 
-
+#define TRIGGER_EXIT_ZONE "TriggerExitZone"
+#define TRIGGER_EXPLORATION_MESSAGE_ZONE_1 "TriggerExplorationMessageZone_1"
+#define TRIGGER_FISHERMEN_ZONE "TriggerFishermenZone"
 
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
 {
@@ -36,13 +38,48 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
     level->isEditor = 0;
     
     FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
-
     Level_update(level, dt);
 }
 
-static void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *action)
+void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *action)
 {
     _allowCameraMovement = action->actionInt;
+}
+
+
+
+static void ScriptAction_exitZoneMessage(Script *script, ScriptAction *action)
+{
+    Level *level = Game_getLevel();
+    if (Level_isTriggerActive(level, TRIGGER_EXIT_ZONE))
+    {
+        DrawNarrationBottomBox("You:", 
+            "My boss will fire me, if I don't get him the story about the haunted castle...", "Talk to the fishermen.");
+    }
+}
+
+static void ScriptAction_explorationMessageZone_1(Script *script, ScriptAction *action)
+{
+    Level *level = Game_getLevel();
+    
+    if (Level_isTriggerActive(level, TRIGGER_EXPLORATION_MESSAGE_ZONE_1))
+    {
+        DrawNarrationBottomBox("You:", "This place is giving me a chill... as if I am watched.", NULL);
+    }
+}
+
+static void ScriptAction_intro_firstStep(Script *script, ScriptAction *action)
+{
+    Level *level = Game_getLevel();
+    if (level->playerDistanceWalked > 1.0f)
+    {
+        script->nextActionId = action->actionIdStart + 1;
+        return;
+    }
+
+    DrawNarrationBottomBox("You:", 
+        "The people said, if I wanted to visit the castle, I should ask the [color=red_]Fisher men[/color].\n"
+        "(Use [color=red_]WASD/SPACE[/color] to move & jump, and the [color=red_]mouse[/color] to look around.)", NULL);
 }
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
@@ -50,72 +87,146 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     DisableCursor();
     // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
     _camera.camera = (Camera){0};
-    _camera.camera.position = (Vector3){ 3.0f, 1.70f, 4.0f };
+    _camera.camera.position = (Vector3){ 10.0f, 1.70f, 10.0f };
     _camera.camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     _camera.camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     _camera.camera.fovy = 45.0f;
     _camera.camera.projection = CAMERA_PERSPECTIVE;
+    _camera.rotation.y = 200.0f * DEG2RAD;
     _camera.velocityDecayRate = 14.0f;
     _camera.acceleration = 25.0f;
 
     Level_load(Game_getLevel(), "resources/levels/docks.lvl");
     int step = 0;
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "It was a [color=red_]dark and stormy night[/color] ...", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "You are an investigative journalist tasked", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "with chasing some [color=grey]rumors[/color].", (Rectangle){10, 10, 200, 100})});
-
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "You wanna write some stories, huh?", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "I've got a scoop for ya.", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "I happen to know a local island is haunted by ghosts.", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 2",  "Don't bother listening to him.", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 2",  "He just likes telling stories. ", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "Nonesense, I've seen em myself!", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "As a matter of fact, I'll take you for free.", (Rectangle){10, 10, 200, 100})});
-        
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_setCameraMovementEnabled,
-        .actionInt = 1});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_jumpStep,
-        .actionData = ScriptAction_JumpStepData_new(-1, 1, 1)});
-    step++;
+    // message to player to get started
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_intro_firstStep });
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_exitZoneMessage });
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_explorationMessageZone_1 });
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_FISHERMEN_ZONE });
+    step += 1;
     
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
     Script_addAction((ScriptAction){
         .actionIdStart = step,
-        .action = ScriptAction_setCameraMovementEnabled,
-        .actionInt = 1});
+        .action = ScriptAction_lookCameraAt,
+        .actionData = ScriptAction_LookCameraAtData_new(
+            &_camera, 2.5f, (Vector3){2.0f, 1.5f, 0})});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 1:",
+            "Oi, what are ye sneaking around like a ghost for?", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+            "Eh, funny you saying that... I was looking for someone to ferry me to the castle.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 2:",
+            "You mad city people ... you don't understand some things better be left alone", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 1:",
+            "Ach, come on, if they wanna get a chill, why stop 'em?", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 2:",
+            "Stop it August, this ain't funny.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "We're all adults. What do you say, stranger, shall I ferry you to the island?", 1)});
+    step += 1;
+    
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+            "Uh... not like I have a choice. See, I am a writer and my boss wants me to write a story about that place.", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "I see, a writer. So ye're smart, eh? I bet this will be a great story for you to tell!", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 2:",
+            "Listen, mister, this place isn't for you. There are stories of people never returning from that castle.", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "Ha! Probably only because they didn't want to pay the price for your ride, Tom!", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "But I am not like that. Tell you what, I will bring you there for free. Just to prove scared little Tommy here wrong!", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Tom:",
+            "That's a cruel joke, August. Don't say I haven't warned ye, mister.", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+            "Oh well, how bad could it be? I am ready when you are, Mister August.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "Then let's go now, the high tide is ebbing.", 1)});
+    step += 1;
+
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_drawTextRect,
+    //     .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "You are an investigative journalist tasked", (Rectangle){10, 10, 200, 100})});
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_drawTextRect,
+    //     .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "with chasing some [color=grey]rumors[/color].", (Rectangle){10, 10, 200, 100})});
+
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_drawTextRect,
+    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "You wanna write some stories, huh?", (Rectangle){10, 10, 200, 100})});
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_drawTextRect,
+    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "I've got a scoop for ya.", (Rectangle){10, 10, 200, 100})});
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_drawTextRect,
+    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "I happen to know a local island is haunted by ghosts.", (Rectangle){10, 10, 200, 100})});
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_drawTextRect,
+    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 2",  "Don't bother listening to him.", (Rectangle){10, 10, 200, 100})});
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_drawTextRect,
+    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 2",  "He just likes telling stories. ", (Rectangle){10, 10, 200, 100})});
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_drawTextRect,
+    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "Nonesense, I've seen em myself!", (Rectangle){10, 10, 200, 100})});
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_drawTextRect,
+    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "As a matter of fact, I'll take you for free.", (Rectangle){10, 10, 200, 100})});
+        
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_setCameraMovementEnabled,
+    //     .actionInt = 1});
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_jumpStep,
+    //     .actionData = ScriptAction_JumpStepData_new(-1, 1, 1)});
+    // step++;
+    
+    // Script_addAction((ScriptAction){
+    //     .actionIdStart = step,
+    //     .action = ScriptAction_setCameraMovementEnabled,
+    //     .actionInt = 1});
 }
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)

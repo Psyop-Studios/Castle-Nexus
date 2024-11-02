@@ -344,7 +344,7 @@ static void DuskGui_defaultDrawStyle(DuskGuiParamsEntry* entry, DuskGuiState* st
 
             int x = (int)(entry->params.bounds.x + lerpedStyle.paddingLeft + (availableSpace.x - box.x) * lerpedStyle.textAlignment.x) + entry->textOffset.x;
             int y = (int)(entry->params.bounds.y + lerpedStyle.paddingTop + (availableSpace.y - box.y) * lerpedStyle.textAlignment.y) + entry->textOffset.y;
-            DrawTextRich(font, text, (Vector2) { x, y }, fontSize, fontSpacing, 1001, textColor);
+            DrawTextRich(font, text, (Vector2) { x, y }, fontSize, fontSpacing, 1001, textColor, 0);
 
             entry->textBounds = (Rectangle) { x, y, box.x, box.y };
         }
