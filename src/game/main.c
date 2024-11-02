@@ -383,6 +383,30 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
         {
             camera->velocity.y = 0;
         }
+
+        if ((results[i].ownerId.id || results[i].ownerId.generation) && fabsf(normal.y) < 0.25f && Vector3DotProduct(camera->velocity, normal) < 0)
+        {
+            LevelEntityComponentClass *rigidSphereClass = &level->entityComponentClasses[COMPONENT_TYPE_RIGID_SPHERE];
+            for (int j = 0; j < rigidSphereClass->instanceCount; j++)
+            {
+                if (rigidSphereClass->generations[j] == 0 || rigidSphereClass->ownerIds[j].id != results[i].ownerId.id)
+                {
+                    continue;
+                }
+                LevelEntity *entity = Level_resolveEntity(level, rigidSphereClass->ownerIds[j]);
+                if (!entity)
+                {
+                    continue;
+                }
+
+                float camVel = Vector3Length(camera->velocity);
+                Vector3 normal = results[i].normal;
+                normal.y = 0;
+                entity->position = Vector3Add(entity->position, Vector3Scale(normal, -camVel * 0.5f * results[i].depth));
+                break;
+
+            }
+        }
         // camera->velocity = Vector3Subtract(camera->velocity, Vector3Scale(normal, Vector3DotProduct(camera->velocity, results[i].normal)));
         // printf(" %f %f %f\n", camera->velocity.x, camera->velocity.y, camera->velocity.z);
     }

@@ -153,6 +153,7 @@ typedef struct Level {
 
 
 typedef struct LevelCollisionResult {
+    LevelEntityInstanceId ownerId;
     Vector3 surfaceContact;
     Vector3 direction;
     Vector3 normal;

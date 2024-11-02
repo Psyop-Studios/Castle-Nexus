@@ -969,6 +969,200 @@ void ColliderBoxComponent_register(Level *level)
         }, sizeof(ColliderBoxComponent));
 }
 
+//# RigidSphereComponent
+// a component that is like a rigidbody but uses only a sphere as approximation for collision,
+// aka a poor man's physics engine
+typedef struct RigidSphereComponent
+{
+    float radius;
+    Vector3 velocity;
+    Vector3 acceleration;
+    float mass;
+    float drag;
+    float bounce;
+    uint8_t hasGroundContact;
+} RigidSphereComponent;
+
+void RigidSphereComponent_onInit(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    RigidSphereComponent *component = (RigidSphereComponent*)componentInstanceData;
+    component->radius = 1.0f;
+    component->velocity = (Vector3){0.0f, 0.0f, 0.0f};
+    component->acceleration = (Vector3){0.0f, 0.0f, 0.0f};
+    component->mass = 1.0f;
+    component->drag = 0.0f;
+    component->bounce = 0.0f;
+}
+
+void RigidSphereComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos, int isMouseOver)
+{
+    RigidSphereComponent *component = (RigidSphereComponent*)componentInstanceData;
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Radius",
+    });
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 60, 20},
+        .text = TextFormat("%.2f##rigid-sphere-radius-%p", component->radius, component),
+        .rayCastTarget = 1,
+    }, &component->radius, 0.01f, 100.0f, 0.01f);
+    *ypos += 20.0f;
+
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Mass",
+    });
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 60, 20},
+        .text = TextFormat("%.2f##rigid-sphere-mass-%p", component->mass, component),
+        .rayCastTarget = 1,
+    }, &component->mass, 0.01f, 100.0f, 0.01f);
+    *ypos += 20.0f;
+
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Drag",
+    });
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 60, 20},
+        .text = TextFormat("%.2f##rigid-sphere-drag-%p", component->drag, component),
+        .rayCastTarget = 1,
+    }, &component->drag, 0.0f, 100.0f, 0.01f);
+    *ypos += 20.0f;
+
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Bounce",
+    });
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 60, 20},
+        .text = TextFormat("%.2f##rigid-sphere-bounce-%p", component->bounce, component),
+        .rayCastTarget = 1,
+    }, &component->bounce, 0.0f, 1.0f, 0.01f);
+
+    *ypos += 20.0f;
+
+}
+
+void RigidSphereComponent_onSerialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
+{
+    RigidSphereComponent *component = (RigidSphereComponent*)componentInstanceData;
+    cJSON_AddNumberToObject(json, "radius", component->radius);
+    cJSON_AddNumberToObject(json, "mass", component->mass);
+    cJSON_AddNumberToObject(json, "drag", component->drag);
+    cJSON_AddNumberToObject(json, "bounce", component->bounce);
+}
+
+void RigidSphereComponent_onDeserialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
+{
+    RigidSphereComponent *component = (RigidSphereComponent*)componentInstanceData;
+    component->radius = (float) cJSON_GetObjectItem(json, "radius")->valuedouble;
+    component->mass = (float) cJSON_GetObjectItem(json, "mass")->valuedouble;
+    component->drag = (float) cJSON_GetObjectItem(json, "drag")->valuedouble;
+    component->bounce = (float) cJSON_GetObjectItem(json, "bounce")->valuedouble;
+}
+
+void RigidSphereComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    if (!level->isEditor)
+    {
+        return;
+    }
+    RigidSphereComponent *component = (RigidSphereComponent*)componentInstanceData;
+    LevelEntity *instance = Level_resolveEntity(level, ownerId);
+    if (!instance)
+    {
+        return;
+    }
+    rlPushMatrix();
+    rlMultMatrixf(MatrixToFloat(instance->toWorldTransform));
+    DrawSphereWires((Vector3){0, 0, 0}, component->radius, 16, 16, DB8_RED);
+    rlPopMatrix();
+}
+
+void RigidSphereComponent_onUpdate(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float dt)
+{
+    RigidSphereComponent *component = (RigidSphereComponent*)componentInstanceData;
+    LevelEntity *instance = Level_resolveEntity(level, ownerId);
+    if (!instance)
+    {
+        return;
+    }
+    component->velocity = Vector3Add(component->velocity, component->acceleration);
+    component->velocity = Vector3Scale(component->velocity, 1.0f - component->drag * dt);
+    instance->position = Vector3Add(instance->position, Vector3Scale(component->velocity, dt));
+    LevelCollisionResult results[8];
+    int resultCount = Level_findCollisions(level, instance->position, component->radius, 1, 0, results, 8);
+
+    // gravity
+    component->velocity = Vector3Add(component->velocity, (Vector3) {0, -24.0f * dt, 0});
+    
+    Vector3 totalShift = {0};
+    component->hasGroundContact = 0;
+
+    for (int i = 0; i < resultCount; i++)
+    {
+        Vector3 normal = results[i].normal;
+
+        if (normal.y > 0.95f)
+        {
+            // lets assume upward facing normals are flat floors to avoid glitches
+            normal = (Vector3){0,1.0f,0};
+            component->hasGroundContact = 1;
+        }
+        Vector3 shift = Vector3Scale(normal, results[i].depth);
+        if (fabsf(shift.y) > fabsf(totalShift.y))
+        {
+            totalShift.y = shift.y;
+        }
+        if (fabsf(shift.x) > fabsf(totalShift.x))
+        {
+            totalShift.x = shift.x;
+        }
+        if (fabsf(shift.z) > fabsf(totalShift.z))
+        {
+            totalShift.z = shift.z;
+        }
+        // cancel velocity in direction of normal
+        // printf("velocity: %f %f %f -> ", camera->velocity.x, camera->velocity.y, camera->velocity.z);
+        if (normal.y > 0.95f)
+        {
+            component->velocity.y = 0;
+        }
+        // camera->velocity = Vector3Subtract(camera->velocity, Vector3Scale(normal, Vector3DotProduct(camera->velocity, results[i].normal)));
+        // printf(" %f %f %f\n", camera->velocity.x, camera->velocity.y, camera->velocity.z);
+    }
+
+    instance->position = Vector3Add(instance->position, totalShift);
+
+    Level_updateEntityTransform(instance);
+}
+
+void RigidSphereComponent_register(Level *level)
+{
+    Level_registerEntityComponentClass(level, COMPONENT_TYPE_RIGID_SPHERE, "RigidSphere", 
+        (LevelEntityComponentClassMethods){
+            .onInitFn = RigidSphereComponent_onInit,
+            .onDestroyFn = NULL,
+            .onDisableFn = NULL,
+            .onEnableFn = NULL,
+            .onSerializeFn = RigidSphereComponent_onSerialize,
+            .onDeserializeFn = RigidSphereComponent_onDeserialize,
+            .onEditorInspectFn = RigidSphereComponent_onInspectorUi,
+            .updateFn = RigidSphereComponent_onUpdate,
+            .drawFn = RigidSphereComponent_onDraw,
+            .onEditorMenuFn = NULL,
+        }, sizeof(RigidSphereComponent));
+}
+
 
 //# Registration
 void LevelComponents_register(Level *level)
@@ -1030,4 +1224,5 @@ void LevelComponents_register(Level *level)
         }, sizeof(SpriteRendererComponent));
 
     ColliderBoxComponent_register(level);
+    RigidSphereComponent_register(level);
 }

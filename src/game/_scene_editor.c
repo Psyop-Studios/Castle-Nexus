@@ -471,6 +471,25 @@ static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* ent
     }
 
     *posY += 20.0f;
+    
+    if (DuskGui_button((DuskGuiParams) {
+        .text = TextFormat("Add Component##AddComponent-%d-%d", entity->id, entity->generation),
+        .bounds = (Rectangle) { 10, *posY, 180, 20 },
+        .rayCastTarget = 1,}
+        ))
+    {
+        DuskGui_openMenu("AddComponentMenu");
+        _selectedEntity = entity;
+        _componentMenu = DuskGui_toScreenSpace((Vector2){10, *posY});
+    }
+
+    *posY += 25.0f;
+
+    *posY += 4.0f;
+    DuskGui_horizontalLine((DuskGuiParams) {
+        .bounds = (Rectangle) { 10, *posY, 180, 2 },
+    });
+    *posY += 4.0f;
 
     char buffer[128];
     sprintf(buffer, "%d-%d", entity->id, entity->generation);
@@ -534,21 +553,6 @@ static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* ent
         }
     }
 
-    *posY += 4.0f;
-    DuskGui_horizontalLine((DuskGuiParams) {
-        .bounds = (Rectangle) { 10, *posY, 180, 2 },
-    });
-    *posY += 4.0f;
-    if (DuskGui_button((DuskGuiParams) {
-        .text = TextFormat("Add Component##AddComponent-%d-%d", entity->id, entity->generation),
-        .bounds = (Rectangle) { 10, *posY, 180, 20 },
-        .rayCastTarget = 1,}
-        ))
-    {
-        DuskGui_openMenu("AddComponentMenu");
-        _selectedEntity = entity;
-        _componentMenu = DuskGui_toScreenSpace((Vector2){10, *posY});
-    }
 
     *posY += 25.0f;
     if (DuskGui_button((DuskGuiParams) {
