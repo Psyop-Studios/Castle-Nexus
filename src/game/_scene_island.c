@@ -7,6 +7,7 @@
 
 static FPSCameraZ _camera;
 static int _allowCameraMovement = 1;
+#define TRIGGER_DOOR_ZONE "TriggerCastleFrontDoor"
 
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
@@ -27,8 +28,10 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
 {
+    dt = fminf(dt, 0.1f);
     Level *level = Game_getLevel();
     level->isEditor = 0;
+    
     FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
     Level_update(level, dt);
 }
@@ -38,51 +41,64 @@ static void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *
     _allowCameraMovement = action->actionInt;
 }
 
+
+
+static void ScriptAction_island_firstStep(Script *script, ScriptAction *action)
+{
+    Level *level = Game_getLevel();
+    if (level->playerDistanceWalked > 1.0f)
+    {
+        script->nextActionId = action->actionIdStart + 1;
+        return;
+    }
+    DrawNarrationBottomBox("Chapter 2:", 
+        "After a short ride, the dock workers dropped you off onto the [color=blue_]islane[/color].\n"
+        "(Use [color=red_]WASD/SPACE[/color] to move & jump, and the [color=red_]mouse[/color]", NULL);
+}
+
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     DisableCursor();
     // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
     _camera.camera = (Camera){0};
-    _camera.camera.position = (Vector3){ 30.0f, 1.70f, -32.0f };
+    _camera.camera.position = (Vector3){ 8.0f, 1.70f, 4.0f };
     _camera.camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     _camera.camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     _camera.camera.fovy = 45.0f;
     _camera.camera.projection = CAMERA_PERSPECTIVE;
+    _camera.rotation.y = 200.0f * DEG2RAD;
     _camera.velocityDecayRate = 14.0f;
     _camera.acceleration = 25.0f;
 
     Level_load(Game_getLevel(), "resources/levels/island-fix.lvl");
-    int step = 0;
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter 2",  "After a short ride, you arrive at the [color=blue]island.[/color]", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter 2",  "You get off the boat.", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter 2",  "You look around to say thank you, but..", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter 2",  "[color=grey] they're already gone.[/color]", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_setCameraMovementEnabled,
-        .actionInt = 1});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_jumpStep,
-        .actionData = ScriptAction_JumpStepData_new(-1, 1, 1)});
-    step++;
+ int step = 0;
     
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_setCameraMovementEnabled,
-        .actionInt = 1});
+    // message to player to get started
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_island_firstStep });
+    step += 1;
+
+    // Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_exitZoneMessage });
+    // Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_explorationMessageZone_1 });
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_DOOR_ZONE });
+    step += 1;
+    
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Spooky voice:",
+            "Who goes there?", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Spooky voice:",
+            "You believe you have the right to invade my land? ", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Spooky voice:",
+            "You lot may have won last time, but not again!", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_PUZZLE_1 });
 }
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)

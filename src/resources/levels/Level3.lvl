@@ -552,9 +552,9 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}],
-	"entityNames":	["Painting-Castle-1", "Painting-Castle-2", "Candle-Blue-1", "Candle-Blue-2", "Candle-Blue-3", "Candle-Blue-4", "Candle-Blue-5", "Candle-Blue-6", "Candle-Blue-7", "Candle-Blue-8", "Painting-Moonlight-1", "Candle-Blue-9", "Painting-Tree-1", null, null, null],
-	"entityTRS":	[-1, 4, -19, 0, 0, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -19, 4, -12, 0, 90, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, 2, 3.8590810298919678, -19, 0, 0, 0, 1, 1, 1, 0, 0, 3, 0, 180, 0, 1, 1, 1, -9, 4.0000009536743164, -8, 0, 90, 0, 1, 1, 1, -7, 4.0000009536743164, -19, 0, 0, 0, 1, 1, 1, -6, 4.0000009536743164, 3, 0, 180, 0, 1, 1, 1, -16, 4.0000009536743164, -10, 0, 180, 0, 1, 1, 1, -15, 4.0000009536743164, -26, 0, 0, 0, 1, 1, 1, -19, 8.0000009536743164, -22, 0, 90, 0, 1, 1, 1, 3, 3.9999995231628418, -10, 0, 270, 0, 1.03857421875, 1.03857421875, 1.03857421875, 0, 3.9999995231628418, -7, 0, 180, 0, 1, 1, 1, -19, 3.9999997615814209, -16, 0, -270, 0, 0.48984384536743164, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0],
+	"entityNames":	["Painting-Castle-1", "Painting-Castle-2", "Candle-Blue-1", "Candle-Blue-2", "Candle-Blue-3", "Candle-Blue-4", "Candle-Blue-5", "Candle-Blue-6", "Candle-Blue-7", "Candle-Blue-8", "Painting-Moonlight-1", "Candle-Blue-9", "Painting-Tree-1", null, "Painting-Chao-1", null],
+	"entityTRS":	[-1, 4, -19, 0, 0, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -19, 4, -12, 0, 90, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, 2, 3.8590810298919678, -19, 0, 0, 0, 1, 1, 1, 0, 0, 3, 0, 180, 0, 1, 1, 1, -9, 4.0000009536743164, -8, 0, 90, 0, 1, 1, 1, -7, 4.0000009536743164, -19, 0, 0, 0, 1, 1, 1, -6, 4.0000009536743164, 3, 0, 180, 0, 1, 1, 1, -16, 4.0000009536743164, -10, 0, 180, 0, 1, 1, 1, -15, 4.0000009536743164, -26, 0, 0, 0, 1, 1, 1, -19, 8.0000009536743164, -22, 0, 90, 0, 1, 1, 1, 3, 3.9999995231628418, -10, 0, 270, 0, 1.03857421875, 1.03857421875, 1.03857421875, 0, 3.9999995231628418, -7, 0, 180, 0, 1, 1, 1, -19, 3.9999997615814209, -16, 0, -270, 0, 0.48984384536743164, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -18, 3.9999997615814209, 3, 0, 180, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 14, 0],
 	"components":	[{
 			"name":	"CameraFacing",
 			"componentId":	0,
@@ -563,12 +563,12 @@
 		}, {
 			"name":	"Wobbler",
 			"componentId":	1,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
-			"entityData":	[null, null, null, null, null, null, null, null]
+			"ownerEntityIds":	[],
+			"entityData":	[]
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/decoration-picture-frame-1.glb",
 					"isDithered":	0,
@@ -621,11 +621,15 @@
 					"mesh":	"resources/level_assets/decoration-picture-frame-1.glb",
 					"isDithered":	0,
 					"trs":	[0, 0, -1, 0, 0, 0, 1, 1, 1]
-				}, null, null, null, null, null, null, null, null, null, null, null]
+				}, null, {
+					"mesh":	"resources/level_assets/decoration-picture-frame-1.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, -1, 0, 0, 0, 1, 1, 1]
+				}, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"texture":	"resources/level_assets/portraitCastle.png",
 					"sprite":	"resources/level_assets/portraitCastle.png",
@@ -687,11 +691,15 @@
 					"texture":	"resources/level_assets/portraitTrees.png",
 					"sprite":	"resources/level_assets/portraitTrees.png",
 					"trs":	[0, 2.1024410724639893, 0.11816415190696716, 0, 0, 0, 0.82763653993606567, 0.82763653993606567, 0.82763653993606567]
-				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+				}, null, {
+					"texture":	"resources/level_assets/portrait-chao.png",
+					"sprite":	"resources/level_assets/portrait-chao.png",
+					"trs":	[-0.0253906324505806, 2.1806633472442627, 0.0544922910630703, 0, 0, 0, 0.90048819780349731, 0.90048819780349731, 0.90048819780349731]
+				}, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"ColliderBox",
 			"componentId":	4,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+			"ownerEntityIds":	[],
+			"entityData":	[]
 		}]
 }

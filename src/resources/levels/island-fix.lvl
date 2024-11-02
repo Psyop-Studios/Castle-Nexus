@@ -551,10 +551,46 @@
 			"instancesSY":	[0.757519543170929, 0.532421886920929, 1, 0.602441430091858, 0.35869133472442627],
 			"instancesSZ":	[0.757519543170929, 0.532421886920929, 1, 0.602441430091858, 0.35869133472442627],
 			"instancesTexId":	[-1, -1, -1, -1, -1]
+		}, {
+			"filename":	"resources/level_assets/decoration-wooden-pole.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/ground-mud-block.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/ground-wooden-planks.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
 		}],
-	"entityNames":	["WATER", "CollisionLeftSideCastle", "CollisionLeftSideIsland", "Collisionisland", "CollisionRightSideIsland", "CollisionLeftSideCastle"],
-	"entityTRS":	[0, 0, 0, 0, 0, 0, 1, 1, 1, -6, -3.5762786865234375e-07, -6, 0, 0, 0, 1, 1, 1, -13, 0.17900355160236359, 2.2006838321685791, 0, -90, 0, 1, 1, 1, 2.0485351085662842, -3.5762786865234375e-07, 12.412012100219727, 0, -180, 0, 1, 1, 1, 14.191506385803223, -4.76837158203125e-07, 2.2907228469848633, 0, -90, 0, 1, 1, 1, 13, -5.9604644775390625e-07, -7, 0, 0, 0, 1, 1, 1],
-	"entityIds":	[0, 1, 2, 3, 4, 5],
+	"entityNames":	["WATER", "CollisionLeftSideCastle", "IslandLeftSide", "Collisionisland", "New Entity", "CollisionLeftSideCastle", "floor collision", "TriggerCastleFrontDoor"],
+	"entityTRS":	[0, 0, 0, 0, 0, 0, 1, 1, 1, -6, -3.5762786865234375e-07, -6, 0, 0, 0, 1, 1, 1, -12, 0, 1, 0, 360, 0, 1, 1, 1, 1, -0.0466800481081009, 1, 0, -360, 0, 1, 1, 1, 15, 0, 3, 0, 0, 0, 1, 1, 1, 13, -5.9604644775390625e-07, -7, 0, 0, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 5, 0, -5, 0, 0, 0, 1.1795997619628906, 9.0492191314697266, 1.1795997619628906],
+	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7],
 	"components":	[{
 			"name":	"CameraFacing",
 			"componentId":	0,
@@ -578,41 +614,49 @@
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/outside-water-1.glb",
 					"isDithered":	0,
 					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
-				}, null, null, null, null, null, null, null]
+				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[],
-			"entityData":	[]
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"ColliderBox",
 			"componentId":	4,
-			"ownerEntityIds":	[1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"size":	[12.871175765991211, 5.7617573738098145, 1.2596876621246338],
 					"offset":	[-0.0025390405207872391, -0.394570380449295, -1.2707030773162842],
 					"isTrigger":	0
 				}, {
-					"size":	[21.67765998840332, 5.7617573738098145, 1.2596876621246338],
-					"offset":	[-0.0025390405207872391, -0.394570380449295, -1.2707030773162842],
+					"size":	[1.6629314422607422, 9.3766412734985352, 26.757070541381836],
+					"offset":	[0, 0, 0],
 					"isTrigger":	0
 				}, {
 					"size":	[29.811176300048828, 5.7617573738098145, 1.2596876621246338],
-					"offset":	[-0.0025390405207872391, -0.394570380449295, -1.2707030773162842],
+					"offset":	[-0.0025390405207872391, 1.3739449977874756, 12.527305603027344],
 					"isTrigger":	0
 				}, {
-					"size":	[21.67765998840332, 5.7617573738098145, 1.2596876621246338],
-					"offset":	[-0.0025390405207872391, -0.394570380449295, -1.2707030773162842],
+					"size":	[0.88484382629394531, 8.44929885864258, 21.928432464599609],
+					"offset":	[0, 0, 0],
 					"isTrigger":	0
 				}, {
 					"size":	[7.9829750061035156, 5.7617573738098145, 1.2596876621246338],
 					"offset":	[-0.83488273620605469, -0.16351567208766937, -0.16218756139278412],
 					"isTrigger":	0
-				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+				}, {
+					"size":	[28.584609985351562, 0.22468748688697815, 23.5728816986084],
+					"offset":	[0, -0.29910147190094, 0],
+					"isTrigger":	0
+				}, {
+					"size":	[8.9797239303588867, 5.4466805458068848, 1.7732030153274536],
+					"offset":	[0, -0.16167968511581421, -0.8230857253074646],
+					"isTrigger":	1
+				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}]
 }

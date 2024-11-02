@@ -563,8 +563,8 @@
 		}, {
 			"name":	"Wobbler",
 			"componentId":	1,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
-			"entityData":	[null, null, null, null, null, null, null, null]
+			"ownerEntityIds":	[],
+			"entityData":	[]
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
@@ -613,7 +613,7 @@
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[0, 1, 2, 3, 0, 0, 0, 0, 8, 9, 10, 11, 0, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 0, 0, 0, 0, 8, 9, 10, 11, 0, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"texture":	"resources/level_assets/anim_flame.png",
 					"sprite":	"resources/level_assets/anim_flame.png",
@@ -662,11 +662,11 @@
 					"texture":	"resources/level_assets/portraitTrees.png",
 					"sprite":	"resources/level_assets/portraitTrees.png",
 					"trs":	[0, 2.1024410724639893, 0.11816415190696716, 0, 0, 0, 0.98076164722442627, 0.85654282569885254, 0.82763653993606567]
-				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+				}, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"ColliderBox",
 			"componentId":	4,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+			"ownerEntityIds":	[],
+			"entityData":	[]
 		}]
 }

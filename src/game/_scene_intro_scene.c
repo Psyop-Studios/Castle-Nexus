@@ -120,60 +120,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
             "Eh, funny you saying that... I was looking for someone to ferry me to the castle.", 1)});
     step += 1;
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 2:",
-            "You mad city people ... you don't understand some things better be left alone", 1)});
-    step += 1;
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 1:",
-            "Ach, come on, if they wanna get a chill, why stop 'em?", 1)});
-    step += 1;
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 2:",
-            "Stop it August, this ain't funny.", 1)});
-    step += 1;
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
-            "We're all adults. What do you say, stranger, shall I ferry you to the island?", 1)});
-    step += 1;
-    
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
-            "Uh... not like I have a choice. See, I am a writer and my boss wants me to write a story about that place.", 1)});
-    step += 1;
 
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
-            "I see, a writer. So ye're smart, eh? I bet this will be a great story for you to tell!", 1)});
-    step += 1;
-
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 2:",
-            "Listen, mister, this place isn't for you. There are stories of people never returning from that castle.", 1)});
-    step += 1;
-
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
-            "Ha! Probably only because they didn't want to pay the price for your ride, Tom!", 1)});
-    step += 1;
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
-            "But I am not like that. Tell you what, I will bring you there for free. Just to prove scared little Tommy here wrong!", 1)});
-    step += 1;
-
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Tom:",
-            "That's a cruel joke, August. Don't say I haven't warned ye, mister.", 1)});
-    step += 1;
-
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
-            "Oh well, how bad could it be? I am ready when you are, Mister August.", 1)});
-    step += 1;
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
-            "Then let's go now, the high tide is ebbing.", 1)});
-    step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_START_ISLAND });
 
     // Script_addAction((ScriptAction){
