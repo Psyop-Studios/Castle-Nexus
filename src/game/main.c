@@ -284,6 +284,11 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
             move.x = 1;
         }
 
+        if (IsKeyDown(KEY_SPACE) && camera->hasGroundContact)
+        {
+            camera->velocity.y = 8.0f;
+        }
+
         Vector3 forwardXZ = Vector3Normalize((Vector3){camera->camera.target.x - camera->camera.position.x, 0, camera->camera.target.z - camera->camera.position.z});
         Vector3 right = Vector3CrossProduct(forwardXZ, (Vector3){0, 1, 0});
         if (Vector3Length(move) > 0.0f)
@@ -325,6 +330,7 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
     camera->velocity = Vector3Add(camera->velocity, (Vector3) {0, -24.0f * dt, 0});
     
     Vector3 totalShift = {0};
+    camera->hasGroundContact = 0;
     for (int i = 0; i < resultCount; i++)
     {
         Vector3 normal = results[i].normal;
@@ -333,6 +339,7 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
         {
             // lets assume upward facing normals are flat floors to avoid glitches
             normal = (Vector3){0,1.0f,0};
+            camera->hasGroundContact = 1;
         }
         Vector3 shift = Vector3Scale(normal, results[i].depth);
         if (fabsf(shift.y) > fabsf(totalShift.y))

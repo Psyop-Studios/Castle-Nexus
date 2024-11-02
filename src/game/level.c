@@ -6,6 +6,7 @@
 #include <raymath.h>
 #include "main.h"
 #include <stdio.h>
+#include "level_components.h"
 
 void Level_init(Level *level)
 {
@@ -505,6 +506,36 @@ int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t m
             }
         }
     }
+
+    LevelEntityComponentClass* boxColliderClass = &level->entityComponentClasses[COMPONENT_TYPE_COLLIDER_BOX];
+    for (int i = 0; i < boxColliderClass->instanceCount && resultIndex < maxResults; i++)
+    {
+        if (boxColliderClass->generations[i] == 0)
+        {
+            continue;
+        }
+        LevelEntity *entity = Level_resolveEntity(level, boxColliderClass->ownerIds[i]);
+        if (!entity)
+        {
+            continue;
+        }
+
+        ColliderBoxComponent *boxCollider = &((ColliderBoxComponent*)boxColliderClass->componentInstanceData)[i];
+        Matrix inv = MatrixInvert(entity->toWorldTransform);
+        Vector3 localPosition = Vector3Transform(position, inv);
+
+        LevelCollisionResult result;
+        if (Level_testCollider(&(LevelCollider){
+            .type = LEVEL_COLLIDER_TYPE_AABOX,
+            .position = boxCollider->offset,
+            .aabox.size = boxCollider->size,
+            .isTrigger = boxCollider->isTrigger,
+        }, &result, localPosition, radius))
+        {
+            results[resultIndex++] = result;
+        }
+    }
+        
     return resultIndex;
 }
 

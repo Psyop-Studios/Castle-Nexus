@@ -71,6 +71,7 @@ typedef struct FPSCameraZ {
     Vector3 velocity;
     float velocityDecayRate;
     float acceleration;
+    uint8_t hasGroundContact;
 } FPSCameraZ;
 
 extern Script _script;

@@ -7,10 +7,6 @@
 #include <stdio.h>
 #include <math.h>
 
-#define COMPONENT_TYPE_CAMERAFACING 0
-#define COMPONENT_TYPE_WOBBLER 1
-#define COMPONENT_TYPE_MESHRENDERER 2
-#define COMPONENT_TYPE_SPRITERENDERER 3
 
 //# CameraFacingComponent
 typedef struct CameraFacingComponent
@@ -72,7 +68,7 @@ void CameraFacingComponent_onInit(Level *level, LevelEntityInstanceId ownerId, v
     component->useDirection = 0;
 }
 
-void CameraFacingComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos)
+void CameraFacingComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos, int isMouseOver)
 {
     CameraFacingComponent *component = (CameraFacingComponent*)componentInstanceData;
     
@@ -226,7 +222,7 @@ void WobblerComponent_onInit(Level *level, LevelEntityInstanceId ownerId, void *
     component->phase = 0.0f;
 }
 
-void WobblerComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos)
+void WobblerComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos, int isMouseOver)
 {
     WobblerComponent *component = (WobblerComponent*)componentInstanceData;
     component->type = DuskGui_comboMenu((DuskGuiParams){
@@ -390,7 +386,7 @@ static MeshRendererComponent *_selectedMeshRendererComponent = NULL;
 static Vector2 _selectedMeshRendererMenuPos = {0};
 static float _selectedMeshRendererMenuWidth = 0.0f;
 
-void MeshRendererComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos)
+void MeshRendererComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos, int isMouseOver)
 {
     MeshRendererComponent *component = (MeshRendererComponent*)componentInstanceData;
     float width = DuskGui_getAvailableSpace().x - 20;
@@ -627,7 +623,7 @@ void SpriteRendererComponent_onInit(Level *level, LevelEntityInstanceId ownerId,
     SpriteRendererComponent_updateTransform(component);
 }
 
-void SpriteRendererComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos)
+void SpriteRendererComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos, int isMouseOver)
 {
     SpriteRendererComponent *component = (SpriteRendererComponent*)componentInstanceData;
     float width = DuskGui_getAvailableSpace().x - 20;
@@ -813,10 +809,155 @@ void SpriteRendererComponent_onDeserialize(Level *level, LevelEntityInstanceId o
     }
 }
 
+//# ColliderBoxComponent
+
+static ColliderBoxComponent *_selectedColliderBoxComponent = NULL;
+
+void ColliderBoxComponent_onInit(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    ColliderBoxComponent *component = (ColliderBoxComponent*)componentInstanceData;
+    component->size = (Vector3){1.0f, 1.0f, 1.0f};
+    component->offset = (Vector3){0.0f, 0.0f, 0.0f};
+}
+
+void ColliderBoxComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos, int isMouseOver)
+{
+    ColliderBoxComponent *component = (ColliderBoxComponent*)componentInstanceData;
+    if (isMouseOver)
+    {
+        _selectedColliderBoxComponent = component;
+    }
+    else if (component <= _selectedColliderBoxComponent)
+    {
+        // new iteration, let's reset
+        _selectedColliderBoxComponent = NULL;
+    }
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Size",
+    });
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 60, 20},
+        .text = TextFormat("%.2f##collider-box-size-x-%p", component->size.x, component),
+        .rayCastTarget = 1,
+    }, &component->size.x, 0.01f, 100.0f, 0.01f);
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){70, *ypos, 60, 20},
+        .text = TextFormat("%.2f##collider-box-size-y-%p", component->size.y, component),
+        .rayCastTarget = 1,
+    }, &component->size.y, 0.01f, 100.0f, 0.01f);
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){130, *ypos, 60, 20},
+        .text = TextFormat("%.2f##collider-box-size-z-%p", component->size.z, component),
+        .rayCastTarget = 1,
+    }, &component->size.z, 0.01f, 100.0f, 0.01f);
+    *ypos += 20.0f;
+
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Offset",
+    });
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 60, 20},
+        .text = TextFormat("%.2f##collider-box-offset-x-%p", component->offset.x, component),
+        .rayCastTarget = 1,
+    }, &component->offset.x, -100.0f, 100.0f, 0.01f);
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){70, *ypos, 60, 20},
+        .text = TextFormat("%.2f##collider-box-offset-y-%p", component->offset.y, component),
+        .rayCastTarget = 1,
+    }, &component->offset.y, -100.0f, 100.0f, 0.01f);
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){130, *ypos, 60, 20},
+        .text = TextFormat("%.2f##collider-box-offset-z-%p", component->offset.z, component),
+        .rayCastTarget = 1,
+    }, &component->offset.z, -100.0f, 100.0f, 0.01f);
+    *ypos += 20.0f;
+
+    if (DuskGui_button((DuskGuiParams){
+        .text = TextFormat("IsTrigger: %s##collider-box-trigger-%p", component->isTrigger ? "True" : "False", component),
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .rayCastTarget = 1,
+    }))
+    {
+        component->isTrigger = !component->isTrigger;
+    }
+    *ypos += 20.0f;
+}
+
+void ColliderBoxComponent_onSerialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
+{
+    ColliderBoxComponent *component = (ColliderBoxComponent*)componentInstanceData;
+    cJSON* size = cJSON_CreateArray();
+    cJSON_AddItemToObject(json, "size", size);
+    cJSON_AddItemToArray(size, cJSON_CreateNumber(component->size.x));
+    cJSON_AddItemToArray(size, cJSON_CreateNumber(component->size.y));
+    cJSON_AddItemToArray(size, cJSON_CreateNumber(component->size.z));
+    cJSON* offset = cJSON_CreateArray();
+    cJSON_AddItemToObject(json, "offset", offset);
+    cJSON_AddItemToArray(offset, cJSON_CreateNumber(component->offset.x));
+    cJSON_AddItemToArray(offset, cJSON_CreateNumber(component->offset.y));
+    cJSON_AddItemToArray(offset, cJSON_CreateNumber(component->offset.z));
+}
+
+void ColliderBoxComponent_onDeserialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
+{
+    ColliderBoxComponent *component = (ColliderBoxComponent*)componentInstanceData;
+    cJSON* size = cJSON_GetObjectItem(json, "size");
+    component->size.x = (float) cJSON_GetArrayItem(size, 0)->valuedouble;
+    component->size.y = (float) cJSON_GetArrayItem(size, 1)->valuedouble;
+    component->size.z = (float) cJSON_GetArrayItem(size, 2)->valuedouble;
+    cJSON* offset = cJSON_GetObjectItem(json, "offset");
+    component->offset.x = (float) cJSON_GetArrayItem(offset, 0)->valuedouble;
+    component->offset.y = (float) cJSON_GetArrayItem(offset, 1)->valuedouble;
+    component->offset.z = (float) cJSON_GetArrayItem(offset, 2)->valuedouble;
+}
+
+void ColliderBoxComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    if (!level->isEditor)
+    {
+        // return;
+    }
+    ColliderBoxComponent *component = (ColliderBoxComponent*)componentInstanceData;
+    LevelEntity *instance = Level_resolveEntity(level, ownerId);
+    if (!instance)
+    {
+        return;
+    }
+    rlPushMatrix();
+    rlMultMatrixf(MatrixToFloat(instance->toWorldTransform));
+    if (_selectedColliderBoxComponent == component)
+    {
+        DrawCubeV(component->offset, component->size, DB8_RED);
+    }
+    DrawCubeWires((Vector3){component->offset.x, component->offset.y, component->offset.z}, component->size.x, component->size.y, component->size.z, DB8_RED);
+    rlPopMatrix();
+}
+
+void ColliderBoxComponent_register(Level *level)
+{
+    Level_registerEntityComponentClass(level, COMPONENT_TYPE_COLLIDER_BOX, "ColliderBox", 
+        (LevelEntityComponentClassMethods){
+            .onInitFn = ColliderBoxComponent_onInit,
+            .onDestroyFn = NULL,
+            .onDisableFn = NULL,
+            .onEnableFn = NULL,
+            .onSerializeFn = ColliderBoxComponent_onSerialize,
+            .onDeserializeFn = ColliderBoxComponent_onDeserialize,
+            .onEditorInspectFn = ColliderBoxComponent_onInspectorUi,
+            .updateFn = NULL,
+            .drawFn = ColliderBoxComponent_onDraw,
+            .onEditorMenuFn = NULL,
+        }, sizeof(ColliderBoxComponent));
+}
 
 
-
-
+//# Registration
 void LevelComponents_register(Level *level)
 {
     Level_registerEntityComponentClass(level, COMPONENT_TYPE_CAMERAFACING, "CameraFacing", 
@@ -874,4 +1015,6 @@ void LevelComponents_register(Level *level)
             .drawFn = SpriteRendererComponent_onDraw,
             .onEditorMenuFn = SpriteRendererComponent_onEditorMenu,
         }, sizeof(SpriteRendererComponent));
+
+    ColliderBoxComponent_register(level);
 }

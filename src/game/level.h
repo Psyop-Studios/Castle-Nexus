@@ -73,7 +73,7 @@ typedef struct LevelEntityComponentClassMethods
     void (*onInitFn)(Level* level, LevelEntityInstanceId ownerId, void *componentInstanceData);
     void (*onSerializeFn)(Level* level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json);
     void (*onDeserializeFn)(Level* level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json);
-    void (*onEditorInspectFn)(Level* level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *yPos);
+    void (*onEditorInspectFn)(Level* level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *yPos, int isMouseOver);
     void (*onEditorMenuFn)(Level* level);
 } LevelEntityComponentClassMethods;
 

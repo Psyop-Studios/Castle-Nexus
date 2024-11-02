@@ -265,7 +265,7 @@ static void SceneDrawUi_mainBar(GameContext *gameCtx, SceneConfig *sceneConfig)
         .text = toggleModeName,
         .rayCastTarget = 1,
         .bounds = (Rectangle) { DuskGui_getAvailableSpace().x - 105, 7, 100, 20 },
-    }))
+    }) || IsKeyPressed(KEY_TAB))
     {
         _editorMode = _editorMode == EDITOR_MODE_EDITGEOMETRY ? EDITOR_MODE_EDITENTITIES : EDITOR_MODE_EDITGEOMETRY;
     }
@@ -501,9 +501,23 @@ static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* ent
 
                     if (componentClass->methods.onEditorInspectFn)
                     {
+                        char *panelId = TextFormat("##component-ui-%d-%d", i, j);
+                        DuskGuiParamsEntry *prevPanel = DuskGui_getEntry(panelId, 1);
+                        DuskGuiParamsEntryId panel = DuskGui_beginPanel((DuskGuiParams) {
+                            .bounds = (Rectangle) { 0, *posY, DuskGui_getAvailableSpace().x, 
+                                prevPanel ? prevPanel->params.bounds.height : 100
+                            },
+                            .styleGroup = &_editor_invisibleStyleGroup,
+                            .rayCastTarget = 1,
+                            .text = panelId,
+                        });
+                        float y = 0.0f;
                         void *componentInstanceData = (char*)componentClass->componentInstanceData + j * componentClass->componentInstanceDataSize;
-                        componentClass->methods.onEditorInspectFn(level, (LevelEntityInstanceId){entity->id, entity->generation}, componentInstanceData, posY);
-                        *posY += 4.0f;
+                        DuskGuiParamsEntry *panelEntry = DuskGui_getEntryById(panel);
+                        componentClass->methods.onEditorInspectFn(level, (LevelEntityInstanceId){entity->id, entity->generation}, componentInstanceData, &y, panelEntry->isMouseOver);
+                        panelEntry->params.bounds.height = y;
+                        DuskGui_endPanel(panel);
+                        *posY += y + 4.0f;
                     }
 
                     if (DuskGui_button((DuskGuiParams) {
