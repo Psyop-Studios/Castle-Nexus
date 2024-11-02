@@ -588,8 +588,8 @@ void Level_updateInstanceTransform(LevelMeshInstance *instance)
     Vector3 position = instance->position;
     Vector3 eulerRotationDeg = instance->eulerRotationDeg;
     Vector3 scale = instance->scale;
-    instance->toWorldTransform = MatrixRotateXYZ((Vector3){DEG2RAD * eulerRotationDeg.x, DEG2RAD * eulerRotationDeg.y, DEG2RAD * eulerRotationDeg.z});
-    instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, MatrixScale(scale.x, scale.y, scale.z));
+    instance->toWorldTransform = MatrixScale(scale.x, scale.y, scale.z);
+    instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, MatrixRotateXYZ((Vector3){DEG2RAD * eulerRotationDeg.x, DEG2RAD * eulerRotationDeg.y, DEG2RAD * eulerRotationDeg.z}));
     instance->toWorldTransform = MatrixMultiply(instance->toWorldTransform, MatrixTranslate(position.x, position.y, position.z));
 
 }
@@ -1251,8 +1251,8 @@ void Level_registerEntityComponentClass(Level *level, uint32_t componentId, cons
 void Level_updateEntityTransform(LevelEntity *entity)
 {
     entity->transformIsDirty = 0;
-    entity->toWorldTransform = MatrixRotateXYZ((Vector3){DEG2RAD * entity->eulerRotationDeg.x, DEG2RAD * entity->eulerRotationDeg.y, DEG2RAD * entity->eulerRotationDeg.z});
     entity->toWorldTransform = MatrixMultiply(entity->toWorldTransform, MatrixScale(entity->scale.x, entity->scale.y, entity->scale.z));
+    entity->toWorldTransform = MatrixRotateXYZ((Vector3){DEG2RAD * entity->eulerRotationDeg.x, DEG2RAD * entity->eulerRotationDeg.y, DEG2RAD * entity->eulerRotationDeg.z});
     entity->toWorldTransform = MatrixMultiply(entity->toWorldTransform, MatrixTranslate(entity->position.x, entity->position.y, entity->position.z));
 }
 

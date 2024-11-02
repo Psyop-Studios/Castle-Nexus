@@ -198,8 +198,8 @@ void WobblerComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *
         break;
     }
 
-    Matrix m = MatrixRotateXYZ((Vector3){DEG2RAD * rotation.x, DEG2RAD * rotation.y, DEG2RAD * rotation.z});
-    m = MatrixMultiply(m, MatrixScale(scale.x, scale.y, scale.z));
+    Matrix m = MatrixScale(scale.x, scale.y, scale.z);
+    m = MatrixMultiply(m, MatrixRotateXYZ((Vector3){DEG2RAD * rotation.x, DEG2RAD * rotation.y, DEG2RAD * rotation.z}));
     m = MatrixMultiply(m, MatrixTranslate(position.x, position.y, position.z));
     instance->toWorldTransform.m12 -= component->pivot.x;
     instance->toWorldTransform.m13 -= component->pivot.y;
@@ -344,8 +344,8 @@ typedef struct MeshRendererComponent
 
 static void MeshRendererComponent_updateTransform(MeshRendererComponent *component)
 {
-    component->transform = MatrixRotateXYZ((Vector3){DEG2RAD * component->eulerRotationDeg.x, DEG2RAD * component->eulerRotationDeg.y, DEG2RAD * component->eulerRotationDeg.z});
-    component->transform = MatrixMultiply(component->transform, MatrixScale(component->scale.x, component->scale.y, component->scale.z));
+    component->transform = MatrixScale(component->scale.x, component->scale.y, component->scale.z);
+    component->transform = MatrixMultiply(component->transform, MatrixRotateXYZ((Vector3){DEG2RAD * component->eulerRotationDeg.x, DEG2RAD * component->eulerRotationDeg.y, DEG2RAD * component->eulerRotationDeg.z}));
     component->transform = MatrixMultiply(component->transform, MatrixTranslate(component->position.x, component->position.y, component->position.z));
 }
 
@@ -564,8 +564,8 @@ static float _selectedSpriteRendererMenuWidth = 0.0f;
 
 static void SpriteRendererComponent_updateTransform(SpriteRendererComponent *component)
 {
-    component->transform = MatrixRotateXYZ((Vector3){DEG2RAD * component->eulerRotationDeg.x, DEG2RAD * component->eulerRotationDeg.y, DEG2RAD * component->eulerRotationDeg.z});
-    component->transform = MatrixMultiply(component->transform, MatrixScale(component->scale.x, component->scale.y, component->scale.z));
+    component->transform = MatrixScale(component->scale.x, component->scale.y, component->scale.z);
+    component->transform = MatrixMultiply(component->transform, MatrixRotateXYZ((Vector3){DEG2RAD * component->eulerRotationDeg.x, DEG2RAD * component->eulerRotationDeg.y, DEG2RAD * component->eulerRotationDeg.z}));
     component->transform = MatrixMultiply(component->transform, MatrixTranslate(component->position.x, component->position.y, component->position.z));
 }
 
