@@ -97,15 +97,15 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     DisableCursor();
     // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
     _camera.camera = (Camera){0};
-    _camera.camera.position = (Vector3){ 30.0f, 1.70f, -32.0f };
-    _camera.camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    _camera.camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    _camera.camera.position = (Vector3){ 1.5f, 1.70f, 0.0f };
+    _camera.camera.target = (Vector3){ 90.0f, 100.0f, 180.0f };
+    _camera.camera.up = (Vector3){ 0.0f, 1.0f, 0.0f }; 
     _camera.camera.fovy = 45.0f;
     _camera.camera.projection = CAMERA_PERSPECTIVE;
     _camera.velocityDecayRate = 14.0f;
     _camera.acceleration = 25.0f;
 
-    Level_load(Game_getLevel(), "resources/levels/island.lvl");
+    Level_load(Game_getLevel(), "resources/levels/Level2.lvl");
     int step = 0;
     Script_addAction((ScriptAction){
         .actionIdStart = step,
@@ -145,10 +145,10 @@ static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)
 }
 
 
-SceneConfig _scene_island = {
+SceneConfig _scene_puzzle_2 = {
     .drawLevelFn = SceneDraw,
     .updateFn = SceneUpdate,
     .initFn = SceneInit,
     .deinitFn = SceneDeinit,
-    .sceneId = SCENE_ID_START_ISLAND,
+    .sceneId = SCENE_ID_PUZZLE_2,
 };

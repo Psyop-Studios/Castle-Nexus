@@ -14,6 +14,9 @@ SceneConfig* Scene_getConfig(uint32_t sceneId)
         &_scene_start,
         &_scene_intro_scene,
         &_scene_island, 
+        &_scene_puzzle_1,
+        &_scene_puzzle_2,
+        &_scene_puzzle_3, 
     };
 
     for (int i = 0; i < sizeof(_scenes) / sizeof(SceneConfig*); i++)

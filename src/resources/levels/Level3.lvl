@@ -539,17 +539,17 @@
 		}, {
 			"name":	"Wobbler",
 			"componentId":	1,
-			"ownerEntityIds":	[],
-			"entityData":	[]
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[],
-			"entityData":	[]
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[],
-			"entityData":	[]
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}]
 }
