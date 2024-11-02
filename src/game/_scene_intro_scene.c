@@ -15,7 +15,7 @@ typedef struct FPSCamera {
 } FPSCamera;
 
 static FPSCamera _camera;
-static int _allowCameraMovement = 1;
+static int _allowCameraMovement = 0;
 
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
@@ -168,7 +168,40 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "It was a [color=red_]dark and stormy night[/color] ...", (Rectangle){10, 10, 200, 100})});
+        .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "You are an investigative journalist tasked", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "with chasing some [color=grey]rumors[/color].", (Rectangle){10, 10, 200, 100})});
+
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "You wanna write some stories, huh?", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "I've got a scoop for ya.", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "I happen to know a local island is haunted by ghosts.", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 2",  "Don't bother listening to him.", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 2",  "He just likes telling stories. ", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "Nonesense, I've seen em myself!", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "As a matter of fact, I'll take you for free.", (Rectangle){10, 10, 200, 100})});
         
     Script_addAction((ScriptAction){
         .actionIdStart = step,

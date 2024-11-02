@@ -110,11 +110,31 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter 3",  "Cecilia:", (Rectangle){10, 10, 200, 100})});
+        .actionData = ScriptAction_DrawTextRectData_new("Chapter 3",  "The Dungeon", (Rectangle){10, 10, 200, 100})});
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter 3",  "After a short ride, our player arrives at the [color=blue]island.[/color]", (Rectangle){10, 10, 200, 100})});
+        .actionData = ScriptAction_DrawTextRectData_new("[color=blue] Cecilia [/color]",  "AHH!", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("[color=blue] Cecilia [/color]",  "Sorry, you scared me!", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("[color=blue] Cecilia [/color]",  "You look horrible! You must have fallen through the floor.", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("[color=blue] Cecilia [/color]",  "This place is pretty old..", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("[color=blue] Cecilia [/color]",  "Either way, you're not getting", (Rectangle){10, 10, 200, 100})});
+            Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("[color=blue] Cecilia [/color]",  "out of here unless you figure out how to escape!", (Rectangle){10, 10, 200, 100})});
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .action = ScriptAction_setCameraMovementEnabled,

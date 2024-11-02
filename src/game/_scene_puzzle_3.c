@@ -110,7 +110,19 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter 5",  "After a short ride, our player arrives at the [color=blue]island.[/color]", (Rectangle){10, 10, 200, 100})});
+        .actionData = ScriptAction_DrawTextRectData_new("Chapter 5",  "Finally out of the [color=grey] basement[/color].", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("[color=blue] Cecilia [/color]",  "[color=blue] How do you like my house[/color]?", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("[color=blue] Cecilia [/color]",  "[color=blue] I think it's pretty nice[/color].", (Rectangle){10, 10, 200, 100})});
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_drawTextRect,
+        .actionData = ScriptAction_DrawTextRectData_new("[color=red] August [/color]",  "[color=red] I'd like it better with neither of you in it [/color].", (Rectangle){10, 10, 200, 100})});
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .action = ScriptAction_setCameraMovementEnabled,
