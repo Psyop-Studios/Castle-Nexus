@@ -341,3 +341,8 @@ void* ScriptAction_DrawNarrationBottomBoxData_new(const char *narrator, const ch
         });
     return data;
 }
+
+void ScriptAction_loadScene(Script *script, ScriptAction *action)
+{
+    Game_setNextScene(action->actionInt);
+}

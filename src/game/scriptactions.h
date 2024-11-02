@@ -24,5 +24,5 @@ void* ScriptAction_LookCameraAtData_new(FPSCameraZ *camera, float transitionTime
 
 void ScriptAction_drawNarrationBottomBox(Script *script, ScriptAction *action);
 void* ScriptAction_DrawNarrationBottomBoxData_new(const char *narrator, const char *text, int proceedOnEnter);
-
+void ScriptAction_loadScene(Script *script, ScriptAction *action);
 #endif

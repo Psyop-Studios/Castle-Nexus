@@ -174,6 +174,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
             "Then let's go now, the high tide is ebbing.", 1)});
     step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_START_ISLAND });
 
     // Script_addAction((ScriptAction){
     //     .actionIdStart = step,

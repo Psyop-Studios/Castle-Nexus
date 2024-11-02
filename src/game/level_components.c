@@ -365,6 +365,12 @@ void MeshRendererComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, v
     maps[MATERIAL_MAP_ALBEDO].texture = 
         mesh->textureIndex >= 0 ? level->textures[mesh->textureIndex].texture : (Texture2D) {0};
     material.maps = maps;
+    Vector2 texSize = {material.maps[MATERIAL_MAP_ALBEDO].texture.width, material.maps[MATERIAL_MAP_ALBEDO].texture.height};
+    int locTexSize = GetShaderLocation(_modelDitherShader, "texSize");
+    int locUvDitherBlockPosScale = GetShaderLocation(_modelDitherShader, "uvDitherBlockPosScale");
+    SetShaderValue(material.shader, locTexSize, &texSize, SHADER_UNIFORM_VEC2);
+    SetShaderValue(material.shader, locUvDitherBlockPosScale, (float[1]){texSize.x / 8.0f}, SHADER_UNIFORM_FLOAT);
+    
     Matrix m = MatrixMultiply(component->transform, instance->toWorldTransform);
     Game_setFogTextures(&material);
     DrawMesh(mesh->model.meshes[0], material, m);

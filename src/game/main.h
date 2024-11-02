@@ -83,5 +83,6 @@ extern Camera _currentCamera;
 Level *Game_getLevel();
 void Game_setFogTextures(Material *mtl);
 void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement, float dt);
+void Game_setNextScene(int sceneId);
 
 #endif

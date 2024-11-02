@@ -261,6 +261,11 @@ void Game_update()
     }
 }
 
+void Game_setNextScene(int sceneId)
+{
+    _contextData->nextSceneId = sceneId;
+}
+
 // handles collision detection and movement for a first person camera
 void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement, float dt)
 {
