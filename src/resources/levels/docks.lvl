@@ -204,6 +204,18 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}, {
+			"filename":	"resources/level_assets/decoration-wooden-pole.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
 			"filename":	"resources/level_assets/door-archway-doubledoor.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],
@@ -360,6 +372,18 @@
 			"instancesSZ":	[1, 2.7749989032745361, 1.8749998807907104, 1, 0.77500015497207642, 1, 1, 1],
 			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1]
 		}, {
+			"filename":	"resources/level_assets/ground-mud-block.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
 			"filename":	"resources/level_assets/ground-small-stairs-1.glb",
 			"instancesPX":	[7, 7, 5, 5],
 			"instancesPY":	[0, 1.1920928955078125e-07, 1.0000001192092896, 1.0000001192092896],
@@ -395,6 +419,18 @@
 			"instancesSY":	[50],
 			"instancesSZ":	[50],
 			"instancesTexId":	[-1]
+		}, {
+			"filename":	"resources/level_assets/ground-wooden-planks.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/guy-1.glb",
 			"instancesPX":	[],
@@ -552,9 +588,9 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}],
-	"entityNames":	["Fisherman1", "boat", "Fisherman2", "WorldBoundaryBlocker", "TriggerExitZone", "TriggerExplorationMessageZone_1", "TriggerFishermenZone", "Water"],
-	"entityTRS":	[2, 4.76837158203125e-07, -1, 0, 0, 0, 1, 1, 1, 1, 0, -7.5000038146972656, 0, 0, 0, 1, 1, 1, 1, 5.9604644775390625e-07, 0, 0, 99, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 11.025003433227539, 0, 13, 0, 0, 0, 1, 1, 1, 14, 0, 1, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1.475000262260437, 0, 0, 0, 0, 1, 1, 1],
-	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7],
+	"entityNames":	["Fisherman1", "boat", "Fisherman2", "WorldBoundaryBlocker", "TriggerExitZone", "TriggerExplorationMessageZone_1", "TriggerFishermenZone", "Water", "Box", "Box", null, null, null, null, null, null],
+	"entityTRS":	[2, 4.76837158203125e-07, -1, 0, 0, 0, 1, 1, 1, 1, 0, -7.5000038146972656, 0, 0, 0, 1, 1, 1, 1, 5.9604644775390625e-07, 0, 0, 99, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 11.025003433227539, 0, 13, 0, 0, 0, 1, 1, 1, 14, 0, 1, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1.475000262260437, 0, 0, 0, 0, 1, 1, 1, 7.125, 2.0749993324279785, 6, 0, 0, 0, 1, 1, 1, 7, 0.90000057220459, 6, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0],
 	"components":	[{
 			"name":	"CameraFacing",
 			"componentId":	0,
@@ -598,7 +634,7 @@
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[0, 1, 1, 1, 2, 7, 0, 0],
+			"ownerEntityIds":	[0, 1, 1, 1, 2, 7, 8, 9],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/guy-1.glb",
 					"isDithered":	0,
@@ -623,7 +659,15 @@
 					"mesh":	"resources/level_assets/outside-water-1.glb",
 					"isDithered":	0,
 					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
-				}, null, null]
+				}, {
+					"mesh":	"resources/level_assets/crate.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
+				}, {
+					"mesh":	"resources/level_assets/crate.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
+				}]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
@@ -632,7 +676,7 @@
 		}, {
 			"name":	"ColliderBox",
 			"componentId":	4,
-			"ownerEntityIds":	[3, 3, 3, 3, 3, 3, 0, 2, 4, 5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[3, 3, 3, 3, 3, 3, 0, 2, 4, 5, 6, 8, 9, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"size":	[1.0699999332427979, 5.1199994087219238, 15.920002937316895],
 					"offset":	[-2.0899994373321533, 1.4500002861022949, -1.1799995899200439],
@@ -677,6 +721,33 @@
 					"size":	[2.40999984741211, 2.2799994945526123, 3.0599997043609619],
 					"offset":	[0, 0, 0],
 					"isTrigger":	1
-				}, null, null, null, null, null, null, null, null, null, null, null, null, null]
+				}, {
+					"size":	[1, 1, 1],
+					"offset":	[0, 0, 0],
+					"isTrigger":	0
+				}, {
+					"size":	[1, 1, 1],
+					"offset":	[0, 0, 0],
+					"isTrigger":	0
+				}, {
+					"size":	[5.73000431060791, 3.09999942779541, 2.6599993705749512],
+					"offset":	[-0.45999997854232788, 0.949999988079071, 4.0899982452392578],
+					"isTrigger":	0
+				}, null, null, null, null, null, null, null, null, null, null]
+		}, {
+			"name":	"RigidSphere",
+			"componentId":	5,
+			"ownerEntityIds":	[8, 9, 0, 0, 0, 0, 0, 0],
+			"entityData":	[{
+					"radius":	0.5000004768371582,
+					"mass":	1,
+					"drag":	0,
+					"bounce":	0
+				}, {
+					"radius":	0.5000004768371582,
+					"mass":	1,
+					"drag":	0,
+					"bounce":	0
+				}, null, null, null, null, null, null]
 		}]
 }

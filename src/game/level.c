@@ -444,6 +444,11 @@ Vector3 AABB_closestPoint(Vector3 min, Vector3 max, Vector3 point, Vector3 *norm
 
 int Level_testCollider(LevelCollider *collider, LevelCollisionResult *result, Vector3 position, float r)
 {
+    if (collider->position.x == position.x && collider->position.y == position.y && collider->position.z == position.z)
+    {
+        // same position, probably same object
+        return 0;
+    }
     if (collider->type == LEVEL_COLLIDER_TYPE_SPHERE)
     {
         float dist = Vector3DistanceSqr(position, collider->position);
@@ -608,6 +613,7 @@ int Level_findCollisions(Level *level, Vector3 position, float radius, uint8_t m
             {
                 result.triggerId = entity->name;
             }
+            result.ownerId = (LevelEntityInstanceId){entity->id, entity->generation};
             results[resultIndex++] = result;
         }
     }
@@ -1031,7 +1037,27 @@ void Level_save(Level *level, const char *levelFile)
 
 void Level_update(Level *level, float dt)
 {
+    dt = fminf(dt, 0.1f);
     level->gameTime += dt;
+
+    for (int i = 0; i < level->entityComponentClassCount;i++)
+    {
+        LevelEntityComponentClass *componentClass = &level->entityComponentClasses[i];
+        if (!componentClass->methods.updateFn)
+        {
+            continue;
+        }
+        for (int j = 0; j < componentClass->instanceCount; j++)
+        {
+            if (componentClass->generations[j] == 0 || Level_resolveEntity(level, componentClass->ownerIds[j]) == NULL)
+            {
+                continue;
+            }
+            LevelEntityInstanceId ownerId = componentClass->ownerIds[j];
+            void *componentInstanceData = (char*) componentClass->componentInstanceData + j * componentClass->componentInstanceDataSize;
+            componentClass->methods.updateFn(level, ownerId, componentInstanceData, dt);
+        }
+    }
 }
 
 LevelCollisionResult Level_calcPenetrationDepth(Level *level, Vector3 point, float radius)
