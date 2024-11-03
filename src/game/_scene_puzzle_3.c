@@ -170,10 +170,33 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionIdStart = step,
         .action = ScriptAction_lookCameraAt,
         .actionData = ScriptAction_LookCameraAtData_new(
-            &_camera, 2.5f, (Vector3){-46.0f, 5.4f, -2.0})});
+            &_camera, 2.5f, (Vector3){-43.0f, 5.4f, -4.0})});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
-            "Who's up fortin they nite", 1)});
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
+            "August! You must get over our deaths and move on. \n"
+            "You also need to stop trapping people in the basement!", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_lookCameraAt,
+        .actionData = ScriptAction_LookCameraAtData_new(
+            &_camera, 2.5f, (Vector3){-43.0f, 5.4f, -1.0})});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=red_] August[/color]:",
+            "The island, the town, our children, they took it all from us, Cecilia!"
+            , 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
+        Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_lookCameraAt,
+        .actionData = ScriptAction_LookCameraAtData_new(
+            &_camera, 2.5f, (Vector3){-43.0f, 5.4f, -4.0})});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
+            "But August... \n"
+            "You still have me!", 1)});
     step += 1;
 
 
