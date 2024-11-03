@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include "scriptactions.h"
 
@@ -15,7 +16,7 @@ typedef struct ScriptAction_DrawRectData {
 
 void* ScriptAction_DrawTextRectData_new(const char *title, const char *text, Rectangle rect)
 {
-    ScriptAction_DrawRectData *data = Scene_alloc(sizeof(ScriptAction_DrawRectData), 
+    ScriptAction_DrawRectData *data = Scene_alloc(sizeof(ScriptAction_DrawRectData),
         &(ScriptAction_DrawRectData){
             .title = title,
             .text = text,
@@ -44,10 +45,10 @@ typedef struct ScriptAction_DrawMagnifiedTextureData {
 
 void* ScriptAction_DrawMagnifiedTextureData_new(Rectangle srcRect, Rectangle dstRect, Texture2D *texture, Shader shader)
 {
-    ScriptAction_DrawMagnifiedTextureData *data = Scene_alloc(sizeof(ScriptAction_DrawMagnifiedTextureData), 
+    ScriptAction_DrawMagnifiedTextureData *data = Scene_alloc(sizeof(ScriptAction_DrawMagnifiedTextureData),
         &(ScriptAction_DrawMagnifiedTextureData){
             .srcRect = (Rectangle){
-                srcRect.x / texture->width, srcRect.y / texture->height, 
+                srcRect.x / texture->width, srcRect.y / texture->height,
                 srcRect.width / texture->width, srcRect.height / texture->height},
             .dstRect = dstRect,
             .texture = texture,
@@ -109,7 +110,7 @@ typedef struct ScriptAction_JumpStepData {
 
 void* ScriptAction_JumpStepData_new(int prevStep, int nextStep, int isRelative)
 {
-    ScriptAction_JumpStepData *data = Scene_alloc(sizeof(ScriptAction_JumpStepData), 
+    ScriptAction_JumpStepData *data = Scene_alloc(sizeof(ScriptAction_JumpStepData),
         &(ScriptAction_JumpStepData){
             .prevStep = prevStep,
             .nextStep = nextStep,
@@ -144,7 +145,7 @@ void ScriptAction_jumpStep(Script *script, ScriptAction *action)
     }
 
     x-=sx + 4;
-    
+
     DrawRectangle(x, y, sx, sy, DB8_WHITE);
     DrawRectangleLinesEx((Rectangle){x,y,sx,sy},2.0f, BLACK);
     DrawTextEx(_fntMedium, "<", (Vector2){x+sx / 2 - 4,y+6}, _fntMedium.baseSize * 2.0f, -2.0f, DB8_WHITE);
@@ -172,7 +173,7 @@ typedef struct ScriptAction_DrawMeshData {
 
 void* ScriptAction_DrawMeshData_new(Mesh *mesh, Shader shader, Material *material, Matrix transform, Camera3D *camera)
 {
-    ScriptAction_DrawMeshData *data = Scene_alloc(sizeof(ScriptAction_DrawMeshData), 
+    ScriptAction_DrawMeshData *data = Scene_alloc(sizeof(ScriptAction_DrawMeshData),
         &(ScriptAction_DrawMeshData){
             .mesh = mesh,
             .camera = camera,
@@ -206,7 +207,7 @@ typedef struct ScriptAction_DrawTextureData {
 
 void* ScriptAction_DrawTextureData_new(Texture2D *texture, Rectangle dstRect, Rectangle srcRect)
 {
-    ScriptAction_DrawTextureData *data = Scene_alloc(sizeof(ScriptAction_DrawTextureData), 
+    ScriptAction_DrawTextureData *data = Scene_alloc(sizeof(ScriptAction_DrawTextureData),
         &(ScriptAction_DrawTextureData){
             .texture = texture,
             .dstRect = dstRect,
@@ -259,7 +260,7 @@ void ScriptAction_lookCameraAt(Script *script, ScriptAction *action)
     }
     float t = (level->gameTime - data->actionStartTime) / data->transitionTime;
     t = EaseInOutSine(t, 0.0f, 1.0f);
-    
+
     camera->rotation.y = LerpAngle(data->startYaw, data->targetYaw, t);
     camera->rotation.x = LerpAngle(data->startPitch, data->targetPitch, t);
 
@@ -275,7 +276,7 @@ void ScriptAction_lookCameraAt(Script *script, ScriptAction *action)
 
 void* ScriptAction_LookCameraAtData_new(FPSCameraZ *camera, float transitionTime, Vector3 position)
 {
-    LookCameraAtData *data = Scene_alloc(sizeof(LookCameraAtData), 
+    LookCameraAtData *data = Scene_alloc(sizeof(LookCameraAtData),
         &(LookCameraAtData){
             .camera = camera,
             .position = position,
@@ -290,10 +291,10 @@ void DrawNarrationBottomBox(const char *narrator, const char *text, const char *
 
     DrawRectangleRec(rect, DB8_WHITE);
     DrawRectangleLinesEx(rect, 2, DB8_BLACK);
-    
+
     DrawTextBoxAligned(_fntMedium, text,
         rect.x + 12, rect.y + 10, rect.width - 24, rect.height - 20, 0.5f, 0.5f, DB8_WHITE);
-    
+
     Rectangle narratorBox = {rect.x + 10, rect.y - 24, 160, 32};
     Rectangle shadowBox = {narratorBox.x + 2, narratorBox.y + 2, narratorBox.width, narratorBox.height};
     DrawRectangleRec(shadowBox, (Color){0, 0, 0, 180});
@@ -318,17 +319,59 @@ typedef struct ScriptAction_DrawNarrationBottomBoxData {
 
 void ScriptAction_drawNarrationBottomBox(Script *script, ScriptAction *action)
 {
+    extern Sound talkSfxMale1;
+    extern Sound talkSfxMale2;
+    extern Sound talkSfxMale3;
+    extern Sound talkSfxFemale1;
+    extern Sound talkSfxFemale2;
+    extern Sound talkSfxFemale3;
+
     ScriptAction_DrawNarrationBottomBoxData *data = action->actionData;
+
+    static bool has_played_sound = false;
+    if (!has_played_sound)
+    {
+        // hacky way to determine if we should play male or female talking sfx
+        if (strstr(data->narrator, "Cecilia") == NULL)
+        {
+            // the narrator is male
+            switch(GetRandomValue(0, 2))
+            {
+                case 0: PlaySound(talkSfxMale1);
+                    break;
+                case 1: PlaySound(talkSfxMale2);
+                    break;
+                case 2: PlaySound(talkSfxMale3);
+                    break;
+            }
+        }
+        else
+        {
+            // the narrator is female (Cecilia)
+            switch(GetRandomValue(0, 2))
+            {
+                case 0: PlaySound(talkSfxFemale1);
+                    break;
+                case 1: PlaySound(talkSfxFemale2);
+                    break;
+                case 2: PlaySound(talkSfxFemale3);
+                    break;
+            }
+        }
+        has_played_sound = true;
+    }
+
     DrawNarrationBottomBox(data->narrator, data->text, data->proceedOnEnter ? "Press [color=red_]ENTER[/color] to continue" : NULL);
     if (data->proceedOnEnter && IsKeyPressed(KEY_ENTER))
     {
         script->nextActionId = script->currentActionId + 1;
+        has_played_sound = false;
     }
 }
 
 void* ScriptAction_DrawNarrationBottomBoxData_new(const char *narrator, const char *text, int proceedOnEnter)
 {
-    ScriptAction_DrawNarrationBottomBoxData *data = Scene_alloc(sizeof(ScriptAction_DrawNarrationBottomBoxData), 
+    ScriptAction_DrawNarrationBottomBoxData *data = Scene_alloc(sizeof(ScriptAction_DrawNarrationBottomBoxData),
         &(ScriptAction_DrawNarrationBottomBoxData){
             .narrator = narrator,
             .text = text,
@@ -379,7 +422,7 @@ void ScriptAction_fadingCut(Script *script, ScriptAction *action)
         DrawRectangle(0, 0, GetScreenWidth() * t * .5f, GetScreenHeight(), data->color);
         DrawRectangle(GetScreenWidth() * (1.0f - t) * .5f, 0, GetScreenWidth() * t, GetScreenHeight(), data->color);
     }
-    if (level->gameTime - data->actionStartTime - data->transitionTime > data->nextStepDelay && 
+    if (level->gameTime - data->actionStartTime - data->transitionTime > data->nextStepDelay &&
         action->actionIdStart == script->currentActionId)
     {
         script->nextActionId = script->currentActionId + 1;
@@ -388,7 +431,7 @@ void ScriptAction_fadingCut(Script *script, ScriptAction *action)
 
 void* ScriptAction_FadingCutData_new(float transitionTime, Color color, uint8_t fadeType, uint8_t fadeTweenType, float nextStepDelay, float direction)
 {
-    ScriptAction_FadingCutData *data = Scene_alloc(sizeof(ScriptAction_FadingCutData), 
+    ScriptAction_FadingCutData *data = Scene_alloc(sizeof(ScriptAction_FadingCutData),
         &(ScriptAction_FadingCutData){
             .transitionTime = transitionTime,
             .color = color,

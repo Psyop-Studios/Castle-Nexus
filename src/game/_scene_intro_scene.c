@@ -34,9 +34,9 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 
 extern Sound waterSfx1;
 extern Sound waterSfx2;
-extern Sound talkSfx1;
-extern Sound talkSfx2;
-extern Sound talkSfx3;
+extern Sound talkSfxMale1;
+extern Sound talkSfxMale2;
+extern Sound talkSfxMale3;
 
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
 {

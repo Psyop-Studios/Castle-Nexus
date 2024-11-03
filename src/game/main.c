@@ -28,9 +28,13 @@ Sound jumpSfx;
 Sound waterSfx1;
 Sound waterSfx2;
 Sound pushSfx;
-Sound talkSfx1;
-Sound talkSfx2;
-Sound talkSfx3;
+Sound talkSfxMale1;
+Sound talkSfxMale2;
+Sound talkSfxMale3;
+Sound talkSfxFemale1;
+Sound talkSfxFemale2;
+Sound talkSfxFemale3;
+
 
 Shader _modelDitherShader;
 Shader _modelTexturedShader;
@@ -72,9 +76,12 @@ void Game_init(void** contextData)
     waterSfx1 = LoadSound("resources/audio/WaterSounds.wav");
     waterSfx2 = LoadSound("resources/audio/WaterSounds2.wav");
     pushSfx = LoadSound("resources/audio/CrateSound1.wav");
-    talkSfx1 = LoadSound("resources/audio/ATalk1.wav");
-    talkSfx2 = LoadSound("resources/audio/ATalk2.wav");
-    talkSfx3 = LoadSound("resources/audio/ATalk3.wav");
+    talkSfxMale1 = LoadSound("resources/audio/ATalk1.wav");
+    talkSfxMale2 = LoadSound("resources/audio/ATalk2.wav");
+    talkSfxMale3 = LoadSound("resources/audio/ATalk3.wav");
+    talkSfxFemale1 = LoadSound("resources/audio/CTalk1.wav");
+    talkSfxFemale2 = LoadSound("resources/audio/CTalk2.wav");
+    talkSfxFemale3 = LoadSound("resources/audio/CTalk3.wav");
 
     if (*contextData == NULL)
     {
@@ -163,9 +170,12 @@ void Game_deinit()
     UnloadSound(waterSfx1);
     UnloadSound(waterSfx2);
     UnloadSound(pushSfx);
-    UnloadSound(talkSfx1);
-    UnloadSound(talkSfx2);
-    UnloadSound(talkSfx3);
+    UnloadSound(talkSfxMale1);
+    UnloadSound(talkSfxMale2);
+    UnloadSound(talkSfxMale3);
+    UnloadSound(talkSfxFemale1);
+    UnloadSound(talkSfxFemale2);
+    UnloadSound(talkSfxFemale3);
 
     SceneConfig *config = Scene_getConfig(_contextData->currentSceneId);
     if (config && config->deinitFn)
@@ -346,7 +356,7 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
 
         distanceTraveled += Vector3Length(move) * dt;
 
-        if (distanceTraveled > 0.35f)
+        if (distanceTraveled > 0.35f && camera->hasGroundContact)
         {
             float pitch = (float)(GetRandomValue(7, 11)) / 10.0f;
             SetSoundPitch(walkSfx1, pitch);
