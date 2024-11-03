@@ -96,6 +96,15 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         "No one!", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=red_] August[/color]:",
+          "Don't tell me that man escaped the trap dungeon! \n"
+          "... it's really hard to set up once it's been used.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=red_] August[/color]:",
+          "I don't have any hands!", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
         "I've gotta get out of here quick.\n"
         "My boss is never gonna believe this scoop!", 1)});
@@ -109,24 +118,38 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_MEMORY_2 });
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
+        Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_lookCameraAt,
+        .actionData = ScriptAction_LookCameraAtData_new(
+            &_camera, 2.5f, (Vector3){2.0f, 1.4f, 20.0})});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
         "I hate to intterupt, \n"
         "But I think it's important for you to know something.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
         "August was a kind man when he was alive. This island was built just\n"
         "so we could send word to shore if there was signs of an impending invastion.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
-        "I think I can connect with him again and stop his anguish.\n"
-        "He was a benevolent man in life, and could become a benevolent ghost in the afterlife", 1)});
+        "This is how our children survived- they were quick enough to get  on the\n"
+        "Coastal lookout's boat. The Coastal lookout lived here with their families.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
-        "I'm pretty sure the entrance is nearby.\n"
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+        "I've gotta write this down..", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
+        "I think I can connect with him again and stop his anguish.\n"
+        "He was a benevolent man in life, and could become a benevolent ghost in the afterlife.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
+        "I'm pretty sure the entrance is this way-\n"
         "Follow me!", 1)});
     step += 1;
 

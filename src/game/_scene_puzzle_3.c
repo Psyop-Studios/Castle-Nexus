@@ -113,7 +113,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.camera.fovy = 45.0f;
     _camera.camera.projection = CAMERA_PERSPECTIVE;
     _camera.velocityDecayRate = 14.0f;
-    _camera.acceleration = 100.0f;
+    _camera.acceleration = 50.0f;
 
     Level_load(Game_getLevel(), "resources/levels/Level3.lvl");
      int step = 0;
@@ -130,26 +130,31 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-            "AHHHHHH!!", 1)});
+        "It appears this room is locked too.. \n"
+        "Unlucky!", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-            "Sorry, you scared me! I'm not used to having company.\n"
-        "You must have fallen for the trap door. Poor thing.", 1)});
+        "Why don't you put your skills to use again and\n"
+        " 'investigate' a way out of here? ", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=red_] August[/color]:",
+        "Haven't you caused enough disruption?\n"
+        "I want to be alone with my grief, but you keep moving around my meticulously placed boxes and causing a ruckus.", 1)});
+    step += 1;
+        Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=red_] August[/color]:",
+        "That's really rude!\n", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-          "You should get washed up once you get out of here.\n"
-        "Oh, speaking of which, no one has ever made it out of here..", 1)});
+        "I wont let you lavish in sorrow!", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-                      "So unless you figure something out, you'll be stuck in here.", 1)});
-    step += 1;
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-        "I'd open the door myself from the outside, but I am a ghost..\n"
-        "I can't really touch anything.", 1)});
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+        "I just want to get out of here alive, but more importantly \n"
+        "I need to this this story to print!", 1)});
     step += 1;
 
 
@@ -162,8 +167,8 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Spooky voice:",
-            "You lot may have won last time, but not again!", 1)});
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "Who's up fortin they nite", 1)});
     step += 1;
 
 

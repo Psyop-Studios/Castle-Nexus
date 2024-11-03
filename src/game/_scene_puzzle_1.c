@@ -116,6 +116,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .action = ScriptAction_lookCameraAt,
         .actionData = ScriptAction_LookCameraAtData_new(
             &_camera, 2.5f, (Vector3){-9.0f, 1.4f, -2.0})});
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
             "AHHHHHH!!", 1)});

@@ -123,12 +123,13 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Spooky voice:",
-            "You believe you have the right to invade my land? ", 1)});
+            "You believe you have the right to disturb my grief\n"
+            "and parade around on my island?", 1)});
     step += 1;
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Spooky voice:",
-            "You lot may have won last time, but not again!", 1)});
+            "This can not be forgiven!", 1)});
     step += 1;
 
     Script_addAction((ScriptAction){

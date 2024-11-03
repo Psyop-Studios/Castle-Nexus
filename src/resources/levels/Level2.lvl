@@ -601,16 +601,16 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/decoration-cobwebs-corner-1.glb",
-			"instancesPX":	[],
-			"instancesPY":	[],
-			"instancesPZ":	[],
-			"instancesRX":	[],
-			"instancesRY":	[],
-			"instancesRZ":	[],
-			"instancesSX":	[],
-			"instancesSY":	[],
-			"instancesSZ":	[],
-			"instancesTexId":	[]
+			"instancesPX":	[9, 6, 5],
+			"instancesPY":	[-9.5367431640625e-07, 3.9999990463256836, -8.3446502685546875e-07],
+			"instancesPZ":	[9, -5, 1],
+			"instancesRX":	[0, 0, 0],
+			"instancesRY":	[270, 90, 0],
+			"instancesRZ":	[0, 0, 0],
+			"instancesSX":	[1, 1, 1],
+			"instancesSY":	[1, 1, 1],
+			"instancesSZ":	[1, 1, 1],
+			"instancesTexId":	[-1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/door-gate-1.glb",
 			"instancesPX":	[],
@@ -625,6 +625,18 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/ground-wall-stones-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-chest-box-1.glb",
 			"instancesPX":	[],
 			"instancesPY":	[],
 			"instancesPZ":	[],
@@ -652,7 +664,7 @@
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[0, 1, 2, 3, 5, 6, 7, 12, 8, 9, 10, 11, 0, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 5, 6, 7, 12, 8, 9, 10, 11, 0, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/decoration-candle-holder.glb",
 					"isDithered":	0,
@@ -709,7 +721,7 @@
 					"mesh":	"resources/level_assets/decoration-picture-frame-1.glb",
 					"isDithered":	0,
 					"trs":	[0, 0, -1, 0, 0, 0, 1, 1, 1]
-				}, null, null, null, null, null, null, null, null, null]
+				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
@@ -823,7 +835,7 @@
 					"isOpen":	0,
 					"openTime":	1,
 					"closeTime":	1,
-					"time":	570.6173095703125,
+					"time":	467.31753540039062,
 					"closedPosition":	[2, 0.0047836750745773315, 14],
 					"closedRotation":	[0, 0, 0],
 					"openPosition":	[2, 2.8975586891174316, 14],
