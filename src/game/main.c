@@ -346,7 +346,7 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
 
         distanceTraveled += Vector3Length(move) * dt;
 
-        if (distanceTraveled > 0.65f)
+        if (distanceTraveled > 0.35f)
         {
             float pitch = (float)(GetRandomValue(7, 11)) / 10.0f;
             SetSoundPitch(walkSfx1, pitch);
