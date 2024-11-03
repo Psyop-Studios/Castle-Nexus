@@ -186,6 +186,8 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     step += 1;
 
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_FINISH });
 }
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)

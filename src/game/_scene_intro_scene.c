@@ -224,7 +224,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
             "Oh well, how bad could it be? I am ready when you are, mister Frank.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Frank:",
             "Then let's go now, the high tide is ebbing.", 1)});
     step += 1;
 
