@@ -76,42 +76,28 @@ void ScriptAction_onBoxInPlaceLevel3(Script *script, ScriptAction *action)
     Level *level = Game_getLevel();
     BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
 
-    // Check first box
-
     extern Sound triggerSfx;
+    extern Sound gateOpeningSfx;
 
+    // Check first box
     if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_1))
     {
         PlaySound(triggerSfx);
-        if (data->timeInPlace1 <= 0.0f)
-        {
-            data->timeInPlace1 = level->gameTime;
-        }
+        PlaySound(gateOpeningSfx);
     }
 
     // Check second box
     if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_2))
     {
         PlaySound(triggerSfx);
-        if (data->timeInPlace2 <= 0.0f)
-        {
-            data->timeInPlace2 = level->gameTime;
-        }
+        PlaySound(gateOpeningSfx);
     }
 
     // Check third box
-
     if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_3))
     {
         PlaySound(triggerSfx);
-    }
-
-    // Only show message if both boxes have been in place for less than 4 seconds
-    if (data->timeInPlace1 > 0.0f && data->timeInPlace2 > 0.0f &&
-        level->gameTime - data->timeInPlace1 < 4.0f &&
-        level->gameTime - data->timeInPlace2 < 4.0f)
-    {
-        DrawNarrationBottomBox("You:", "The boxes are in place", NULL);
+        PlaySound(gateOpeningSfx);
     }
 }
 

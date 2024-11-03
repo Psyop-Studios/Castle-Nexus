@@ -54,19 +54,12 @@ typedef struct BoxInPlaceData
 void ScriptAction_onBoxInPlaceLevel1(Script *script, ScriptAction *action)
 {
     extern Sound triggerSfx;
+    extern Sound gateOpeningSfx;
     Level *level = Game_getLevel();
-    BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
     if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_1))
     {
         PlaySound(triggerSfx);
-        if (data->timeInPlace <= 0.0f)
-        {
-            data->timeInPlace = level->gameTime;
-        }
-    }
-    if (data->timeInPlace > 0.0f && level->gameTime - data->timeInPlace < 4.0f)
-    {
-        DrawNarrationBottomBox("You:", "The box is in place", NULL);
+        PlaySound(gateOpeningSfx);
     }
 }
 
