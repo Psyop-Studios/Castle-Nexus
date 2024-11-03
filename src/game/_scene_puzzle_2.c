@@ -40,22 +40,7 @@ typedef struct BoxInPlaceData
     float timeInPlace;
 } BoxInPlaceData;
 
-void ScriptAction_onBoxInPlaceLevel2(Script *script, ScriptAction *action)
-{
-    Level *level = Game_getLevel();
-    BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
-    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_2))
-    {
-        if (data->timeInPlace <= 0.0f)
-        {
-            data->timeInPlace = level->gameTime;
-        }
-    }
-    if (data->timeInPlace > 0.0f && level->gameTime - data->timeInPlace < 4.0f)
-    {
-        DrawNarrationBottomBox("You:", "The box is in place", NULL);
-    }
-}
+
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
@@ -107,7 +92,6 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 1});
 
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_onBoxInPlaceLevel2, .actionData = Scene_alloc(sizeof(BoxInPlaceData), &(BoxInPlaceData){.timeInPlace = 0.0f}) });
 
     
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_MEMORY_2 });

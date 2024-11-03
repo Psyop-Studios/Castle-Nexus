@@ -133,16 +133,16 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/door-archway-doubledoor.glb",
-			"instancesPX":	[],
-			"instancesPY":	[],
-			"instancesPZ":	[],
-			"instancesRX":	[],
-			"instancesRY":	[],
-			"instancesRZ":	[],
-			"instancesSX":	[],
-			"instancesSY":	[],
-			"instancesSZ":	[],
-			"instancesTexId":	[]
+			"instancesPX":	[5],
+			"instancesPY":	[-0.35947266221046448],
+			"instancesPZ":	[-7.3499031066894531],
+			"instancesRX":	[0],
+			"instancesRY":	[0],
+			"instancesRZ":	[0],
+			"instancesSX":	[0.907031238079071],
+			"instancesSY":	[0.907031238079071],
+			"instancesSZ":	[0.907031238079071],
+			"instancesTexId":	[-1]
 		}, {
 			"filename":	"resources/level_assets/outside-island-1.glb",
 			"instancesPX":	[0],
@@ -587,6 +587,54 @@
 			"instancesSY":	[],
 			"instancesSZ":	[],
 			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-wave-circle.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-cobwebs-corner-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/door-gate-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/ground-wall-stones-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
 		}],
 	"entityNames":	["WATER", "CollisionLeftSideCastle", "IslandLeftSide", "Collisionisland", "New Entity", "CollisionLeftSideCastle", "floor collision", "TriggerCastleFrontDoor"],
 	"entityTRS":	[0, 0, 0, 0, 0, 0, 1, 1, 1, -6, -3.5762786865234375e-07, -6, 0, 0, 0, 1, 1, 1, -12, 0, 1, 0, 360, 0, 1, 1, 1, 1, -0.0466800481081009, 1, 0, -360, 0, 1, 1, 1, 15, 0, 3, 0, 0, 0, 1, 1, 1, 13, -5.9604644775390625e-07, -7, 0, 0, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 5, 0, -5, 0, 0, 0, 1.1795997619628906, 9.0492191314697266, 1.1795997619628906],
@@ -599,7 +647,7 @@
 		}, {
 			"name":	"Wobbler",
 			"componentId":	1,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"type":	1,
 					"argument":	0,
@@ -610,7 +658,7 @@
 					"pivotX":	0.71584057807922363,
 					"pivotY":	0.891594171524048,
 					"pivotZ":	-0.22077739238739014
-				}, null, null, null, null, null, null, null]
+				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
@@ -623,8 +671,8 @@
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"ColliderBox",
 			"componentId":	4,
@@ -658,5 +706,20 @@
 					"offset":	[0, -0.16167968511581421, -0.8230857253074646],
 					"isTrigger":	1
 				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+		}, {
+			"name":	"RigidSphere",
+			"componentId":	5,
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null]
+		}, {
+			"name":	"CollisionDetector",
+			"componentId":	6,
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null]
+		}, {
+			"name":	"DoorState",
+			"componentId":	7,
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null]
 		}]
 }
