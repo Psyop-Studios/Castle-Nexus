@@ -51,8 +51,6 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
         float pitch = (float)(GetRandomValue(9, 10)) / 10.0f;
         SetSoundPitch(waterSfx1, pitch);
         SetSoundPitch(waterSfx2, pitch);
-        SetSoundVolume(waterSfx1, 0.6f);
-        SetSoundVolume(waterSfx2, 0.6f);
         GetRandomValue(0, 1) == 0 ? PlaySound(waterSfx1) : PlaySound(waterSfx2);
         water_timer = (float)GetRandomValue(60, 70) / 10.0f;
     }
