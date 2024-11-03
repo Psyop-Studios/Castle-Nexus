@@ -18,11 +18,11 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     BeginMode3D(_camera.camera);
     _currentCamera = _camera.camera;
-    
+
     Level *level = Game_getLevel();
-    
+
     Level_draw(level);
-    
+
     EndMode3D();
 
     // if (IsMouseButtonDown(0) && _allowCameraMovement)
@@ -36,7 +36,7 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
     dt = fminf(dt, 0.1f);
     Level *level = Game_getLevel();
     level->isEditor = 0;
-    
+
     Level_update(level, dt);
     FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
 }
@@ -53,10 +53,12 @@ typedef struct BoxInPlaceData
 
 void ScriptAction_onBoxInPlaceLevel1(Script *script, ScriptAction *action)
 {
+    extern Sound triggerSfx;
     Level *level = Game_getLevel();
     BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
     if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_1))
     {
+        PlaySound(triggerSfx);
         if (data->timeInPlace <= 0.0f)
         {
             data->timeInPlace = level->gameTime;
@@ -78,7 +80,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.camera = (Camera){0};
     _camera.camera.position = (Vector3){ -9.0f, 1.70f, -4.0f };
     _camera.camera.target = (Vector3){ 90.0f, 100.0f, 180.0f };
-    _camera.camera.up = (Vector3){ 0.0f, 1.0f, 0.0f }; 
+    _camera.camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     _camera.camera.fovy = 45.0f;
     _camera.camera.projection = CAMERA_PERSPECTIVE;
     _camera.rotation.y = 200.0f * DEG2RAD;
@@ -88,7 +90,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Level_load(Game_getLevel(), "resources/levels/test1.lvl");
     int step = 0;
     _allowCameraMovement = 0;
-    
+
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .actionIdEnd = step + 2,
@@ -97,7 +99,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     step += 1;
 
-    
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
     Script_addAction((ScriptAction){
         .actionIdStart = step,
@@ -131,7 +133,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_onBoxInPlaceLevel1, .actionData = Scene_alloc(sizeof(BoxInPlaceData), &(BoxInPlaceData){.timeInPlace = 0.0f}) });
 
-    
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_MEMORY_1 });
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});

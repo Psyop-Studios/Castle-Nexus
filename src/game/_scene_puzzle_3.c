@@ -11,17 +11,19 @@ static FPSCameraZ _camera;
 static int _allowCameraMovement = 1;
 #define TRIGGER_BOXTARGET_LEVEL_3_1 "BoxTarget1"
 #define TRIGGER_BOXTARGET_LEVEL_3_2 "BoxTarget2"
+#define TRIGGER_BOXTARGET_LEVEL_3_3 "BoxTargetPt1"
+
 #define TRIGGER_MEMORY_3 "Memory3"
 
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     BeginMode3D(_camera.camera);
     _currentCamera = _camera.camera;
-    
+
     Level *level = Game_getLevel();
-    
+
     Level_draw(level);
-    
+
     EndMode3D();
 
     // if (IsMouseButtonDown(0) && _allowCameraMovement)
@@ -35,7 +37,7 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
     dt = fminf(dt, 0.1f);
     Level *level = Game_getLevel();
     level->isEditor = 0;
-    
+
     Level_update(level, dt);
     FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
 }
@@ -75,8 +77,12 @@ void ScriptAction_onBoxInPlaceLevel3(Script *script, ScriptAction *action)
     BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
 
     // Check first box
+
+    extern Sound triggerSfx;
+
     if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_1))
     {
+        PlaySound(triggerSfx);
         if (data->timeInPlace1 <= 0.0f)
         {
             data->timeInPlace1 = level->gameTime;
@@ -86,10 +92,18 @@ void ScriptAction_onBoxInPlaceLevel3(Script *script, ScriptAction *action)
     // Check second box
     if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_2))
     {
+        PlaySound(triggerSfx);
         if (data->timeInPlace2 <= 0.0f)
         {
             data->timeInPlace2 = level->gameTime;
         }
+    }
+
+    // Check third box
+
+    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_3))
+    {
+        PlaySound(triggerSfx);
     }
 
     // Only show message if both boxes have been in place for less than 4 seconds
@@ -109,7 +123,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.camera = (Camera){0};
     _camera.camera.position = (Vector3){ -2.0f, 1.70f, -2.0f };
     _camera.camera.target = (Vector3){ 90.0f, 100.0f, 180.0f };
-    _camera.camera.up = (Vector3){ 0.0f, 1.0f, 0.0f }; 
+    _camera.camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     _camera.camera.fovy = 45.0f;
     _camera.camera.projection = CAMERA_PERSPECTIVE;
     _camera.velocityDecayRate = 14.0f;
@@ -117,8 +131,8 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     Level_load(Game_getLevel(), "resources/levels/Level3.lvl");
      int step = 0;
-    
-    
+
+
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .actionIdEnd = step + 2,
@@ -126,7 +140,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, -1.0f)});
     step += 1;
 
-    
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
@@ -157,7 +171,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_onBoxInPlaceLevel3, .actionData = Scene_alloc(sizeof(BoxInPlaceData), &(BoxInPlaceData){.timeInPlace1 = 0.0f, .timeInPlace2 = 0.0f}) });
 
-    
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_MEMORY_3 });
     step += 1;
 

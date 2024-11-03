@@ -34,6 +34,7 @@ Sound talkSfxMale3;
 Sound talkSfxFemale1;
 Sound talkSfxFemale2;
 Sound talkSfxFemale3;
+Sound triggerSfx;
 
 
 Shader _modelDitherShader;
@@ -73,7 +74,7 @@ void Game_init(void** contextData)
     walkSfx1 = LoadSound("resources/audio/WalkSand1.wav");
     walkSfx2 = LoadSound("resources/audio/WalkSand2.wav");
     jumpSfx = LoadSound("resources/audio/Jump.wav");
-    waterSfx1 = LoadSound("resources/audio/WaterSounds.wav");
+    waterSfx1 = LoadSound("resources/audio/WaterSounds1.wav");
     waterSfx2 = LoadSound("resources/audio/WaterSounds2.wav");
     pushSfx = LoadSound("resources/audio/CrateSound1.wav");
     talkSfxMale1 = LoadSound("resources/audio/ATalk1.wav");
@@ -82,6 +83,7 @@ void Game_init(void** contextData)
     talkSfxFemale1 = LoadSound("resources/audio/CTalk1.wav");
     talkSfxFemale2 = LoadSound("resources/audio/CTalk2.wav");
     talkSfxFemale3 = LoadSound("resources/audio/CTalk3.wav");
+    triggerSfx = LoadSound("resources/audio/Trigger.wav");
 
     if (*contextData == NULL)
     {
@@ -176,6 +178,7 @@ void Game_deinit()
     UnloadSound(talkSfxFemale1);
     UnloadSound(talkSfxFemale2);
     UnloadSound(talkSfxFemale3);
+    UnloadSound(triggerSfx);
 
     SceneConfig *config = Scene_getConfig(_contextData->currentSceneId);
     if (config && config->deinitFn)
@@ -481,7 +484,7 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
                 Vector3 normal = results[i].normal;
                 normal.y = 0;
                 entity->position = Vector3Add(entity->position, Vector3Scale(normal, -camVel * 0.5f * results[i].depth));
-                if (!IsSoundPlaying(pushSfx)) {
+                if (!IsSoundPlaying(pushSfx) && results[i].depth > 0.01f) {
                     PlaySound(pushSfx);
                 }
                 break;

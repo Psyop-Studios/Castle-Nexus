@@ -26,7 +26,7 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
     dt = fminf(dt, 0.1f);
     Level *level = Game_getLevel();
     level->isEditor = 0;
-    
+
     Level_update(level, dt);
     FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
 }
@@ -40,7 +40,24 @@ typedef struct BoxInPlaceData
     float timeInPlace;
 } BoxInPlaceData;
 
-
+void ScriptAction_onBoxInPlaceLevel2(Script *script, ScriptAction *action)
+{
+    extern Sound triggerSfx;
+    Level *level = Game_getLevel();
+    BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
+    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_2))
+    {
+        PlaySound(triggerSfx);
+        if (data->timeInPlace <= 0.0f)
+        {
+            data->timeInPlace = level->gameTime;
+        }
+    }
+    if (data->timeInPlace > 0.0f && level->gameTime - data->timeInPlace < 4.0f)
+    {
+        DrawNarrationBottomBox("You:", "The box is in place", NULL);
+    }
+}
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
@@ -50,7 +67,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.camera = (Camera){0};
     _camera.camera.position = (Vector3){ 1.5f, 1.70f, 0.0f };
     _camera.camera.target = (Vector3){ 90.0f, 100.0f, 180.0f };
-    _camera.camera.up = (Vector3){ 0.0f, 1.0f, 0.0f }; 
+    _camera.camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     _camera.camera.fovy = 45.0f;
     _camera.camera.projection = CAMERA_PERSPECTIVE;
     _camera.velocityDecayRate = 14.0f;
@@ -58,10 +75,10 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     Level_load(Game_getLevel(), "resources/levels/Level2.lvl");
     int step = 0;
-    
 
 
-    
+
+
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .actionIdEnd = step + 2,
@@ -93,7 +110,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 1});
 
 
-    
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_MEMORY_2 });
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
@@ -126,7 +143,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, 1.0f)});
 
     step += 1;
-    
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_PUZZLE_3 });
 
 
