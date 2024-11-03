@@ -199,6 +199,47 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
             "You still have me!", 1)});
     step += 1;
 
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_lookCameraAt,
+        .actionData = ScriptAction_LookCameraAtData_new(
+            &_camera, 2.5f, (Vector3){-43.0f, 5.4f, -1.0})});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=red_] August[/color]:",
+        "Oh my dear Cecilia.. how could I have forsaken you! \n"
+        "Let us spend eternity together because our writers ran out of time to create more levels...", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
+        Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_lookCameraAt,
+        .actionData = ScriptAction_LookCameraAtData_new(
+            &_camera, 2.5f, (Vector3){-43.0f, 5.4f, -4.0})});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
+            "And ran out of time for a better ending..", 1)});
+    step += 1;
+
+        Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
+        Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_lookCameraAt,
+        .actionData = ScriptAction_LookCameraAtData_new(
+            &_camera, 2.5f, (Vector3){-43.0f, 5.4f, -2.5})});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+            "Does this mean my plot is conveniently tied up? \n"
+            "I get to  go home and write this story into a news paper?", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_lookCameraAt,
+        .actionData = ScriptAction_LookCameraAtData_new(
+            &_camera, 2.5f, (Vector3){-43.0f, 5.4f, -1.0})});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=red_] August[/color]:",
+        "Yup! I'll even be calling the Frank to come pick ya back up!", 1)});
+    step += 1;
 
 
     Script_addAction((ScriptAction){
