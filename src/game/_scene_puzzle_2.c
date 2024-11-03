@@ -87,26 +87,24 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-            "AHHHHHH!!", 1)});
+            "Hmm. Seems I've gotten a bit mixed up, and we're in another locked area.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-            "Sorry, you scared me! I'm not used to having company.\n"
-        "You must have fallen for the trap door. Poor thing.", 1)});
+            "Oh, I know, you could try finding a way to open the door again!", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=red_] August[/color]:",
+          "Who are you talking to, [color=blue] Cecilia?[/color]", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-          "You should get washed up once you get out of here.\n"
-        "Oh, speaking of which, no one has ever made it out of here..", 1)});
+        "No one!", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-                      "So unless you figure something out, you'll be stuck in here.", 1)});
-    step += 1;
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-        "I'd open the door myself from the outside, but I am a ghost..\n"
-        "I can't really touch anything.", 1)});
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+        "I've gotta get out of here quick.\n"
+        "My boss is never gonna believe this scoop!", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 1});
 
