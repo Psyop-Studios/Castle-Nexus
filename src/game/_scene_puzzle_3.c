@@ -165,7 +165,12 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_MEMORY_3 });
     step += 1;
-
+        Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
+        Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .action = ScriptAction_lookCameraAt,
+        .actionData = ScriptAction_LookCameraAtData_new(
+            &_camera, 2.5f, (Vector3){-46.0f, 5.4f, -2.0})});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
             "Who's up fortin they nite", 1)});
