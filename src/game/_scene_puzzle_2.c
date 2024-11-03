@@ -16,17 +16,9 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     BeginMode3D(_camera.camera);
     _currentCamera = _camera.camera;
-    
     Level *level = Game_getLevel();
-    
     Level_draw(level);
-    
     EndMode3D();
-
-    // if (IsMouseButtonDown(0) && _allowCameraMovement)
-    // {
-        // UpdateCamera(&_camera, CAMERA_FIRST_PERSON);
-    // }
 }
 
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
@@ -115,10 +107,32 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Spooky voice:",
-            "You lot may have won last time, but not again!", 1)});
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
+        "I hate to intterupt, \n"
+        "But I think it's important for you to know something.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
+        "August was a kind man when he was alive. This island was built just\n"
+        "so we could send word to shore if there was signs of an impending invastion.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
+        "I think I can connect with him again and stop his anguish.\n"
+        "He was a benevolent man in life, and could become a benevolent ghost in the afterlife", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
+        "I think I can connect with him again and stop his anguish.\n"
+        "He was a benevolent man in life, and could become a benevolent ghost in the afterlife.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
+        "I'm pretty sure the entrance is nearby.\n"
+        "Follow me!", 1)});
     step += 1;
 
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_PUZZLE_3 });
 
 
 }

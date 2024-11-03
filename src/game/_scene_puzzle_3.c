@@ -9,8 +9,8 @@
 
 static FPSCameraZ _camera;
 static int _allowCameraMovement = 1;
-#define TRIGGER_BOXTARGET_1 "BoxTarget1"
-#define TRIGGER_BOXTARGET_2 "BoxTarget2"
+#define TRIGGER_BOXTARGET_LEVEL_3_1 "BoxTarget1"
+#define TRIGGER_BOXTARGET_LEVEL_3_2 "BoxTarget2"
 #define TRIGGER_MEMORY_3 "Memory3"
 
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
@@ -75,7 +75,7 @@ void ScriptAction_onBoxInPlaceLevel3(Script *script, ScriptAction *action)
     BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
 
     // Check first box
-    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_1))
+    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_1))
     {
         if (data->timeInPlace1 <= 0.0f)
         {
@@ -84,7 +84,7 @@ void ScriptAction_onBoxInPlaceLevel3(Script *script, ScriptAction *action)
     }
 
     // Check second box
-    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_2))
+    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_2))
     {
         if (data->timeInPlace2 <= 0.0f)
         {
