@@ -40,16 +40,25 @@ extern Sound talkSfxMale3;
 
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
 {
+
+    dt = fminf(dt, 0.1f);
+
     // water sfx
-    if (GetRandomValue (0, 150) == 0 && !IsSoundPlaying(waterSfx1) && !IsSoundPlaying(waterSfx2))
+    static float water_timer = 3.0f;
+
+    if (water_timer <= 0.2f && !IsSoundPlaying(waterSfx1) && !IsSoundPlaying(waterSfx2))
     {
         float pitch = (float)(GetRandomValue(9, 10)) / 10.0f;
         SetSoundPitch(waterSfx1, pitch);
         SetSoundPitch(waterSfx2, pitch);
         GetRandomValue(0, 1) == 0 ? PlaySound(waterSfx1) : PlaySound(waterSfx2);
+        water_timer = (float)GetRandomValue(60, 70) / 10.0f;
+    }
+    else
+    {
+        water_timer -= dt;
     }
 
-    dt = fminf(dt, 0.1f);
     Level *level = Game_getLevel();
     level->isEditor = 0;
 
@@ -187,7 +196,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
             "We're all adults. What do you say, stranger, shall I ferry you to the island?", 1)});
     step += 1;
-    
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
             "Uh... not like I have a choice. See, I am a writer and my boss wants me to write a story about that place.", 1)});
