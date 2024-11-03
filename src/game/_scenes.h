@@ -12,9 +12,11 @@
 #define SCENE_ID_PUZZLE_1 4
 #define SCENE_ID_PUZZLE_2 5
 #define SCENE_ID_PUZZLE_3 6
+#define SCENE_ID_FINISH 7
 
 extern SceneConfig _scene_editor;
 extern SceneConfig _scene_start;
+extern SceneConfig _scene_finish;
 extern SceneConfig _scene_intro_scene;
 extern SceneConfig _scene_island;
 extern SceneConfig _scene_puzzle_1;
