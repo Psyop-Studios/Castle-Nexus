@@ -45,24 +45,46 @@ static void StepDrawTitle(Script *script, ScriptAction *action)
     Level *level = Game_getLevel();
     LevelTexture* tex = Level_getLevelTexture(level, "title-part-castle.png");
     LevelTexture* texNexus = Level_getLevelTexture(level, "title-part-nexus.png");
+    LevelTexture* waterGradient = Level_getLevelTexture(level, "water-gradient.png");
+    LevelTexture* skyGradient = Level_getLevelTexture(level, "sky-gradient.png");
+    LevelTexture* horizont = Level_getLevelTexture(level, "horizont.png");
+    LevelTexture* introCastle = Level_getLevelTexture(level, "intro-castle.png");
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
-    if (tex)
+    float waterHeight = screenHeight * .6f;
+    if (tex && texNexus && waterGradient && skyGradient && horizont && introCastle)
     {
         int width = tex->texture.width * 2;
         int height = tex->texture.height * 2;
-        int x = (screenWidth - width) / 2;
-        int y = (screenHeight - height) / 2 - 50;
-        DrawTextureEx(tex->texture, (Vector2){x, y}, 0, 2.0f, WHITE);
+        for (int x = 0; x < screenWidth; x += waterGradient->texture.width * 2.0f)
+        {
+            DrawTextureEx(skyGradient->texture, (Vector2){x, 0}, 0, 2.0f, WHITE);
+        }
+        for (int x = 0; x < screenWidth; x += horizont->texture.width * 2.0f)
+        {
+            DrawTextureEx(horizont->texture, (Vector2){x, waterHeight - horizont->texture.height * 2.0f + 64}, 0, 2.0f, WHITE);
+        }
+        for (int x = 0; x < screenWidth; x += waterGradient->texture.width * 2.0f)
+        {
+            DrawRectangle(x, waterHeight + waterGradient->texture.height, waterGradient->texture.width * 2.0f, screenHeight - waterHeight, DB8_BLUE);
+            DrawTextureEx(waterGradient->texture, (Vector2){x, waterHeight}, 0, 2.0f, WHITE);
+        }
 
-        x = x + sinf(level->gameTime * 0.20f) * 10.0f;
-        y = y + cosf(level->gameTime * 0.85f) * 20.0f;
-        DrawTextureEx(texNexus->texture, (Vector2){x, y}, 0, 2.0f, WHITE);
+        DrawTextureEx(introCastle->texture, (Vector2){(screenWidth - introCastle->texture.width * 2) * 4 / 5, waterHeight - introCastle->texture.height + 32}, 0, 2.0f, WHITE);
+
+        
+        int sx = (screenWidth - width) / 5;
+        int sy = (screenHeight - height) / 2 - 50;
+        DrawTextureEx(tex->texture, (Vector2){sx, sy}, 0, 2.0f, WHITE);
+
+        sx = sx + sinf(level->gameTime * 0.20f) * 10.0f;
+        sy = sy + cosf(level->gameTime * 0.85f) * 20.0f;
+        DrawTextureEx(texNexus->texture, (Vector2){sx, sy}, 0, 2.0f, WHITE);
+        // DrawTextureEx(waterGradient->texture, (Vector2){0, waterHeight - waterGradient->texture.height}, 0, 2.0f, WHITE);
+    // DrawRectangle(0, waterHeight, screenWidth, screenHeight - waterHeight, DB8_BLUE);
     }
 
-    float waterHeight = screenHeight * .8f;
-    DrawRectangle(0, waterHeight, screenWidth, screenHeight - waterHeight, DB8_BLUE);
-
+    
     if (script->currentActionId == 0)
     {
         const char *enterToContinue = "Press [color=red_]ENTER[/color] to start your journey...";
