@@ -176,61 +176,62 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
             "Eh, funny you saying that... I was looking for someone to ferry me to the castle.", 1)});
     step += 1;
+        Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 2:",
+            "You mad city people ... you don't understand some things better be left alone", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 1:",
+            "Ach, come on, if they wanna get a chill, why stop 'em?", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 2:",
+            "Stop it August, this ain't funny.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "We're all adults. What do you say, stranger, shall I ferry you to the island?", 1)});
+    step += 1;
+    
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+            "Uh... not like I have a choice. See, I am a writer and my boss wants me to write a story about that place.", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "I see, a writer. So ye're smart, eh? I bet this will be a great story for you to tell!", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 2:",
+            "Listen, mister, this place isn't for you. There are stories of people never returning from that castle.", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "Ha! Probably only because they didn't want to pay the price for your ride, Tom!", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "But I am not like that. Tell you what, I will bring you there for free. Just to prove scared little Tommy here wrong!", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Tom:",
+            "That's a cruel joke, August. Don't say I haven't warned ye, mister.", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+            "Oh well, how bad could it be? I am ready when you are, Mister August.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+            "Then let's go now, the high tide is ebbing.", 1)});
+    step += 1;
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_START_ISLAND });
-
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_drawTextRect,
-    //     .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "You are an investigative journalist tasked", (Rectangle){10, 10, 200, 100})});
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_drawTextRect,
-    //     .actionData = ScriptAction_DrawTextRectData_new("Chapter I",  "with chasing some [color=grey]rumors[/color].", (Rectangle){10, 10, 200, 100})});
-
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_drawTextRect,
-    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "You wanna write some stories, huh?", (Rectangle){10, 10, 200, 100})});
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_drawTextRect,
-    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "I've got a scoop for ya.", (Rectangle){10, 10, 200, 100})});
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_drawTextRect,
-    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "I happen to know a local island is haunted by ghosts.", (Rectangle){10, 10, 200, 100})});
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_drawTextRect,
-    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 2",  "Don't bother listening to him.", (Rectangle){10, 10, 200, 100})});
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_drawTextRect,
-    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 2",  "He just likes telling stories. ", (Rectangle){10, 10, 200, 100})});
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_drawTextRect,
-    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "Nonesense, I've seen em myself!", (Rectangle){10, 10, 200, 100})});
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_drawTextRect,
-    //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "As a matter of fact, I'll take you for free.", (Rectangle){10, 10, 200, 100})});
-
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_setCameraMovementEnabled,
-    //     .actionInt = 1});
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_jumpStep,
-    //     .actionData = ScriptAction_JumpStepData_new(-1, 1, 1)});
-    // step++;
-
-    // Script_addAction((ScriptAction){
-    //     .actionIdStart = step,
-    //     .action = ScriptAction_setCameraMovementEnabled,
-    //     .actionInt = 1});
 }
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)
