@@ -45,25 +45,59 @@ static void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *
     _allowCameraMovement = action->actionInt;
 }
 
-typedef struct BoxInPlaceData
-{
-    float timeInPlace;
+typedef struct {
+    float timeInPlace1;
+    float timeInPlace2;
+
 } BoxInPlaceData;
+
+// void ScriptAction_onBoxInPlaceLevel3(Script *script, ScriptAction *action)
+// {
+//     Level *level = Game_getLevel();
+//     BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
+
+//     if ((Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_1)) && (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_2)))
+//     {
+//         if (data->timeInPlace <= 0.0f)
+//         {
+//             data->timeInPlace = level->gameTime;
+//         }
+//     }
+//     if (data->timeInPlace > 0.0f && level->gameTime - data->timeInPlace < 4.0f)
+//     {
+//         DrawNarrationBottomBox("You:", "The box is in place", NULL);
+//     }
+// }
 
 void ScriptAction_onBoxInPlaceLevel3(Script *script, ScriptAction *action)
 {
     Level *level = Game_getLevel();
     BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
-    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_1) && Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_2))
+
+    // Check first box
+    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_1))
     {
-        if (data->timeInPlace <= 0.0f)
+        if (data->timeInPlace1 <= 0.0f)
         {
-            data->timeInPlace = level->gameTime;
+            data->timeInPlace1 = level->gameTime;
         }
     }
-    if (data->timeInPlace > 0.0f && level->gameTime - data->timeInPlace < 4.0f)
+
+    // Check second box
+    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_2))
     {
-        DrawNarrationBottomBox("You:", "The box is in place", NULL);
+        if (data->timeInPlace2 <= 0.0f)
+        {
+            data->timeInPlace2 = level->gameTime;
+        }
+    }
+
+    // Only show message if both boxes have been in place for less than 4 seconds
+    if (data->timeInPlace1 > 0.0f && data->timeInPlace2 > 0.0f &&
+        level->gameTime - data->timeInPlace1 < 4.0f &&
+        level->gameTime - data->timeInPlace2 < 4.0f)
+    {
+        DrawNarrationBottomBox("You:", "The boxes are in place", NULL);
     }
 }
 
@@ -78,7 +112,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.camera.fovy = 45.0f;
     _camera.camera.projection = CAMERA_PERSPECTIVE;
     _camera.velocityDecayRate = 14.0f;
-    _camera.acceleration = 50.0f;
+    _camera.acceleration = 100.0f;
 
     Level_load(Game_getLevel(), "resources/levels/Level3.lvl");
      int step = 0;
@@ -114,7 +148,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 1});
 
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_onBoxInPlaceLevel3, .actionData = Scene_alloc(sizeof(BoxInPlaceData), &(BoxInPlaceData){.timeInPlace = 0.0f}) });
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_onBoxInPlaceLevel3, .actionData = Scene_alloc(sizeof(BoxInPlaceData), &(BoxInPlaceData){.timeInPlace1 = 0.0f, .timeInPlace2 = 0.0f}) });
 
     
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_MEMORY_3 });

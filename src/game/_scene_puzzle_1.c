@@ -112,7 +112,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-                      "So unless you figure something out, you'll be stuck in here.", 1)});
+          "So unless you figure something out, you'll be stuck in here.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
