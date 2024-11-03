@@ -88,6 +88,7 @@ typedef struct BoxInPlaceData
     float timeInPlace;
 } BoxInPlaceData;
 
+
 void ScriptAction_onBoxInPlace(Script *script, ScriptAction *action)
 {
     Level *level = Game_getLevel();
@@ -117,7 +118,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.camera.projection = CAMERA_PERSPECTIVE;
     _camera.rotation.y = 200.0f * DEG2RAD;
     _camera.velocityDecayRate = 14.0f;
-    _camera.acceleration = 25.0f;
+    _camera.acceleration = 50.0f;
 
     _allowCameraMovement = 1;
 

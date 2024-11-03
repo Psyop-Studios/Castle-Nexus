@@ -103,9 +103,9 @@
 			"instancesRX":	[0, 0, 0],
 			"instancesRY":	[135, 0, 0],
 			"instancesRZ":	[0, 0, 0],
-			"instancesSX":	[0.89462876319885254, 1, 1],
-			"instancesSY":	[0.89462876319885254, 1, 1],
-			"instancesSZ":	[0.89462876319885254, 1, 1],
+			"instancesSX":	[1.060155987739563, 1, 1],
+			"instancesSY":	[1.060155987739563, 1, 1],
+			"instancesSZ":	[1.060155987739563, 1, 1],
 			"instancesTexId":	[-1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/ground-medium-blocks-1.glb",
@@ -133,16 +133,16 @@
 			"instancesTexId":	[-1, -1]
 		}, {
 			"filename":	"resources/level_assets/door-archway-doubledoor.glb",
-			"instancesPX":	[-4, -27],
-			"instancesPY":	[0, 3.9999961853027344],
-			"instancesPZ":	[-1, -2],
-			"instancesRX":	[0, 0],
-			"instancesRY":	[270, 90],
-			"instancesRZ":	[0, 0],
-			"instancesSX":	[1, 1],
-			"instancesSY":	[1, 1],
-			"instancesSZ":	[1, 1],
-			"instancesTexId":	[-1, -1]
+			"instancesPX":	[-4],
+			"instancesPY":	[0],
+			"instancesPZ":	[-1],
+			"instancesRX":	[0],
+			"instancesRY":	[270],
+			"instancesRZ":	[0],
+			"instancesSX":	[1],
+			"instancesSY":	[1],
+			"instancesSZ":	[1],
+			"instancesTexId":	[-1]
 		}, {
 			"filename":	"resources/level_assets/outside-island-1.glb",
 			"instancesPX":	[],
@@ -600,9 +600,9 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}],
-	"entityNames":	["Painting-Castle-1", "Painting-Castle-2", "Candle-Blue-1", "Candle-Blue-2", "Candle-Blue-3", "Candle-Blue-4", "Candle-Blue-5", "Candle-Blue-6", "Candle-Blue-7", "Candle-Blue-8", "Painting-Moonlight-1", "Candle-Blue-9", "Painting-Tree-1", "Box", "Painting-Chao-1", "Box", "Box"],
-	"entityTRS":	[-1, 4, -19, 0, 0, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -19, 4, -12, 0, 90, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, 2, 3.8590810298919678, -19, 0, 0, 0, 1, 1, 1, 0, 0, 3, 0, 180, 0, 1, 1, 1, -9, 4.0000009536743164, -8, 0, 90, 0, 1, 1, 1, -7, 4.0000009536743164, -19, 0, 0, 0, 1, 1, 1, -6, 4.0000009536743164, 3, 0, 180, 0, 1, 1, 1, -16, 4.0000009536743164, -10, 0, 180, 0, 1, 1, 1, -15, 4.0000009536743164, -26, 0, 0, 0, 1, 1, 1, -19, 8.0000009536743164, -22, 0, 90, 0, 1, 1, 1, 3, 3.9999995231628418, -10, 0, 270, 0, 1.03857421875, 1.03857421875, 1.03857421875, 0, 3.9999995231628418, -7, 0, 180, 0, 1, 1, 1, -19, 3.9999997615814209, -16, 0, -270, 0, 0.48984384536743164, 1, 1, -6, 4.734276294708252, -2, 0, 0, 0, 1, 1, 1, -18, 3.9999997615814209, 3, 0, 180, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -13, 8.6626949310302734, -24, 0, 0, 0, 1, 1, 1, -17, 8.6176748275756836, -22, 0, 0, 0, 1.0767582654953, 1.0767582654953, 1.0767582654953],
-	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+	"entityNames":	["Painting-Castle-1", "Painting-Castle-2", "Candle-Blue-1", "Candle-Blue-2", "Candle-Blue-3", "Candle-Blue-4", "Candle-Blue-5", "Candle-Blue-6", "Candle-Blue-7", "Candle-Blue-8", "Painting-Moonlight-1", "Candle-Blue-9", "Painting-Tree-1", "Box", "Painting-Chao-1", "Box", "Box", "BoxTarget1", "BoxTarget2", "Memory3", "Door", null, null, null],
+	"entityTRS":	[-1, 4, -19, 0, 0, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -19, 4, -12, 0, 90, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, 2, 3.8590810298919678, -19, 0, 0, 0, 1, 1, 1, 0, 0, 3, 0, 180, 0, 1, 1, 1, -9, 4.0000009536743164, -8, 0, 90, 0, 1, 1, 1, -7, 4.0000009536743164, -19, 0, 0, 0, 1, 1, 1, -6, 4.0000009536743164, 3, 0, 180, 0, 1, 1, 1, -16, 4.0000009536743164, -10, 0, 180, 0, 1, 1, 1, -15, 4.0000009536743164, -26, 0, 0, 0, 1, 1, 1, -19, 8.0000009536743164, -22, 0, 90, 0, 1, 1, 1, 3, 3.9999995231628418, -10, 0, 270, 0, 1.03857421875, 1.03857421875, 1.03857421875, 0, 3.9999995231628418, -7, 0, 180, 0, 1, 1, 1, -19, 3.9999997615814209, -16, 0, -270, 0, 0.48984384536743164, 1, 1, -6, 4.734276294708252, -2, 0, 0, 0, 1, 1, 1, -18, 3.9999997615814209, 3, 0, 180, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -13, 8.6626949310302734, -24, 0, 0, 0, 1, 1, 1, -17, 8.6176748275756836, -22, 0, 0, 0, 1.0767582654953, 1.0767582654953, 1.0767582654953, -10, 4, -4, 0, 0, 0, 1, 1, 1, -10, 4, 0, 0, 0, 0, 1, 1, 1, -29, 4, -2, 0, 0, 0, 1, 6.8492183685302734, 1, -26, 4, -2, 0, -90, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 0, 0, 0],
 	"components":	[{
 			"name":	"CameraFacing",
 			"componentId":	0,
@@ -616,7 +616,7 @@
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/decoration-picture-frame-1.glb",
 					"isDithered":	0,
@@ -685,11 +685,15 @@
 					"mesh":	"resources/level_assets/crate.glb",
 					"isDithered":	0,
 					"trs":	[0, 0, 0, 0, 0, 0, 1.2008789777755737, 1.2008789777755737, 1.2008789777755737]
-				}, null, null, null, null, null, null, null]
+				}, {
+					"mesh":	"resources/level_assets/door-archway-doubledoor.glb",
+					"isDithered":	0,
+					"trs":	[0, 0.050585977733135223, 0, 0, 0, 0, 1, 1, 1]
+				}, null, null, null, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 20, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"texture":	"resources/level_assets/portraitCastle.png",
 					"sprite":	"resources/level_assets/portraitCastle.png",
@@ -751,7 +755,11 @@
 					"texture":	"resources/level_assets/portraitTrees.png",
 					"sprite":	"resources/level_assets/portraitTrees.png",
 					"trs":	[0, 2.1024410724639893, 0.11816415190696716, 0, 0, 0, 0.82763653993606567, 0.82763653993606567, 0.82763653993606567]
-				}, null, {
+				}, {
+					"texture":	"resources/level_assets/doorknob.png",
+					"sprite":	"resources/level_assets/doorknob.png",
+					"trs":	[1, 1.3026366233825684, 0.44560572504997253, 0, 0, 0, 0.15976549685001373, 0.15976549685001373, 0.15976549685001373]
+				}, {
 					"texture":	"resources/level_assets/portrait-chao.png",
 					"sprite":	"resources/level_assets/portrait-chao.png",
 					"trs":	[-0.0253906324505806, 2.1806633472442627, 0.0544922910630703, 0, 0, 0, 0.90048819780349731, 0.90048819780349731, 0.90048819780349731]
@@ -759,7 +767,7 @@
 		}, {
 			"name":	"ColliderBox",
 			"componentId":	4,
-			"ownerEntityIds":	[13, 15, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[13, 15, 16, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"size":	[1, 1, 1],
 					"offset":	[0, 0, 0],
@@ -772,7 +780,15 @@
 					"size":	[1, 1, 1],
 					"offset":	[0, 0, 0],
 					"isTrigger":	0
-				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+				}, {
+					"size":	[0.372539073228836, 3.2434766292572021, 3.4796872138977051],
+					"offset":	[1.06246018409729, 1.4634764194488525, 0],
+					"isTrigger":	1
+				}, {
+					"size":	[4.6871094703674316, 8.03718662261963, 0.25769537687301636],
+					"offset":	[0, -0.453281283378601, 0.40550771355628967],
+					"isTrigger":	0
+				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"RigidSphere",
 			"componentId":	5,
@@ -796,7 +812,11 @@
 		}, {
 			"name":	"CollisionDetector",
 			"componentId":	6,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
-			"entityData":	[null, null, null, null, null, null, null, null]
+			"ownerEntityIds":	[17, 18, 0, 0, 0, 0, 0, 0],
+			"entityData":	[{
+					"radius":	0.12999998033046722
+				}, {
+					"radius":	0.12999998033046722
+				}, null, null, null, null, null, null]
 		}]
 }

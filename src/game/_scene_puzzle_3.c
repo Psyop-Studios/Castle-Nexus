@@ -4,9 +4,14 @@
 #include "scriptactions.h"
 #include "dusk-gui.h"
 #include <raymath.h>
+#include <stdio.h>
+
 
 static FPSCameraZ _camera;
 static int _allowCameraMovement = 1;
+#define TRIGGER_BOXTARGET_LEVEL_3_1 "BoxTarget1"
+#define TRIGGER_BOXTARGET_LEVEL_3_2 "BoxTarget2"
+#define TRIGGER_MEMORY_3 "Memory3"
 
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
@@ -40,6 +45,28 @@ static void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *
     _allowCameraMovement = action->actionInt;
 }
 
+typedef struct BoxInPlaceData
+{
+    float timeInPlace;
+} BoxInPlaceData;
+
+void ScriptAction_onBoxInPlaceLevel3(Script *script, ScriptAction *action)
+{
+    Level *level = Game_getLevel();
+    BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
+    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_1) && Level_isTriggeredOn(level, TRIGGER_BOXTARGET_LEVEL_3_2))
+    {
+        if (data->timeInPlace <= 0.0f)
+        {
+            data->timeInPlace = level->gameTime;
+        }
+    }
+    if (data->timeInPlace > 0.0f && level->gameTime - data->timeInPlace < 4.0f)
+    {
+        DrawNarrationBottomBox("You:", "The box is in place", NULL);
+    }
+}
+
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     DisableCursor();
@@ -51,40 +78,55 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.camera.fovy = 45.0f;
     _camera.camera.projection = CAMERA_PERSPECTIVE;
     _camera.velocityDecayRate = 14.0f;
-    _camera.acceleration = 25.0f;
+    _camera.acceleration = 50.0f;
 
     Level_load(Game_getLevel(), "resources/levels/Level3.lvl");
-    int step = 0;
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("Chapter 5",  "Finally out of the [color=grey] basement[/color].", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("[color=blue] Cecilia [/color]",  "[color=blue] How do you like my house[/color]?", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("[color=blue] Cecilia [/color]",  "[color=blue] I think it's pretty nice[/color].", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_drawTextRect,
-        .actionData = ScriptAction_DrawTextRectData_new("[color=red] August [/color]",  "[color=red] I'd like it better with neither of you in it [/color].", (Rectangle){10, 10, 200, 100})});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_setCameraMovementEnabled,
-        .actionInt = 1});
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_jumpStep,
-        .actionData = ScriptAction_JumpStepData_new(-1, 1, 1)});
-    step++;
+     int step = 0;
     
-    Script_addAction((ScriptAction){
-        .actionIdStart = step,
-        .action = ScriptAction_setCameraMovementEnabled,
-        .actionInt = 1});
+
+
+    
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
+            "AHHHHHH!!", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
+            "Sorry, you scared me! I'm not used to having company.\n"
+        "You must have fallen for the trap door. Poor thing.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
+          "You should get washed up once you get out of here.\n"
+        "Oh, speaking of which, no one has ever made it out of here..", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
+                      "So unless you figure something out, you'll be stuck in here.", 1)});
+    step += 1;
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
+        "I'd open the door myself from the outside, but I am a ghost..\n"
+        "I can't really touch anything.", 1)});
+    step += 1;
+
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 1});
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_onBoxInPlaceLevel3, .actionData = Scene_alloc(sizeof(BoxInPlaceData), &(BoxInPlaceData){.timeInPlace = 0.0f}) });
+
+    
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_MEMORY_3 });
+    step += 1;
+
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Spooky voice:",
+            "You lot may have won last time, but not again!", 1)});
+    step += 1;
+
+
+
 }
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)

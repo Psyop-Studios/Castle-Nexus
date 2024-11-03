@@ -1,4 +1,11 @@
 {
     "texture": "crate_tex.png",
-    "dithered": false
+    "dithered": false,
+    "colliders": [
+        {
+            "type": "aabox",
+            "position": [0,0,0],
+            "size": [2,4,2]
+        }
+    ]
 }

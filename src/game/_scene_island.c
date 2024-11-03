@@ -4,6 +4,8 @@
 #include "scriptactions.h"
 #include "dusk-gui.h"
 #include <raymath.h>
+#include <stdio.h>
+
 
 static FPSCameraZ _camera;
 static int _allowCameraMovement = 1;
@@ -42,6 +44,10 @@ static void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *
 }
 
 
+typedef struct BoxInPlaceData
+{
+    float timeInPlace;
+} BoxInPlaceData;
 
 static void ScriptAction_island_firstStep(Script *script, ScriptAction *action)
 {
@@ -68,7 +74,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.camera.projection = CAMERA_PERSPECTIVE;
     _camera.rotation.y = 200.0f * DEG2RAD;
     _camera.velocityDecayRate = 14.0f;
-    _camera.acceleration = 25.0f;
+    _camera.acceleration = 50.0f;
 
     Level_load(Game_getLevel(), "resources/levels/island-fix.lvl");
  int step = 0;
