@@ -34,6 +34,11 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
 {
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
+        DisableCursor();
+    }
+
     dt = fminf(dt, 0.1f);
     Level *level = Game_getLevel();
     level->isEditor = 0;
@@ -215,7 +220,6 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
 static void SceneDeinit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
-    EnableCursor();
 }
 
 SceneConfig _scene_intro_scene = {

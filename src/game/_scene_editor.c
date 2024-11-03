@@ -899,6 +899,7 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    EnableCursor();
     TraceLog(LOG_INFO, "Editor : %d", SceneConfig->sceneId);
     // _model = LoadModel("resources/level-blocks.glb");
     // _model.materials[0].shader = _modelDitherShader;
