@@ -49,10 +49,11 @@ static void StepDrawTitle(Script *script, ScriptAction *action)
     LevelTexture* skyGradient = Level_getLevelTexture(level, "sky-gradient.png");
     LevelTexture* horizont = Level_getLevelTexture(level, "horizont.png");
     LevelTexture* introCastle = Level_getLevelTexture(level, "intro-castle.png");
+    LevelTexture* miniGhost = Level_getLevelTexture(level, "mini-ghost-sprite.png");
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
     float waterHeight = screenHeight * .6f;
-    if (tex && texNexus && waterGradient && skyGradient && horizont && introCastle)
+    if (tex && texNexus && waterGradient && skyGradient && horizont && introCastle && miniGhost)
     {
         int width = tex->texture.width * 2;
         int height = tex->texture.height * 2;
@@ -70,8 +71,16 @@ static void StepDrawTitle(Script *script, ScriptAction *action)
             DrawTextureEx(waterGradient->texture, (Vector2){x, waterHeight}, 0, 2.0f, WHITE);
         }
 
-        DrawTextureEx(introCastle->texture, (Vector2){(screenWidth - introCastle->texture.width * 2) * 4 / 5, waterHeight - introCastle->texture.height + 32}, 0, 2.0f, WHITE);
+        float castleX = (screenWidth - introCastle->texture.width * 2) * 4 / 5;
+        float castleY = waterHeight - introCastle->texture.height + 32;
+        DrawTextureEx(introCastle->texture, (Vector2){castleX, castleY}, 0, 2.0f, WHITE);
 
+        float ghostX = castleX + introCastle->texture.width + 20 + cosf(level->gameTime * 0.25f) * 40.0f;
+        float xdir = sinf(level->gameTime * 0.25f);
+        float ghostY = castleY + introCastle->texture.height + 20 + sinf(level->gameTime * 0.15f) * 10.0f;
+
+        int frameSelect = (int)(level->gameTime * 4) % 4;
+        DrawTexturePro(miniGhost->texture, (Rectangle){frameSelect * 8, 0, xdir < 0.0f ? 8 : -8, 8}, (Rectangle){ghostX, ghostY, 16, 16}, (Vector2){8, 8}, 0, WHITE);
         
         int sx = (screenWidth - width) / 5;
         int sy = (screenHeight - height) / 2 - 50;
