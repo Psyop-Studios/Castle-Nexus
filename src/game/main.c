@@ -216,7 +216,9 @@ void DrawScene()
     SceneConfig *config = Scene_getConfig(_contextData->currentSceneId);
     if (config)
     {
-        config->updateFn(_contextData, config, GetFrameTime());
+        float dt = GetFrameTime();
+        dt = fminf(dt, 0.1f);
+        config->updateFn(_contextData, config, dt);
         config->drawLevelFn(_contextData, config);
     }
 
