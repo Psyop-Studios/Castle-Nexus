@@ -107,7 +107,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionIdStart = step,
         .actionIdEnd = step + 2,
         .action = ScriptAction_fadingCut,
-        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_TOP_DOWN, FADE_TWEEN_TYPE_SIN, 1.0f, 1.0f)});
+        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, 1.0f)});
     step += 1;
     Script_addAction((ScriptAction){
         .actionIdStart = step,

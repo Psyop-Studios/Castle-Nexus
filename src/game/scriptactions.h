@@ -3,7 +3,10 @@
 
 #include "main.h"
 
-#define FADE_TYPE_TOP_DOWN 0
+#define FADE_TYPE_VERTICAL_CLOSE 0
+#define FADE_TYPE_TOP_DOWN_CLOSE 1
+#define FADE_TYPE_BOTTOM_UP_CLOSE 2
+
 #define FADE_TWEEN_TYPE_LINEAR 0
 #define FADE_TWEEN_TYPE_SIN 1
 

@@ -59,6 +59,7 @@ void ScriptAction_onBoxInPlaceLevel2(Script *script, ScriptAction *action)
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    Game_setFogGradient(174.0/512.0, 104.0/512.0, 0.55f, 0.26f);
     DisableCursor();
     // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
     _camera.camera = (Camera){0};
@@ -76,6 +77,12 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
 
     
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .actionIdEnd = step + 2,
+        .action = ScriptAction_fadingCut,
+        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, -1.0f)});
+    step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
@@ -127,7 +134,17 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         "Follow me!", 1)});
     step += 1;
 
+
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .actionIdEnd = step + 2,
+        .action = ScriptAction_fadingCut,
+        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, 1.0f)});
+
+    step += 1;
+    
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_PUZZLE_3 });
+
 
 
 }

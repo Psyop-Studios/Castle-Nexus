@@ -336,6 +336,12 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
 
     if (allowCameraMovement)
     {
+        // needed for browser; if we don't do that, the mouse will eventually be released and
+        // then the game becomes unplayable
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            DisableCursor();
+        }
         Vector3 move = {0};
         if (IsKeyDown(KEY_W))
         {

@@ -40,11 +40,6 @@ extern Sound talkSfxMale3;
 
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
 {
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-    {
-        DisableCursor();
-    }
-
     // water sfx
     if (GetRandomValue (0, 150) == 0 && !IsSoundPlaying(waterSfx1) && !IsSoundPlaying(waterSfx2))
     {
@@ -150,7 +145,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionIdStart = step,
         .actionIdEnd = step + 2,
         .action = ScriptAction_fadingCut,
-        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_TOP_DOWN, FADE_TWEEN_TYPE_SIN, 1.0f, -1.0f)});
+        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, -1.0f)});
     step += 1;
     // message to player to get started
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 1});
@@ -229,6 +224,14 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
             "Then let's go now, the high tide is ebbing.", 1)});
+    step += 1;
+
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .actionIdEnd = step + 2,
+        .action = ScriptAction_fadingCut,
+        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, 1.0f)});
+
     step += 1;
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_START_ISLAND });

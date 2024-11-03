@@ -103,6 +103,7 @@ void ScriptAction_onBoxInPlaceLevel3(Script *script, ScriptAction *action)
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    Game_setFogGradient(174.0/512.0, 104.0/512.0, 0.55f, 0.26f);
     DisableCursor();
     // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
     _camera.camera = (Camera){0};
@@ -117,7 +118,13 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Level_load(Game_getLevel(), "resources/levels/Level3.lvl");
      int step = 0;
     
-
+    
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .actionIdEnd = step + 2,
+        .action = ScriptAction_fadingCut,
+        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, -1.0f)});
+    step += 1;
 
     
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
@@ -160,6 +167,14 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
 
 
+
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .actionIdEnd = step + 2,
+        .action = ScriptAction_fadingCut,
+        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, 1.0f)});
+
+    step += 1;
 
 }
 

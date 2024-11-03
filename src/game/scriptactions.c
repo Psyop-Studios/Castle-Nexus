@@ -412,10 +412,18 @@ void ScriptAction_fadingCut(Script *script, ScriptAction *action)
     {
         t = EaseInOutSine(t, 0.0f, 1.0f);
     }
-    if (data->fadeType == FADE_TYPE_TOP_DOWN)
+    if (data->fadeType == FADE_TYPE_VERTICAL_CLOSE)
     {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight() * t * .5f, data->color);
         DrawRectangle(0, GetScreenHeight() * (1.0f - t * .5f), GetScreenWidth(), GetScreenHeight(), data->color);
+    }
+    else if (data->fadeType == FADE_TYPE_TOP_DOWN_CLOSE)
+    {
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight() * t, data->color);
+    }
+    else if (data->fadeType == FADE_TYPE_BOTTOM_UP_CLOSE)
+    {
+        DrawRectangle(0, GetScreenHeight() * (1.0f - t), GetScreenWidth(), GetScreenHeight(), data->color);
     }
     else
     {

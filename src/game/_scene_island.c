@@ -79,8 +79,15 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.acceleration = 50.0f;
 
     Level_load(Game_getLevel(), "resources/levels/island-fix.lvl");
- int step = 0;
+    int step = 0;
+
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .actionIdEnd = step + 2,
+        .action = ScriptAction_fadingCut,
+        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, -1.0f)});
     
+    step += 1;
     // message to player to get started
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_island_firstStep });
     step += 1;
@@ -114,6 +121,14 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
             "You lot may have won last time, but not again!", 1)});
     step += 1;
 
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .actionIdEnd = step + 2,
+        .action = ScriptAction_fadingCut,
+        .actionData = ScriptAction_FadingCutData_new(0.4f, DB8_BLACK, FADE_TYPE_BOTTOM_UP_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, 1.0f)});
+    
+
+    step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_PUZZLE_1 });
 }
 
