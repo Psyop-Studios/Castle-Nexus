@@ -70,9 +70,10 @@ static void ScriptAction_level1_transition_landing(Script *script, ScriptAction 
     static bool done = false;
     if (!done)
     {
-        if (!IsSoundPlaying(landingSfx))
+        if (!IsSoundPlaying(landingSfx)) {
             PlaySound(landingSfx);
             done = true;
+        }
     }
 }
 
