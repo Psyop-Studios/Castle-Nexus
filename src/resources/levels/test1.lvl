@@ -145,16 +145,16 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/decoration-cobwebs-corner-1.glb",
-			"instancesPX":	[-10, -10, 12, 4],
-			"instancesPY":	[1.1920928955078125e-07, 2.384185791015625e-07, 0.300000250339508, -0.17499977350234985],
-			"instancesPZ":	[-8, -2, 6, -4],
-			"instancesRX":	[0, 0, 11, 0],
-			"instancesRY":	[-270, -180, -90, 270],
-			"instancesRZ":	[0, 0, 19, 0],
-			"instancesSX":	[1, 1, 1, 1],
-			"instancesSY":	[1, 1, 1, 1],
-			"instancesSZ":	[1, 1, 1, 1],
-			"instancesTexId":	[-1, -1, -1, -1]
+			"instancesPX":	[-10, -10, 12, 4, -6],
+			"instancesPY":	[1.1920928955078125e-07, 2.384185791015625e-07, 0.300000250339508, -0.17499977350234985, 0.62500041723251343],
+			"instancesPZ":	[-8, -2, 6, -4, 6],
+			"instancesRX":	[0, 0, 11, 0, 0],
+			"instancesRY":	[-270, -180, -90, 270, -180],
+			"instancesRZ":	[0, 0, 19, 0, 0],
+			"instancesSX":	[1, 1, 1, 1, 1],
+			"instancesSY":	[1, 1, 1, 1, 0.29999992251396179],
+			"instancesSZ":	[1, 1, 1, 1, 1],
+			"instancesTexId":	[-1, -1, -1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/decoration-docks-bollard-2-chain.glb",
 			"instancesPX":	[],
@@ -647,7 +647,7 @@
 		}, {
 			"name":	"Wobbler",
 			"componentId":	1,
-			"ownerEntityIds":	[27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[27, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"type":	1,
 					"argument":	0,
@@ -658,7 +658,7 @@
 					"pivotX":	0.32088729739189148,
 					"pivotY":	-0.12806949019432068,
 					"pivotZ":	26.953893661499023
-				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+				}, null, null, null, null, null, null, null]
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
@@ -852,7 +852,7 @@
 		}, {
 			"name":	"ColliderBox",
 			"componentId":	4,
-			"ownerEntityIds":	[25, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[25, 0, 29, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"size":	[1, 1, 1],
 					"offset":	[0, -0.00999999977648258, 0],
@@ -865,7 +865,7 @@
 					"size":	[7.9852337837219238, 9.6119136810302734, 1],
 					"offset":	[0, 0, 0],
 					"isTrigger":	1
-				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+				}, null, null, null, null, null]
 		}, {
 			"name":	"RigidSphere",
 			"componentId":	5,
@@ -891,7 +891,7 @@
 					"isOpen":	0,
 					"openTime":	2.4399986267089844,
 					"closeTime":	0.17000053822994232,
-					"time":	68.866912841796875,
+					"time":	12.790326118469238,
 					"closedPosition":	[1.1999990940093994, -3.5762786865234375e-07, 8],
 					"closedRotation":	[0, 0, 0],
 					"openPosition":	[1.19999897480011, 2.9499983787536621, 8],

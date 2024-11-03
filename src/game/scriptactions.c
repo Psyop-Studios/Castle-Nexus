@@ -5,6 +5,7 @@
 #include <raymath.h>
 #include <stdio.h>
 #include <math.h>
+#include "scriptactions.h"
 
 typedef struct ScriptAction_DrawRectData {
     const char *title;
@@ -339,4 +340,62 @@ void* ScriptAction_DrawNarrationBottomBoxData_new(const char *narrator, const ch
 void ScriptAction_loadScene(Script *script, ScriptAction *action)
 {
     Game_setNextScene(action->actionInt);
+}
+
+typedef struct ScriptAction_FadingCutData {
+    float transitionTime;
+    float actionStartTime;
+    float nextStepDelay;
+    Color color;
+    uint8_t fadeType;
+    uint8_t fadeTweenType;
+    float animationDirection;
+} ScriptAction_FadingCutData;
+
+void ScriptAction_fadingCut(Script *script, ScriptAction *action)
+{
+    ScriptAction_FadingCutData *data = action->actionData;
+    Level *level = Game_getLevel();
+    if (data->actionStartTime == 0.0f)
+    {
+        data->actionStartTime = level->gameTime;
+    }
+    float t = (level->gameTime - data->actionStartTime) / data->transitionTime;
+    if (data->animationDirection < 0.0f)
+    {
+        t = 1.0f - t;
+    }
+    if (data->fadeTweenType == FADE_TWEEN_TYPE_SIN)
+    {
+        t = EaseInOutSine(t, 0.0f, 1.0f);
+    }
+    if (data->fadeType == FADE_TYPE_TOP_DOWN)
+    {
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight() * t * .5f, data->color);
+        DrawRectangle(0, GetScreenHeight() * (1.0f - t * .5f), GetScreenWidth(), GetScreenHeight(), data->color);
+    }
+    else
+    {
+        DrawRectangle(0, 0, GetScreenWidth() * t * .5f, GetScreenHeight(), data->color);
+        DrawRectangle(GetScreenWidth() * (1.0f - t) * .5f, 0, GetScreenWidth() * t, GetScreenHeight(), data->color);
+    }
+    if (level->gameTime - data->actionStartTime - data->transitionTime > data->nextStepDelay && 
+        action->actionIdStart == script->currentActionId)
+    {
+        script->nextActionId = script->currentActionId + 1;
+    }
+}
+
+void* ScriptAction_FadingCutData_new(float transitionTime, Color color, uint8_t fadeType, uint8_t fadeTweenType, float nextStepDelay, float direction)
+{
+    ScriptAction_FadingCutData *data = Scene_alloc(sizeof(ScriptAction_FadingCutData), 
+        &(ScriptAction_FadingCutData){
+            .transitionTime = transitionTime,
+            .color = color,
+            .fadeType = fadeType,
+            .fadeTweenType = fadeTweenType,
+            .nextStepDelay = nextStepDelay,
+            .animationDirection = direction,
+        });
+    return data;
 }

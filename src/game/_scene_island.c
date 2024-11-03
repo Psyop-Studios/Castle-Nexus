@@ -13,6 +13,7 @@ static int _allowCameraMovement = 1;
 
 static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    ClearBackground(DB8_BG_GREY);
     BeginMode3D(_camera.camera);
     _currentCamera = _camera.camera;
     
@@ -58,12 +59,13 @@ static void ScriptAction_island_firstStep(Script *script, ScriptAction *action)
         return;
     }
     DrawNarrationBottomBox("Chapter 2:", 
-        "After a short ride, the dock workers dropped you off onto the [color=blue_] island[/color].\n"
+        "After a short ride, the dock workers dropped you off onto the [color=blue]island[/color].\n"
         "Somehow, the dock workers were [color=red_] already gone.[/color]", NULL);
 }
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    Game_setFogGradient(176.0/512.0, 320.0/512.0, 0.175f, 0.4f);
     DisableCursor();
     // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
     _camera.camera = (Camera){0};

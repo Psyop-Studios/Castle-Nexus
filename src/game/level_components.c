@@ -1455,6 +1455,24 @@ void DoorStateComponent_onDeserialize(Level *level, LevelEntityInstanceId ownerI
     component->openRotation.z = (float) cJSON_GetArrayItem(openRotation, 2)->valuedouble;
     component->toggleOpenTriggerId = strdup(cJSON_GetObjectItem(json, "toggleOpenTriggerId")->valuestring);
     component->toggleCloseTriggerId = strdup(cJSON_GetObjectItem(json, "toggleCloseTriggerId")->valuestring);
+
+    LevelEntity *entity = Level_resolveEntity(level, ownerId);
+    if (!entity)
+    {
+        return;
+    }
+    if (component->isOpen)
+    {
+        entity->position = component->openPosition;
+        entity->eulerRotationDeg = component->openRotation;
+    }
+    else
+    {
+        entity->position = component->closedPosition;
+        entity->eulerRotationDeg = component->closedRotation;
+    }
+    component->time = level->renderTime;
+    Level_updateEntityTransform(entity);
 }
 
 void DoorStateComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)

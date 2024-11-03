@@ -108,6 +108,7 @@ void ScriptAction_onBoxInPlace(Script *script, ScriptAction *action)
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    Game_setFogGradient(174.0/512.0, 200.0/512.0, 0.125f, 0.4f);
     DisableCursor();
     // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
     _camera.camera = (Camera){0};
@@ -120,11 +121,19 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     _camera.velocityDecayRate = 14.0f;
     _camera.acceleration = 50.0f;
 
-    _allowCameraMovement = 1;
+    _allowCameraMovement = 0;
 
     Level_load(Game_getLevel(), "resources/levels/docks.lvl");
     int step = 0;
+    
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .actionIdEnd = step + 2,
+        .action = ScriptAction_fadingCut,
+        .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_TOP_DOWN, FADE_TWEEN_TYPE_SIN, 1.0f, -1.0f)});
+    step += 1;
     // message to player to get started
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 1});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_intro_firstStep });
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_exitZoneMessage });

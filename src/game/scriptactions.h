@@ -3,6 +3,11 @@
 
 #include "main.h"
 
+#define FADE_TYPE_TOP_DOWN 0
+#define FADE_TWEEN_TYPE_LINEAR 0
+#define FADE_TWEEN_TYPE_SIN 1
+
+
 void DrawNarrationBottomBox(const char *narrator, const char *text, const char *proceedText);
 
 void* ScriptAction_DrawTextRectData_new(const char *title, const char *text, Rectangle rect);
@@ -25,4 +30,7 @@ void* ScriptAction_LookCameraAtData_new(FPSCameraZ *camera, float transitionTime
 void ScriptAction_drawNarrationBottomBox(Script *script, ScriptAction *action);
 void* ScriptAction_DrawNarrationBottomBoxData_new(const char *narrator, const char *text, int proceedOnEnter);
 void ScriptAction_loadScene(Script *script, ScriptAction *action);
+
+void ScriptAction_fadingCut(Script *script, ScriptAction *action);
+void* ScriptAction_FadingCutData_new(float transitionTime, Color color, uint8_t fadeType, uint8_t fadeTweenType, float nextStepDelay, float direction);
 #endif

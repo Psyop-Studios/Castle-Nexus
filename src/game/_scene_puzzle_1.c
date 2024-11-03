@@ -72,6 +72,7 @@ void ScriptAction_onBoxInPlaceLevel1(Script *script, ScriptAction *action)
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
+    Game_setFogGradient(174.0/512.0, 104.0/512.0, 0.55f, 0.26f);
     DisableCursor();
     // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
     _camera.camera = (Camera){0};

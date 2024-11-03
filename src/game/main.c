@@ -60,7 +60,7 @@ void Game_init(void** contextData)
 
         _contextData = (GameContext*) *contextData;
         _contextData->currentSceneId = SCENE_ID_INVALID;
-        _contextData->nextSceneId = SCENE_ID_START_INTRO;
+        _contextData->nextSceneId = SCENE_ID_START;
     }
     else
     {
@@ -82,6 +82,9 @@ void Game_init(void** contextData)
     SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "uvDitherBlockPosScale"), (float[]){16.0f}, SHADER_UNIFORM_FLOAT);
     SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "uvOverride"), (float[]){0.0f, 0.0f}, SHADER_UNIFORM_VEC2);
 
+    Vector2 fogPoint = {174.0/512.0, 200.0/512.0};
+    Game_setFogGradient(fogPoint.x, fogPoint.y, 0.125f, 0.4f);
+
     _outlineShader = LoadShader(0, "resources/outline.fs");
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "depthOutlineEnabled"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "uvOutlineEnabled"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
@@ -101,6 +104,17 @@ void Game_init(void** contextData)
 
     _fogTex = Level_getTexture(&_level, "db8-dither.png", (Texture2D){0});
     DuskGui_setDefaultFont(_fntMedium, _fntMedium.baseSize, -1);
+}
+
+void Game_setFogGradient(float x, float y, float fogScale, float fogPower)
+{
+    Vector2 fogPoint = {x, y};
+    SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "fogPoint"), (float[]){fogPoint.x, fogPoint.y}, SHADER_UNIFORM_VEC2);
+    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "fogPoint"), (float[]){fogPoint.x, fogPoint.y}, SHADER_UNIFORM_VEC2);
+    SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "fogScale"), (float[]){fogScale}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "fogScale"), (float[]){fogScale}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "fogPower"), (float[]){fogPower}, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(_modelTexturedShader, GetShaderLocation(_modelTexturedShader, "fogPower"), (float[]){fogPower}, SHADER_UNIFORM_FLOAT);
 }
 
 void Game_setFogTextures(Material *mtl)

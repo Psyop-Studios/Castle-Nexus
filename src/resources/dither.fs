@@ -27,6 +27,9 @@ uniform vec2 uvOverride;
 uniform float uvDitherBlockPosScale;
 uniform vec2 texSize;
 uniform vec4 uvTextureFrame;
+uniform vec2 fogPoint;
+uniform float fogScale;
+uniform float fogPower;
 
 vec2 encode16bit(float x) {
     // Ensure the value is within the 16-bit range
@@ -40,10 +43,9 @@ vec2 encode16bit(float x) {
 }
 
 void main() {
-    vec2 fogPoint = vec2(174.0/512.0, 200.0/512.0);
     float dist = length(fragPosition.xyz);
-    float fogDist = max(0.0, pow(dist,0.4) - 1.5);
-    float fogLevel = min(1.0,fogDist * 0.125);
+    float fogDist = max(0.0, pow(dist,fogPower) - 1.5);
+    float fogLevel = min(1.0,fogDist * fogScale);
     fogLevel = floor(fogLevel *64.0)/64.0;
     // gl_FragColor = vec4(fogLevel,0.0,0.0,1.0);
     // return;

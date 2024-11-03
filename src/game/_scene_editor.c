@@ -760,14 +760,15 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *sceneConfig)
     }
 
     DuskGuiParamsEntry* menu;
+    static FilePathList levelFiles = {0};
     if ((menu = DuskGui_beginMenu((DuskGuiParams) {
         .text = "LoadMenu",
         .rayCastTarget = 1,
         .bounds = (Rectangle) { 530, 25, 110, 60 },
     })))
     {
-
-        FilePathList levelFiles = LoadDirectoryFilesEx("resources/levels", ".lvl", 0);
+        if (levelFiles.paths == NULL)
+            levelFiles = LoadDirectoryFilesEx("resources/levels", ".lvl", 0);
 
         for (int i = 0; i < levelFiles.count; i++)
         {
@@ -798,12 +799,16 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *sceneConfig)
         }
         menu->params.bounds.height = 10 + levelFiles.count * 20;
 
-        UnloadDirectoryFiles(levelFiles);
-
         DuskGui_endMenu();
     }
     else
     {
+        if (levelFiles.paths)
+        {
+            UnloadDirectoryFiles(levelFiles);
+            levelFiles.paths = NULL;
+        }
+
         DuskGui_closeMenu("LoadMenu");
     }
 
