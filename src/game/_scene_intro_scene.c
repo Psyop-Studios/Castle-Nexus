@@ -183,10 +183,10 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Fisherman 2:",
-            "Stop it August, this ain't funny.", 1)});
+            "Stop it Frank, this ain't funny.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Frank:",
             "We're all adults. What do you say, stranger, shall I ferry you to the island?", 1)});
     step += 1;
 
@@ -196,7 +196,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Frank:",
             "I see, a writer. So ye're smart, eh? I bet this will be a great story for you to tell!", 1)});
     step += 1;
 
@@ -206,22 +206,22 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Frank:",
             "Ha! Probably only because they didn't want to pay the price for your ride, Tom!", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Frank:",
             "But I am not like that. Tell you what, I will bring you there for free. Just to prove scared little Tommy here wrong!", 1)});
     step += 1;
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Tom:",
-            "That's a cruel joke, August. Don't say I haven't warned ye, mister.", 1)});
+            "That's a cruel joke, Frank. Don't say I haven't warned ye, mister.", 1)});
     step += 1;
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
-            "Oh well, how bad could it be? I am ready when you are, Mister August.", 1)});
+            "Oh well, how bad could it be? I am ready when you are, mister Frank.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("August:",

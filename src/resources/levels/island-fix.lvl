@@ -635,6 +635,42 @@
 			"instancesSY":	[],
 			"instancesSZ":	[],
 			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-chest-box-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-chest-cover-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-crown.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
 		}],
 	"entityNames":	["WATER", "CollisionLeftSideCastle", "IslandLeftSide", "Collisionisland", "New Entity", "CollisionLeftSideCastle", "floor collision", "TriggerCastleFrontDoor"],
 	"entityTRS":	[0, 0, 0, 0, 0, 0, 1, 1, 1, -6, -3.5762786865234375e-07, -6, 0, 0, 0, 1, 1, 1, -12, 0, 1, 0, 360, 0, 1, 1, 1, 1, -0.0466800481081009, 1, 0, -360, 0, 1, 1, 1, 15, 0, 3, 0, 0, 0, 1, 1, 1, 13, -5.9604644775390625e-07, -7, 0, 0, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 5, 0, -5, 0, 0, 0, 1.1795997619628906, 9.0492191314697266, 1.1795997619628906],
@@ -671,14 +707,14 @@
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+			"ownerEntityIds":	[],
+			"entityData":	[]
 		}, {
 			"name":	"ColliderBox",
 			"componentId":	4,
 			"ownerEntityIds":	[1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
-					"size":	[12.871175765991211, 5.7617573738098145, 1.2596876621246338],
+					"size":	[12.871175765991211, 11.41191291809082, 1.2596876621246338],
 					"offset":	[-0.0025390405207872391, -0.394570380449295, -1.2707030773162842],
 					"isTrigger":	0
 				}, {
@@ -702,7 +738,7 @@
 					"offset":	[0, -0.29910147190094, 0],
 					"isTrigger":	0
 				}, {
-					"size":	[8.9797239303588867, 5.4466805458068848, 1.7732030153274536],
+					"size":	[9.0098018646240234, 5.4466805458068848, 4.1744141578674316],
 					"offset":	[0, -0.16167968511581421, -0.8230857253074646],
 					"isTrigger":	1
 				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
@@ -719,7 +755,7 @@
 		}, {
 			"name":	"DoorState",
 			"componentId":	7,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
-			"entityData":	[null, null, null, null, null, null, null, null]
+			"ownerEntityIds":	[],
+			"entityData":	[]
 		}]
 }
