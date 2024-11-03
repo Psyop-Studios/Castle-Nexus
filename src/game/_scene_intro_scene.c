@@ -30,6 +30,7 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 #define TRIGGER_EXIT_ZONE "TriggerExitZone"
 #define TRIGGER_EXPLORATION_MESSAGE_ZONE_1 "TriggerExplorationMessageZone_1"
 #define TRIGGER_FISHERMEN_ZONE "TriggerFishermenZone"
+#define TRIGGER_BOXTARGET "BoxTarget"
 
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
 {
@@ -37,8 +38,8 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
     Level *level = Game_getLevel();
     level->isEditor = 0;
     
-    FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
     Level_update(level, dt);
+    FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
 }
 
 void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *action)
@@ -82,6 +83,28 @@ static void ScriptAction_intro_firstStep(Script *script, ScriptAction *action)
         "(Use [color=red_]WASD/SPACE[/color] to move & jump, and the [color=red_]mouse[/color] to look around.)", NULL);
 }
 
+typedef struct BoxInPlaceData
+{
+    float timeInPlace;
+} BoxInPlaceData;
+
+void ScriptAction_onBoxInPlace(Script *script, ScriptAction *action)
+{
+    Level *level = Game_getLevel();
+    BoxInPlaceData *data = (BoxInPlaceData*)action->actionData;
+    if (Level_isTriggeredOn(level, TRIGGER_BOXTARGET))
+    {
+        if (data->timeInPlace <= 0.0f)
+        {
+            data->timeInPlace = level->gameTime;
+        }
+    }
+    if (data->timeInPlace > 0.0f && level->gameTime - data->timeInPlace < 4.0f)
+    {
+        DrawNarrationBottomBox("You:", "The box is in place", NULL);
+    }
+}
+
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     DisableCursor();
@@ -105,6 +128,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_exitZoneMessage });
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_explorationMessageZone_1 });
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_onBoxInPlace, .actionData = Scene_alloc(sizeof(BoxInPlaceData), &(BoxInPlaceData){.timeInPlace = 0.0f}) });
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_FISHERMEN_ZONE });
     step += 1;
     

@@ -1034,9 +1034,21 @@ void Level_save(Level *level, const char *levelFile)
 
 }
 
+void Level_addTriggerId(Level *level, const char *triggerId)
+{
+    if (level->activeTriggerCount >= 16 || isInList(level->activeTriggerIds, level->activeTriggerCount, triggerId))
+    {
+        return;
+    }
+    level->activeTriggerIds[level->activeTriggerCount++] = triggerId;
+}
 
 void Level_update(Level *level, float dt)
 {
+    memcpy(level->previousTriggerIds, level->activeTriggerIds, sizeof(level->activeTriggerIds));
+    level->previousTriggerCount = level->activeTriggerCount;
+    level->activeTriggerCount = 0;
+
     dt = fminf(dt, 0.1f);
     level->gameTime += dt;
 

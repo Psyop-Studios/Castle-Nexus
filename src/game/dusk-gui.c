@@ -1853,6 +1853,24 @@ int DuskGui_textInputField(DuskGuiParams params, char** buffer)
             }
         }
     }
+
+    static const char *items[] = {"Copy", "Paste", NULL};
+    int selectedItem = 0;
+    if (DuskGui_contextMenuItemsPopup(params, entry->isMouseOver, items, &selectedItem)) {
+        if (selectedItem == 0) {
+            SetClipboardText(DuskGui_getText(entry));
+        } else if (selectedItem == 1) {
+            const char* text = GetClipboardText();
+            if (text) {
+                DuskGuiTextBuffer* textBuffer = DuskGui_getTextBuffer(entry, 1);
+                textBuffer->buffer = Dusk_realloc(textBuffer->buffer, strlen(text) + 1);
+                textBuffer->capacity = strlen(text);
+                entry->cursorIndex = TextLength(text);
+                strcpy(textBuffer->buffer, text);
+            }
+        }
+    }
+
     return entry->isTriggered;
 }
 

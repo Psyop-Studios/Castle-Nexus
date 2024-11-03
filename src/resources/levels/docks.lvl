@@ -600,9 +600,9 @@
 			"instancesSZ":	[],
 			"instancesTexId":	[]
 		}],
-	"entityNames":	["Fisherman1", "boat", "Fisherman2", "WorldBoundaryBlocker", "TriggerExitZone", "TriggerExplorationMessageZone_1", "TriggerFishermenZone", "Water", "Box", "Box", "FoamCircle", null, null, null, null, null],
-	"entityTRS":	[2, 4.76837158203125e-07, -1, 0, 0, 0, 1, 1, 1, 1, 0, -7.5000038146972656, 0, 0, 0, 1, 1, 1, 1, 5.9604644775390625e-07, 0, 0, 99, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 11.025003433227539, 0, 13, 0, 0, 0, 1, 1, 1, 14, 0, 1, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1.475000262260437, 0, 0, 0, 0, 1, 1, 1, 7.125, 2.0749993324279785, 6, 0, 0, 0, 1, 1, 1, 7, 0.90000057220459, 6, 0, 0, 0, 1, 1, 1, 5.0749979019165039, -1.4249997138977051, -4, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0],
+	"entityNames":	["Fisherman1", "boat", "Fisherman2", "WorldBoundaryBlocker", "TriggerExitZone", "TriggerExplorationMessageZone_1", "TriggerFishermenZone", "Water", "Box", "Box", "FoamCircle", "FoamCircle", "FoamCircle", "BoxTarget", null, null],
+	"entityTRS":	[2, 4.76837158203125e-07, -1, 0, 0, 0, 1, 1, 1, 1, 0, -7.5000038146972656, 0, 0, 0, 1, 1, 1, 1, 5.9604644775390625e-07, 0, 0, 99, 0, 1, 1, 1, 1, 0, 4, 0, 0, 0, 1, 1, 1, 11.025003433227539, 0, 13, 0, 0, 0, 1, 1, 1, 14, 0, 1, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1.475000262260437, 0, 0, 0, 0, 1, 1, 1, 13, 0.57499933242797852, 6, 0, 0, 0, 1, 1, 1, 5.1749978065490723, 0.50000095367431641, 7.8249998092651367, 0, 0, 0, 1, 1, 1, 5.0749979019165039, -1.4249997138977051, -4, 0, 0, 0, 1, 1, 1, 5.649998664855957, -1.6249995231628418, 3, 0, 0, 0, 1, 1, 1, 10.424997329711914, -1.4249999523162842, 2.975001335144043, 0, 0, 0, 1, 1, 1, 15, 0.200000137090683, 6, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 0, 0],
 	"components":	[{
 			"name":	"CameraFacing",
 			"componentId":	0,
@@ -611,7 +611,7 @@
 		}, {
 			"name":	"Wobbler",
 			"componentId":	1,
-			"ownerEntityIds":	[1, 1, 7, 10, 10, 0, 0, 0],
+			"ownerEntityIds":	[1, 1, 7, 10, 10, 11, 11, 12, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"type":	0,
 					"argument":	0,
@@ -647,7 +647,7 @@
 					"argument":	0,
 					"useGameTime":	0,
 					"amplitude":	0.50839477777481079,
-					"frequency":	1.9989780187606812,
+					"frequency":	1.6931300163269043,
 					"phase":	0,
 					"pivotX":	0,
 					"pivotY":	0,
@@ -657,16 +657,56 @@
 					"argument":	0,
 					"useGameTime":	0,
 					"amplitude":	0.33780017495155334,
-					"frequency":	1.9989780187606812,
+					"frequency":	1.6931300163269043,
 					"phase":	1.5611584186553955,
 					"pivotX":	0,
 					"pivotY":	0,
 					"pivotZ":	0
-				}, null, null, null]
+				}, {
+					"type":	9,
+					"argument":	0,
+					"useGameTime":	0,
+					"amplitude":	0.50839477777481079,
+					"frequency":	1.6931300163269043,
+					"phase":	0,
+					"pivotX":	0,
+					"pivotY":	0,
+					"pivotZ":	0
+				}, {
+					"type":	1,
+					"argument":	0,
+					"useGameTime":	0,
+					"amplitude":	0.33780017495155334,
+					"frequency":	1.6931300163269043,
+					"phase":	1.5611584186553955,
+					"pivotX":	0,
+					"pivotY":	0,
+					"pivotZ":	0
+				}, {
+					"type":	9,
+					"argument":	0,
+					"useGameTime":	0,
+					"amplitude":	0.50839477777481079,
+					"frequency":	1.6931300163269043,
+					"phase":	0,
+					"pivotX":	0,
+					"pivotY":	0,
+					"pivotZ":	0
+				}, {
+					"type":	1,
+					"argument":	0,
+					"useGameTime":	0,
+					"amplitude":	0.33780017495155334,
+					"frequency":	1.6931300163269043,
+					"phase":	1.5611584186553955,
+					"pivotX":	0,
+					"pivotY":	0,
+					"pivotZ":	0
+				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[0, 1, 1, 1, 2, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 1, 1, 2, 7, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/guy-1.glb",
 					"isDithered":	0,
@@ -703,7 +743,15 @@
 					"mesh":	"resources/level_assets/decoration-wave-circle.glb",
 					"isDithered":	0,
 					"trs":	[0, 0, 0, 0, 0, 0, 1.3249996900558472, 1.3249996900558472, 1.3249996900558472]
-				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+				}, {
+					"mesh":	"resources/level_assets/decoration-wave-circle.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, 0, 0, 0, 0, 1.3249996900558472, 1.3249996900558472, 1.3249996900558472]
+				}, {
+					"mesh":	"resources/level_assets/decoration-wave-circle.glb",
+					"isDithered":	0,
+					"trs":	[0, 0, 0, 0, 0, 0, 1.3249996900558472, 1.3249996900558472, 1.3249996900558472]
+				}, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
@@ -785,5 +833,12 @@
 					"drag":	0,
 					"bounce":	0
 				}, null, null, null, null, null, null]
+		}, {
+			"name":	"CollisionDetector",
+			"componentId":	6,
+			"ownerEntityIds":	[13, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[{
+					"radius":	0.12999998033046722
+				}, null, null, null, null, null, null, null]
 		}]
 }

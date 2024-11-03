@@ -180,6 +180,7 @@ LevelMesh *Level_getMesh(Level *level, const char *filename);
 int Level_isTriggerActive(Level *level, const char *name);
 int Level_isTriggeredOn(Level *level, const char *name);
 int Level_isTriggeredOff(Level *level, const char *name);
+void Level_addTriggerId(Level *level, const char *triggerId);
 
 void Level_addColliderSphere(Level *level, Vector3 position, float radius, int isTrigger);
 void Level_addColliderBox(Level *level, Vector3 position, Vector3 size, int isTrigger);

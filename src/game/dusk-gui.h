@@ -235,6 +235,8 @@ int DuskGui_closeMenu(const char *menuName);
 // returns the index of the selected item
 int DuskGui_comboMenu(DuskGuiParams params, const char* items[], int selectedItem);
 // when a right click is detected, this function can be used to present a context menu
+// It triggers opening the menu when open is 1 and returns 1 if a menu item was selected and
+// sets the selectedItem pointer to the index of the selected item.
 int DuskGui_contextMenuItemsPopup(DuskGuiParams params, int open, const char* items[], int *selectedItem);
 void DuskGui_closeAllMenus();
 

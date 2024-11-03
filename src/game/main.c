@@ -346,14 +346,12 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
     Vector3 totalShift = {0};
     camera->hasGroundContact = 0;
 
-    memcpy(level->previousTriggerIds, level->activeTriggerIds, sizeof(level->activeTriggerIds));
-    level->previousTriggerCount = level->activeTriggerCount;
-    level->activeTriggerCount = 0;
+    
     for (int i = 0; i < resultCount; i++)
     {
         if (results[i].triggerId)
         {
-            level->activeTriggerIds[level->activeTriggerCount++] = results[i].triggerId;
+            Level_addTriggerId(level, results[i].triggerId);
             continue;
         }
         Vector3 normal = results[i].normal;

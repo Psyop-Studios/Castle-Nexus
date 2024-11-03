@@ -1163,6 +1163,96 @@ void RigidSphereComponent_register(Level *level)
         }, sizeof(RigidSphereComponent));
 }
 
+//# CollisionDetector
+typedef struct CollisionDetectorComponent
+{
+    float radius;
+} CollisionDetectorComponent;
+
+void CollisionDetectorComponent_onInit(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    CollisionDetectorComponent *component = (CollisionDetectorComponent*)componentInstanceData;
+    component->radius = 0.5f;
+}
+
+void CollisionDetectorComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos, int isMouseOver)
+{
+    CollisionDetectorComponent *component = (CollisionDetectorComponent*)componentInstanceData;
+    
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, DuskGui_getAvailableSpace().x - 20, 20},
+        .text = TextFormat("Radius: %.2f##collision-detector-radius-%p", component->radius, component),
+        .rayCastTarget = 1,
+    }, &component->radius, 0.01f, 100.0f, 0.01f);
+    *ypos += 20.0f;
+}
+
+void CollisionDetectorComponent_onSerialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
+{
+    CollisionDetectorComponent *component = (CollisionDetectorComponent*)componentInstanceData;
+    cJSON_AddNumberToObject(json, "radius", component->radius);
+}
+
+void CollisionDetectorComponent_onDeserialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
+{
+    CollisionDetectorComponent *component = (CollisionDetectorComponent*)componentInstanceData;
+    component->radius = (float) cJSON_GetObjectItem(json, "radius")->valuedouble;
+}
+
+void CollisionDetectorComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    if (!level->isEditor)
+    {
+        return;
+    }
+    CollisionDetectorComponent *component = (CollisionDetectorComponent*)componentInstanceData;
+    LevelEntity *instance = Level_resolveEntity(level, ownerId);
+    if (!instance)
+    {
+        return;
+    }
+    rlPushMatrix();
+    rlMultMatrixf(MatrixToFloat(instance->toWorldTransform));
+    DrawSphereWires((Vector3){0, 0, 0}, component->radius, 16, 16, DB8_RED);
+    rlPopMatrix();
+}
+
+void CollisionDetectorComponent_onUpdate(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float dt)
+{
+    CollisionDetectorComponent *component = (CollisionDetectorComponent*)componentInstanceData;
+    LevelEntity *instance = Level_resolveEntity(level, ownerId);
+    if (!instance)
+    {
+        return;
+    }
+    LevelCollisionResult results[8];
+    int resultCount = Level_findCollisions(level, instance->position, component->radius, 1, 0, results, 8);
+    for (int i = 0; i < resultCount; i++)
+    {
+        if (results[i].ownerId.id || results[i].ownerId.generation)
+        {
+            Level_addTriggerId(level, instance->name);
+            break;
+        }
+    }
+}
+
+void CollisionDetectorComponent_register(Level *level)
+{
+    Level_registerEntityComponentClass(level, COMPONENT_TYPE_COLLISION_DETECTOR, "CollisionDetector", 
+        (LevelEntityComponentClassMethods){
+            .onInitFn = CollisionDetectorComponent_onInit,
+            .onDestroyFn = NULL,
+            .onDisableFn = NULL,
+            .onEnableFn = NULL,
+            .onSerializeFn = CollisionDetectorComponent_onSerialize,
+            .onDeserializeFn = CollisionDetectorComponent_onDeserialize,
+            .onEditorInspectFn = CollisionDetectorComponent_onInspectorUi,
+            .updateFn = CollisionDetectorComponent_onUpdate,
+            .drawFn = CollisionDetectorComponent_onDraw,
+            .onEditorMenuFn = NULL,
+        }, sizeof(CollisionDetectorComponent));
+}
 
 //# Registration
 void LevelComponents_register(Level *level)
@@ -1225,4 +1315,5 @@ void LevelComponents_register(Level *level)
 
     ColliderBoxComponent_register(level);
     RigidSphereComponent_register(level);
+    CollisionDetectorComponent_register(level);
 }
