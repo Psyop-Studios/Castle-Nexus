@@ -154,7 +154,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
         "I just want to get out of here alive, but more importantly \n"
-        "I need to this this story to print!", 1)});
+        "I need to take this story to print!", 1)});
     step += 1;
 
 

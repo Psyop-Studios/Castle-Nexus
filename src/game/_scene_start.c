@@ -62,7 +62,7 @@ static void StepDrawTitle(Script *script, ScriptAction *action)
     {
         int width = tex->texture.width * 2;
         int height = tex->texture.height * 2;
-        
+
         int sx = (screenWidth - width) / 5.0f;
         if (!isStartScreen)
         {
@@ -165,8 +165,8 @@ static void StepDrawTitle(Script *script, ScriptAction *action)
             int frameSelect = (int)(level->gameTime * 4) % 4;
             DrawTexturePro(miniGhost->texture, (Rectangle){frameSelect * 8, 0, xdir < 0.0f ? 8 : -8, 8}, (Rectangle){ghostX, ghostY, 16, 16}, (Vector2){8, 8}, 0, WHITE);
         }
-        
-        
+
+
         int sy = (screenHeight - height) / 2 - 50;
         DrawTextureEx(tex->texture, (Vector2){sx, sy}, 0, 2.0f, WHITE);
 
@@ -176,11 +176,11 @@ static void StepDrawTitle(Script *script, ScriptAction *action)
 
         // DrawTextureEx(waterGradient->texture, (Vector2){0, waterHeight - waterGradient->texture.height}, 0, 2.0f, WHITE);
     // DrawRectangle(0, waterHeight, screenWidth, screenHeight - waterHeight, DB8_BLUE);
-        
+
     }
 
 
-    
+
     if (script->currentActionId == 0)
     {
         const char *enterToContinue = "Press [color=red_]ENTER[/color] to start your journey...";
@@ -207,7 +207,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     }
 
     TraceLog(LOG_INFO, "SceneInit: %d", SceneConfig->sceneId);
-    
+
     _camera = (Camera){0};
     _camera.position = (Vector3){ 10.0f, 1.70f, 10.0f };
     _camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
@@ -219,7 +219,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     int step = 0;
 
-    
+
     if (gameCtx->currentSceneId == SCENE_ID_START)
     {
         Script_addAction((ScriptAction){
@@ -233,7 +233,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
             .actionIdEnd = step + 2,
             .action = ScriptAction_fadingCut,
             .actionData = ScriptAction_FadingCutData_new(2.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 100000000.0f, -1.0f)});
-        
+
         step += 1;
         Script_addAction((ScriptAction){
             .actionIdStart = step,
@@ -275,7 +275,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     }
 
 
-        
+
     // Script_addAction((ScriptAction){
     //     .actionIdStart = step,
     //     .action = ScriptAction_drawTextRect,

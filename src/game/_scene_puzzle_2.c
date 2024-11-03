@@ -98,7 +98,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=red_] August[/color]:",
           "Don't tell me that man escaped the trap dungeon! \n"
-          "... it's really hard to set up once it's been used.", 1)});
+          "...It's really hard to set up once it's been used.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=red_] August[/color]:",
@@ -125,17 +125,17 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
             &_camera, 2.5f, (Vector3){2.0f, 1.4f, 20.0})});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-        "I hate to intterupt, \n"
+        "I hate to interrupt, \n"
         "But I think it's important for you to know something.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
         "August was a kind man when he was alive. This island was built just\n"
-        "so we could send word to shore if there was signs of an impending invastion.", 1)});
+        "so we could send word to shore if there are signs of an impending invasion.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
-        "This is how our children survived- they were quick enough to get  on the\n"
+        "This is how our children survived -- they were quick enough to get on the\n"
         "Coastal lookout's boat. The Coastal lookout lived here with their families.", 1)});
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
@@ -149,7 +149,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]:",
-        "I'm pretty sure the entrance is this way-\n"
+        "I'm pretty sure the entrance is this way --\n"
         "Follow me!", 1)});
     step += 1;
 
