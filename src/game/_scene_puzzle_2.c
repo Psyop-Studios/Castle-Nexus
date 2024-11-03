@@ -112,7 +112,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_MEMORY_2 });
     step += 1;
-
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
         "I hate to intterupt, \n"
