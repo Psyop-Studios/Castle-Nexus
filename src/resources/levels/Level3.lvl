@@ -37,16 +37,16 @@
 			"instancesTexId":	[]
 		}, {
 			"filename":	"resources/level_assets/wall-large-blocks-arch-1000a.glb",
-			"instancesPX":	[-4, -4, -10, -10, -10, -26, -26, -10],
-			"instancesPY":	[0, 0, 3.9999995231628418, 3.9999995231628418, 3.9999992847442627, 3.9999990463256836, 3.9999990463256836, 3.9999990463256836],
-			"instancesPZ":	[2, -4, 4, -9, -7, -5, 1, -20],
-			"instancesRX":	[0, 0, 0, 0, 0, 0, 0, 0],
-			"instancesRY":	[90, -90, -270, 90, -90, -90, 90, 270],
-			"instancesRZ":	[0, 0, 0, 0, 0, 0, 0, 0],
-			"instancesSX":	[1, 1, 1, 1, 1, 1, 1, 1],
-			"instancesSY":	[1, 1, 1, 1, 1, 1, 1, 1],
-			"instancesSZ":	[1, 1, 1, 1, 1, 1, 1, 1],
-			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1]
+			"instancesPX":	[-4, -4, -10, -10, -10, -26, -26, -10, -28, -28],
+			"instancesPY":	[0, 0, 3.9999995231628418, 3.9999995231628418, 3.9999992847442627, 3.9999990463256836, 3.9999990463256836, 3.9999990463256836, 4, 4],
+			"instancesPZ":	[2, -4, 4, -9, -7, -5, 1, -20, 1, -5],
+			"instancesRX":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesRY":	[90, -90, -270, 90, -90, -90, 90, 270, 90, 270],
+			"instancesRZ":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"instancesSX":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesSY":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesSZ":	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			"instancesTexId":	[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/ceiling-large-blocks-a.glb",
 			"instancesPX":	[-2, 0, 2, 2, 0, -2, -2, 0, 2, 2, 0, -2, -2, 0, 2, -10, -10, -10, -10, -10, -10, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, -2, -2, -2, -2, -2, -2, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -6, -6, -6, -6, -6, -6, -8, -8, -8, -8, -8, -8, -8, -6, -6, -8, -8, -6, -6, -8, -8, -6, -18, -16, -14, -12, -12, -14, -16, -18, -18, -16, -14, -12, -12, -14, -16, -18, -18, -16, -14, -12, -12, -12, -14, -16, -18, -18, -16, -14, -12, -14, -16, -18, -12, -14, -14, -12, -12, -14, -14, -12, -12, -14, -16, -16, -16, -16, -16, -18, -18, -18, -18, -18, -20, -20, -20, -20, -20, -22, -22, -22, -22, -22, -24, -24, -24, -24, -24, -10, -10, -10, -10, -8, -6, -6, -8, -8, -6, -6, -8, -10, -12, -14, -16, -16, -14, -12, -10, -10, -12, -14, -16, -16, -14, -12, -10, -18, -18, -18, -18],
@@ -599,10 +599,46 @@
 			"instancesSY":	[],
 			"instancesSZ":	[],
 			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-cobwebs-corner-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/door-gate-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/ground-wall-stones-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
 		}],
-	"entityNames":	["Painting-Castle-1", "Painting-Castle-2", "Candle-Blue-1", "Candle-Blue-2", "Candle-Blue-3", "Candle-Blue-4", "Candle-Blue-5", "Candle-Blue-6", "Candle-Blue-7", "Candle-Blue-8", "Painting-Moonlight-1", "Candle-Blue-9", "Painting-Tree-1", "Box", "Painting-Chao-1", "Box", "Box", "BoxTarget1", "BoxTarget2", "Memory3", "Door", null, null, null],
-	"entityTRS":	[-1, 4, -19, 0, 0, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -19, 4, -12, 0, 90, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, 2, 3.8590810298919678, -19, 0, 0, 0, 1, 1, 1, 0, 0, 3, 0, 180, 0, 1, 1, 1, -9, 4.0000009536743164, -8, 0, 90, 0, 1, 1, 1, -7, 4.0000009536743164, -19, 0, 0, 0, 1, 1, 1, -6, 4.0000009536743164, 3, 0, 180, 0, 1, 1, 1, -16, 4.0000009536743164, -10, 0, 180, 0, 1, 1, 1, -15, 4.0000009536743164, -26, 0, 0, 0, 1, 1, 1, -19, 8.0000009536743164, -22, 0, 90, 0, 1, 1, 1, 3, 3.9999995231628418, -10, 0, 270, 0, 1.03857421875, 1.03857421875, 1.03857421875, 0, 3.9999995231628418, -7, 0, 180, 0, 1, 1, 1, -19, 3.9999997615814209, -16, 0, -270, 0, 0.48984384536743164, 1, 1, -6, 4.6287107467651367, -2, 0, 0, 0, 1, 1, 1, -18, 3.9999997615814209, 3, 0, 180, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -17, 8.6776371002197266, -22, 0, 0, 0, 1, 1, 1, -14, 8.5854482650756836, -24, 0, 0, 0, 1, 1, 1, -10, 4, -4, 0, 0, 0, 1, 1, 1, -10, 4, 0, 0, 0, 0, 1, 1, 1, -29, 4, -2, 0, 0, 0, 1, 6.8492183685302734, 1, -26, 4, -2, 0, -90, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 0, 0, 0],
+	"entityNames":	["Painting-Castle-1", "Painting-Castle-2", "Candle-Blue-1", "Candle-Blue-2", "Candle-Blue-3", "Candle-Blue-4", "Candle-Blue-5", "Candle-Blue-6", "Candle-Blue-7", "Candle-Blue-8", "Painting-Moonlight-1", "Candle-Blue-9", "Painting-Tree-1", "Box", "Painting-Chao-1", "Box", "Box", "BoxTarget1", "BoxTarget2", "Memory3", "DoorFront", "DoorBack##entity-name-textfield-0x6174f0e67c80", null, null],
+	"entityTRS":	[-1, 4, -19, 0, 0, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -19, 4, -12, 0, 90, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, 2, 3.8590810298919678, -19, 0, 0, 0, 1, 1, 1, 0, 0, 3, 0, 180, 0, 1, 1, 1, -9, 4.0000009536743164, -8, 0, 90, 0, 1, 1, 1, -7, 4.0000009536743164, -19, 0, 0, 0, 1, 1, 1, -6, 4.0000009536743164, 3, 0, 180, 0, 1, 1, 1, -16, 4.0000009536743164, -10, 0, 180, 0, 1, 1, 1, -15, 4.0000009536743164, -26, 0, 0, 0, 1, 1, 1, -19, 8.0000009536743164, -22, 0, 90, 0, 1, 1, 1, 3, 3.9999995231628418, -10, 0, 270, 0, 1.03857421875, 1.03857421875, 1.03857421875, 0, 3.9999995231628418, -7, 0, 180, 0, 1, 1, 1, -19, 3.9999997615814209, -16, 0, -270, 0, 0.48984384536743164, 1, 1, -6, 4.6287107467651367, -2, 0, 0, 0, 1, 1, 1, -18, 3.9999997615814209, 3, 0, 180, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -17, 8.6776371002197266, -22, 0, 0, 0, 1, 1, 1, -14, 8.5854482650756836, -24, 0, 0, 0, 1, 1, 1, -10, 4, -4, 0, 0, 0, 1, 1, 1, -10, 4, 0, 0, 0, 0, 1, 1, 1, -29, 4, -2, 0, 0, 0, 1, 6.8492183685302734, 1, -26, 4, -2, 0, -90, 0, 1, 1, 1, -26, 4, -2, 0, -90, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 0, 0],
 	"components":	[{
 			"name":	"CameraFacing",
 			"componentId":	0,
@@ -611,12 +647,12 @@
 		}, {
 			"name":	"Wobbler",
 			"componentId":	1,
-			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+			"ownerEntityIds":	[],
+			"entityData":	[]
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
-			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 21, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"mesh":	"resources/level_assets/decoration-picture-frame-1.glb",
 					"isDithered":	0,
@@ -686,14 +722,18 @@
 					"isDithered":	0,
 					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
 				}, {
-					"mesh":	"resources/level_assets/door-archway-doubledoor.glb",
+					"mesh":	"resources/level_assets/door-gate-1.glb",
 					"isDithered":	0,
 					"trs":	[0, 0.050585977733135223, 0, 0, 0, 0, 1, 1, 1]
-				}, null, null, null, null, null, null]
+				}, {
+					"mesh":	"resources/level_assets/door-gate-1.glb",
+					"isDithered":	0,
+					"trs":	[0.074218787252903, -0.024121053516864777, 2.4007813930511475, 0, 2.859375, 0, 1, 1, 1]
+				}, null, null, null, null, null]
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 20, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"texture":	"resources/level_assets/portraitCastle.png",
 					"sprite":	"resources/level_assets/portraitCastle.png",
@@ -755,19 +795,15 @@
 					"texture":	"resources/level_assets/portraitTrees.png",
 					"sprite":	"resources/level_assets/portraitTrees.png",
 					"trs":	[0, 2.1024410724639893, 0.11816415190696716, 0, 0, 0, 0.82763653993606567, 0.82763653993606567, 0.82763653993606567]
-				}, {
-					"texture":	"resources/level_assets/doorknob.png",
-					"sprite":	"resources/level_assets/doorknob.png",
-					"trs":	[1, 1.3026366233825684, 0.44560572504997253, 0, 0, 0, 0.15976549685001373, 0.15976549685001373, 0.15976549685001373]
-				}, {
+				}, null, {
 					"texture":	"resources/level_assets/portrait-chao.png",
 					"sprite":	"resources/level_assets/portrait-chao.png",
 					"trs":	[-0.0253906324505806, 2.1806633472442627, 0.0544922910630703, 0, 0, 0, 0.90048819780349731, 0.90048819780349731, 0.90048819780349731]
-				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+				}, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"ColliderBox",
 			"componentId":	4,
-			"ownerEntityIds":	[13, 15, 16, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[13, 15, 16, 19, 20, 21, 0, 0],
 			"entityData":	[{
 					"size":	[1, 1, 1],
 					"offset":	[0, 0, 0],
@@ -785,10 +821,14 @@
 					"offset":	[1.06246018409729, 1.4634764194488525, 0],
 					"isTrigger":	1
 				}, {
-					"size":	[4.6871094703674316, 8.03718662261963, 0.25769537687301636],
+					"size":	[4.6871094703674316, 8.03718662261963, 1.0483202934265137],
 					"offset":	[0, -0.453281283378601, 0.40550771355628967],
 					"isTrigger":	0
-				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+				}, {
+					"size":	[4.6871094703674316, 8.0488662719726562, 0.17913925647735596],
+					"offset":	[0, 1.1404297351837158, 2.368046760559082],
+					"isTrigger":	0
+				}, null, null]
 		}, {
 			"name":	"RigidSphere",
 			"componentId":	5,
@@ -817,6 +857,33 @@
 					"radius":	0.3671875
 				}, {
 					"radius":	0.367304652929306
+				}, null, null, null, null, null, null]
+		}, {
+			"name":	"DoorState",
+			"componentId":	7,
+			"ownerEntityIds":	[20, 21, 0, 0, 0, 0, 0, 0],
+			"entityData":	[{
+					"isOpen":	0,
+					"openTime":	1,
+					"closeTime":	1,
+					"time":	0,
+					"closedPosition":	[-26, 4, -2],
+					"closedRotation":	[0, -90, 0],
+					"openPosition":	[-26, 4, -2],
+					"openRotation":	[0, -20, 0],
+					"toggleOpenTriggerId":	"BoxTarget1",
+					"toggleCloseTriggerId":	"CloseDoorTrigger"
+				}, {
+					"isOpen":	0,
+					"openTime":	1,
+					"closeTime":	1,
+					"time":	379.9246826171875,
+					"closedPosition":	[-26, 4, -2],
+					"closedRotation":	[0, -90, 0],
+					"openPosition":	[-26, 4, -2],
+					"openRotation":	[0, -20, 0],
+					"toggleOpenTriggerId":	"BoxTarget2",
+					"toggleCloseTriggerId":	"CloseDoorTrigger"
 				}, null, null, null, null, null, null]
 		}]
 }

@@ -123,11 +123,6 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
-        "I think I can connect with him again and stop his anguish.\n"
-        "He was a benevolent man in life, and could become a benevolent ghost in the afterlife.", 1)});
-    step += 1;
-    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
-        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("[color=blue] Cecilia[/color]",
         "I'm pretty sure the entrance is nearby.\n"
         "Follow me!", 1)});
     step += 1;

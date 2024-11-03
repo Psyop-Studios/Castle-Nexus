@@ -599,9 +599,45 @@
 			"instancesSY":	[],
 			"instancesSZ":	[],
 			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-cobwebs-corner-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/door-gate-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/ground-wall-stones-1.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
 		}],
 	"entityNames":	["Candle", "Candle", "Candle", "Candle", "BoxTarget", "Box", "Box", "Box", "Candle", "Candle", "Candle", "Candle", "Door", "Painting-Castle-1", "Painting-Tree-1", "Memory2"],
-	"entityTRS":	[6, -1.1920928955078125e-06, 5, 0, 0, 0, 1, 1, 1, -2, -1.1920928955078125e-06, 5, 0, -180, 0, 1, 1, 1, -1, -1.1920928955078125e-06, 13, 0, -90, 0, 1, 1, 1, 5, -1.1920928955078125e-06, 13, 0, -90, 0, 1, 1, 1, -2, 6, -5, 0, 0, 0, 1, 1, 1, -5, 4.6289057731628418, -5, 0, 0, 0, 1, 1, 1, 4, 6.5429682731628418, -5, 0, 0, 0, 1, 1, 1, 8, 4.43632984161377, -3, 0, 0, 0, 1, 1, 1, 7, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, 2, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, -3, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, -6, 3.9999997615814209, -2, 0, 180, 0, 1, 1, 1, 2, 0, 14, 0, 0, 0, 1, 1, 1, 5, 4.0000009536743164, 2, 0, 180, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -1, 3.5866208076477051, 2, 0, -180, 0, 1.0750001668930054, 1.3328126668930054, 0.60937517881393433, 2, 2.384185791015625e-07, 17.67333984375, 0, 0, 0, 1, 1, 1],
+	"entityTRS":	[6, -1.1920928955078125e-06, 5, 0, 0, 0, 1, 1, 1, -2, -1.1920928955078125e-06, 5, 0, -180, 0, 1, 1, 1, -1, -1.1920928955078125e-06, 13, 0, -90, 0, 1, 1, 1, 5, -1.1920928955078125e-06, 13, 0, -90, 0, 1, 1, 1, -2, 6, -5, 0, 0, 0, 1, 1, 1, -5, 4.6289057731628418, -5, 0, 0, 0, 1, 1, 1, 4, 6.5429682731628418, -5, 0, 0, 0, 1, 1, 1, 8, 4.43632984161377, -3, 0, 0, 0, 1, 1, 1, 7, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, 2, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, -3, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, -6, 3.9999997615814209, -2, 0, 180, 0, 1, 1, 1, 1.1999990940093994, -4.76837158203125e-07, 8, 0, 0, 0, 1, 1, 1, 5, 4.0000009536743164, 2, 0, 180, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -1, 3.5866208076477051, 2, 0, -180, 0, 1.0750001668930054, 1.3328126668930054, 0.60937517881393433, 2, 2.384185791015625e-07, 17.67333984375, 0, 0, 0, 1, 1, 1],
 	"entityIds":	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
 	"components":	[{
 			"name":	"CameraFacing",
@@ -646,9 +682,9 @@
 					"isDithered":	0,
 					"trs":	[0, 0, 0, 0, 0, 0, 1, 1, 1]
 				}, {
-					"mesh":	"resources/level_assets/door-archway-doubledoor.glb",
+					"mesh":	"resources/level_assets/door-gate-1.glb",
 					"isDithered":	0,
-					"trs":	[0, 0.050585977733135223, 0, 0, 0, 0, 1, 1, 1]
+					"trs":	[0.56620949506759644, 0.055468793958425522, 6.0099611282348633, 0, 0, 0, 1, 1, 1]
 				}, {
 					"mesh":	"resources/level_assets/decoration-candle-holder.glb",
 					"isDithered":	0,
@@ -677,7 +713,7 @@
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[0, 1, 2, 3, 12, 0, 0, 0, 8, 9, 10, 11, 0, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 0, 0, 0, 0, 8, 9, 10, 11, 0, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"texture":	"resources/level_assets/anim_flame.png",
 					"sprite":	"resources/level_assets/anim_flame.png",
@@ -698,11 +734,7 @@
 					"sprite":	"resources/level_assets/anim_flame.png",
 					"animation":	"red_flame",
 					"trs":	[-0.23046873509883881, 2.62939453125, -0.020605482161045074, 0, 89.9609375, 0, 0.36308583617210388, 0.36308583617210388, 0.36308583617210388]
-				}, {
-					"texture":	"resources/level_assets/doorknob.png",
-					"sprite":	"resources/level_assets/doorknob.png",
-					"trs":	[1, 1.3026366233825684, 0.44560572504997253, 0, 0, 0, 0.15976549685001373, 0.15976549685001373, 0.15976549685001373]
-				}, null, null, null, {
+				}, null, null, null, null, {
 					"texture":	"resources/level_assets/anim_flame.png",
 					"sprite":	"resources/level_assets/anim_flame.png",
 					"animation":	"red_flame",
@@ -748,9 +780,9 @@
 					"offset":	[0, 0, 0],
 					"isTrigger":	0
 				}, {
-					"size":	[4.6871094703674316, 8.03718662261963, 0.25769537687301636],
-					"offset":	[0, -0.453281283378601, 0.40550771355628967],
-					"isTrigger":	0
+					"size":	[7.63711404800415, 6.7940974235534668, 1.0876953601837158],
+					"offset":	[0.25031250715255737, 3.5426175594329834, 6.3478908538818359],
+					"isTrigger":	1
 				}, {
 					"size":	[5.1076569557189941, 8.7146492004394531, 1.4529688358306885],
 					"offset":	[0, 0, 0.92628896236419678],
@@ -782,6 +814,22 @@
 			"ownerEntityIds":	[4, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"radius":	0.24499997496604919
+				}, null, null, null, null, null, null, null]
+		}, {
+			"name":	"DoorState",
+			"componentId":	7,
+			"ownerEntityIds":	[12, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[{
+					"isOpen":	0,
+					"openTime":	2.4399986267089844,
+					"closeTime":	0.17000053822994232,
+					"time":	841.62518310546875,
+					"closedPosition":	[1.1999990940093994, -3.5762786865234375e-07, 8],
+					"closedRotation":	[0, 0, 0],
+					"openPosition":	[1.19999897480011, 2.9499983787536621, 8],
+					"openRotation":	[0, 0, 0],
+					"toggleOpenTriggerId":	"BoxTarget",
+					"toggleCloseTriggerId":	"CloseDoorTrigger-1"
 				}, null, null, null, null, null, null, null]
 		}]
 }
