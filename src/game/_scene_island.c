@@ -16,11 +16,11 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
     ClearBackground(DB8_BG_GREY);
     BeginMode3D(_camera.camera);
     _currentCamera = _camera.camera;
-    
+
     Level *level = Game_getLevel();
-    
+
     Level_draw(level);
-    
+
     EndMode3D();
 
     // if (IsMouseButtonDown(0) && _allowCameraMovement)
@@ -36,7 +36,7 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
     level->isEditor = 0;
     Level_update(level, dt);
     FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
- 
+
 }
 
 static void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *action)
@@ -44,6 +44,16 @@ static void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *
     _allowCameraMovement = action->actionInt;
 }
 
+extern Sound fallingSfx;
+static void ScriptAction_island_transition_falling(Script *script, ScriptAction *action)
+{
+    static bool done = false;
+    if (!done)
+    {
+        PlaySound(fallingSfx);
+        done = true;
+    }
+}
 
 typedef struct BoxInPlaceData
 {
@@ -58,7 +68,7 @@ static void ScriptAction_island_firstStep(Script *script, ScriptAction *action)
         script->nextActionId = action->actionIdStart + 1;
         return;
     }
-    DrawNarrationBottomBox("Chapter 2:", 
+    DrawNarrationBottomBox("Chapter 2:",
         "After a short ride, the dock workers dropped you off onto the [color=blue]island[/color].\n"
         "Somehow, the dock workers were [color=red_] already gone.[/color]", NULL);
 }
@@ -86,7 +96,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
         .actionIdEnd = step + 2,
         .action = ScriptAction_fadingCut,
         .actionData = ScriptAction_FadingCutData_new(1.0f, DB8_BLACK, FADE_TYPE_VERTICAL_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, -1.0f)});
-    
+
     step += 1;
     // message to player to get started
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_island_firstStep });
@@ -97,7 +107,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_DOOR_ZONE });
     step += 1;
-    
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
@@ -123,12 +133,18 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     Script_addAction((ScriptAction){
         .actionIdStart = step,
-        .actionIdEnd = step + 2,
+        .actionIdEnd = step + 1,
+        .action = ScriptAction_island_transition_falling,
+        .actionInt = 1
+    });
+
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .actionIdEnd = step + 1,
         .action = ScriptAction_fadingCut,
         .actionData = ScriptAction_FadingCutData_new(0.4f, DB8_BLACK, FADE_TYPE_BOTTOM_UP_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, 1.0f)});
-    
-
     step += 1;
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_loadScene, .actionInt = SCENE_ID_PUZZLE_1 });
 }
 

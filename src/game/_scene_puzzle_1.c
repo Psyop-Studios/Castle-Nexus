@@ -64,6 +64,17 @@ void ScriptAction_onBoxInPlaceLevel1(Script *script, ScriptAction *action)
 }
 
 
+extern Sound landingSfx;
+static void ScriptAction_level1_transition_landing(Script *script, ScriptAction *action)
+{
+    static bool done = false;
+    if (!done)
+    {
+        if (!IsSoundPlaying(landingSfx))
+            PlaySound(landingSfx);
+            done = true;
+    }
+}
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
@@ -84,14 +95,20 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     int step = 0;
     _allowCameraMovement = 0;
 
+
     Script_addAction((ScriptAction){
         .actionIdStart = step,
-        .actionIdEnd = step + 2,
+        .actionIdEnd = step + 1,
+        .action = ScriptAction_level1_transition_landing,
+        .actionInt = 1
+    });
+
+    Script_addAction((ScriptAction){
+        .actionIdStart = step,
+        .actionIdEnd = step + 1,
         .action = ScriptAction_fadingCut,
         .actionData = ScriptAction_FadingCutData_new(0.7f, DB8_BLACK, FADE_TYPE_TOP_DOWN_CLOSE, FADE_TWEEN_TYPE_SIN, 1.0f, -1.0f)});
-
     step += 1;
-
 
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
     Script_addAction((ScriptAction){

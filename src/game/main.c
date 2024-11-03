@@ -36,6 +36,9 @@ Sound talkSfxFemale2;
 Sound talkSfxFemale3;
 Sound triggerSfx;
 Sound gateOpeningSfx;
+Sound fallingSfx;
+Sound landingSfx;
+
 
 
 Shader _modelDitherShader;
@@ -86,6 +89,8 @@ void Game_init(void** contextData)
     talkSfxFemale3 = LoadSound("resources/audio/CTalk3.wav");
     triggerSfx = LoadSound("resources/audio/Trigger.wav");
     gateOpeningSfx = LoadSound("resources/audio/Gate.wav");
+    fallingSfx = LoadSound("resources/audio/Falling.wav");
+    landingSfx = LoadSound("resources/audio/Landing.wav");
 
     if (*contextData == NULL)
     {
@@ -182,6 +187,8 @@ void Game_deinit()
     UnloadSound(talkSfxFemale3);
     UnloadSound(triggerSfx);
     UnloadSound(gateOpeningSfx);
+    UnloadSound(fallingSfx);
+    UnloadSound(landingSfx);
 
     SceneConfig *config = Scene_getConfig(_contextData->currentSceneId);
     if (config && config->deinitFn)
