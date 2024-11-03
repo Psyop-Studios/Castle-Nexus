@@ -1,5 +1,6 @@
 #include "main.h"
 #include "scene.h"
+#include "util.h"
 #include <raylib.h>
 #include <raymath.h>
 #include <stdio.h>
@@ -240,13 +241,6 @@ typedef struct LookCameraAtData {
     float startPitch;
 } LookCameraAtData;
 
-float LerpAngle(float a, float b, float t)
-{
-    float delta = b - a;
-    if (delta > PI) delta -= 2 * PI;
-    if (delta < -PI) delta += 2 * PI;
-    return a + delta * t;
-}
 
 void ScriptAction_lookCameraAt(Script *script, ScriptAction *action)
 {

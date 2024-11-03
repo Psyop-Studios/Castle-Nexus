@@ -1399,6 +1399,7 @@ int DuskGui_floatInputField(DuskGuiParams params, float* value, float min, float
             const char* text = GetClipboardText();
             if (text) {
                 *value = atof(text);
+                modified = 1;
             }
         }
     }
@@ -1867,6 +1868,7 @@ int DuskGui_textInputField(DuskGuiParams params, char** buffer)
                 textBuffer->capacity = strlen(text);
                 entry->cursorIndex = TextLength(text);
                 strcpy(textBuffer->buffer, text);
+                entry->isTriggered = 1;
             }
         }
     }

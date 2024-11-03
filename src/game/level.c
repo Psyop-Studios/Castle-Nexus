@@ -325,7 +325,8 @@ void Level_clearInstances(Level *level)
             {
                 LevelEntityInstanceId ownerId = componentClass->ownerIds[j];
                 char *componentInstanceData = (char*) componentClass->componentInstanceData + j * componentClass->componentInstanceDataSize;
-                componentClass->methods.onDestroyFn(level, ownerId, componentInstanceData);
+                if (componentClass->generations[j])
+                    componentClass->methods.onDestroyFn(level, ownerId, componentInstanceData);
                 componentClass->generations[j] = 0;
             }
         }
@@ -1193,6 +1194,10 @@ void Level_unload(Level *level)
         {
             for (int j = 0; j < componentClass->instanceCount; j++)
             {
+                if (componentClass->generations[j] == 0)
+                {
+                    continue;
+                }
                 componentClass->methods.onDestroyFn(level,
                     (LevelEntityInstanceId){0}, (void*)((char*)componentClass->componentInstanceData + j * componentClass->componentInstanceDataSize));
             }

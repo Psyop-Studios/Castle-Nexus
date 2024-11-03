@@ -263,140 +263,150 @@ char* replacePathSeps(char *path)
 
 extern Vector3 _worldCursor;
 
-int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Vector3 *euler, Vector3 *scale, Vector3 *cursorAnchor)
+int SceneDrawUi_transformUi(float *posY, const char *uiId, Vector3 *position, Vector3 *euler, Vector3 *scale, Vector3 *cursorAnchor, Vector3 maxMoveDist)
 {
     int modified = 0;
     char buffer[256];
     // Position input fields
-    sprintf(buffer, "%.3f##X-%s", position->x, uiId);
-    
-    if (DuskGui_floatInputField((DuskGuiParams) {
-        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 },
-    }, &position->x, cursorAnchor->x - 1.0f, cursorAnchor->x + 1.0f, 0.025f))
+    if (position)
     {
-        modified = 1;
-    }
-    
-    sprintf(buffer, "%.3f##Y-%s", position->y, uiId);
-    if (DuskGui_floatInputField((DuskGuiParams) {
-        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 },
-    }, &position->y, cursorAnchor->y - 2.0f, cursorAnchor->y + 4.0f, 0.025f))
-    {
-        modified = 1;
-    }
-    
-    sprintf(buffer, "%.3f##Z-%s", position->z, uiId);
-    if (DuskGui_floatInputField((DuskGuiParams) {
-        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 },
-    }, &position->z, cursorAnchor->z - 1.0f, cursorAnchor->z + 1.0f, 0.025f))
-    {
-        modified = 1;
-    }
-    
-    *posY += 20.0f;
-    
-    // Rotation input fields
-    sprintf(buffer, "%.3f##RX-%s", euler->x, uiId);
-    if (DuskGui_floatInputField((DuskGuiParams) {
-        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 },
-    }, &euler->x, -3000.0f, 3000.0f, 1.0f))
-    {
-        modified = 1;
-    }
-    
-    sprintf(buffer, "%.3f##RY-%s", euler->y, uiId);
-    if (DuskGui_floatInputField((DuskGuiParams) {
-        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 },
-    }, &euler->y, -3000.0f, 3000.0f, 1.0f))
-    {
-        modified = 1;
-    }
-    
-    sprintf(buffer, "%.3f##RZ-%s", euler->z, uiId);
-    if (DuskGui_floatInputField((DuskGuiParams) {
-        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 },
-    }, &euler->z, -3000.0f, 3000.0f, 1.0f))
-    {
-        modified = 1;
-    }
-    
-    *posY += 20.0f;
-    if (DuskGui_button((DuskGuiParams) {
-        .text = TextFormat("Reset Rotation##reset-rot-%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 }}))
-    {
-        *euler = (Vector3){0, 0, 0};
-        modified = 1;
-    }
-    
 
-    if (DuskGui_button((DuskGuiParams) {
-        .text = TextFormat("<-##<-%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 }}))
-    {
-        euler->y += -45.0f;
-        modified = 1;
-    }
-    
-    if (DuskGui_button((DuskGuiParams) {
-        .text = TextFormat("->##->%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 }}))
-    {
-        euler->y -= -45.0f;
-        modified = 1;
-    }
-
-    *posY += 20.0f;
-
-    // scale
-    sprintf(buffer, "%.3f##SX-%s", scale->x, uiId);
-    if (DuskGui_floatInputField((DuskGuiParams) {
-        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 },
-    }, &scale->x, 0.1f, 10.0f, 0.1f))
-    {
-        modified = 1;
-    }
-
-    sprintf(buffer, "%.3f##SY-%s", scale->y, uiId);
-    if (DuskGui_floatInputField((DuskGuiParams) {
-        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 },
-    }, &scale->y, 0.1f, 10.0f, 0.1f))
-    {
-        modified = 1;
-    }
-
-    sprintf(buffer, "%.3f##SZ-%s", scale->z, uiId);
-    if (DuskGui_floatInputField((DuskGuiParams) {
-        .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 },
-    }, &scale->z, 0.1f, 10.0f, 0.1f))
-    {
-        modified = 1;
-    }
-
-    *posY += 20.0f;
-
-    if (DuskGui_button((DuskGuiParams) {
-        .text = TextFormat("Reset Scale##reset-scale-%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 }}))
-    {
-        *scale = (Vector3){1, 1, 1};
-        modified = 1;
-    }
-
-    float maxAbsScale = fmaxf(fmaxf(fabsf(scale->x), fabsf(scale->y)), fabsf(scale->z));
-    if (maxAbsScale > 0.0f)
-    {
-        float scaleFac = maxAbsScale;
-        sprintf(buffer, "%.3f##scale_xyz-%s", scaleFac, uiId);
-        if (DuskGui_floatInputField((DuskGuiParams){
-            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle){70, *posY, 60, 20},
-        }, &scaleFac, 0.0f, 50.0f, 0.025f))
+        sprintf(buffer, "%.3f##X-%s", position->x, uiId);
+        
+        if (DuskGui_floatInputField((DuskGuiParams) {
+            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 },
+        }, &position->x, cursorAnchor->x - maxMoveDist.x, cursorAnchor->x + maxMoveDist.x, 0.025f))
         {
-            scaleFac /= maxAbsScale;
-            scale->x *= scaleFac;
-            scale->y *= scaleFac;
-            scale->z *= scaleFac;
             modified = 1;
         }
+        
+        sprintf(buffer, "%.3f##Y-%s", position->y, uiId);
+        if (DuskGui_floatInputField((DuskGuiParams) {
+            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 },
+        }, &position->y, cursorAnchor->y - maxMoveDist.y, cursorAnchor->y + maxMoveDist.y, 0.025f))
+        {
+            modified = 1;
+        }
+        
+        sprintf(buffer, "%.3f##Z-%s", position->z, uiId);
+        if (DuskGui_floatInputField((DuskGuiParams) {
+            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 },
+        }, &position->z, cursorAnchor->z - maxMoveDist.z, cursorAnchor->z + maxMoveDist.z, 0.025f))
+        {
+            modified = 1;
+        }
+        
+        *posY += 20.0f;
+    }
+    // Rotation input fields
+    if (euler)
+    {
+
+        sprintf(buffer, "%.3f##RX-%s", euler->x, uiId);
+        if (DuskGui_floatInputField((DuskGuiParams) {
+            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 },
+        }, &euler->x, -3000.0f, 3000.0f, 1.0f))
+        {
+            modified = 1;
+        }
+        
+        sprintf(buffer, "%.3f##RY-%s", euler->y, uiId);
+        if (DuskGui_floatInputField((DuskGuiParams) {
+            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 },
+        }, &euler->y, -3000.0f, 3000.0f, 1.0f))
+        {
+            modified = 1;
+        }
+        
+        sprintf(buffer, "%.3f##RZ-%s", euler->z, uiId);
+        if (DuskGui_floatInputField((DuskGuiParams) {
+            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 },
+        }, &euler->z, -3000.0f, 3000.0f, 1.0f))
+        {
+            modified = 1;
+        }
+        
+        *posY += 20.0f;
+        if (DuskGui_button((DuskGuiParams) {
+            .text = TextFormat("Reset Rotation##reset-rot-%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 }}))
+        {
+            *euler = (Vector3){0, 0, 0};
+            modified = 1;
+        }
+        
+
+        if (DuskGui_button((DuskGuiParams) {
+            .text = TextFormat("<-##<-%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 }}))
+        {
+            euler->y += -45.0f;
+            modified = 1;
+        }
+        
+        if (DuskGui_button((DuskGuiParams) {
+            .text = TextFormat("->##->%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 }}))
+        {
+            euler->y -= -45.0f;
+            modified = 1;
+        }
+
+        *posY += 20.0f;
     }
 
-    *posY += 20.0f;
+    // scale
+    if (scale)
+    {
+        sprintf(buffer, "%.3f##SX-%s", scale->x, uiId);
+        if (DuskGui_floatInputField((DuskGuiParams) {
+            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 },
+        }, &scale->x, 0.1f, 10.0f, 0.1f))
+        {
+            modified = 1;
+        }
+
+        sprintf(buffer, "%.3f##SY-%s", scale->y, uiId);
+        if (DuskGui_floatInputField((DuskGuiParams) {
+            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 70, *posY, 60, 20 },
+        }, &scale->y, 0.1f, 10.0f, 0.1f))
+        {
+            modified = 1;
+        }
+
+        sprintf(buffer, "%.3f##SZ-%s", scale->z, uiId);
+        if (DuskGui_floatInputField((DuskGuiParams) {
+            .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle) { 130, *posY, 60, 20 },
+        }, &scale->z, 0.1f, 10.0f, 0.1f))
+        {
+            modified = 1;
+        }
+
+        *posY += 20.0f;
+
+        if (DuskGui_button((DuskGuiParams) {
+            .text = TextFormat("Reset Scale##reset-scale-%s", uiId), .rayCastTarget = 1, .bounds = (Rectangle) { 10, *posY, 60, 20 }}))
+        {
+            *scale = (Vector3){1, 1, 1};
+            modified = 1;
+        }
+
+        float maxAbsScale = fmaxf(fmaxf(fabsf(scale->x), fabsf(scale->y)), fabsf(scale->z));
+        if (maxAbsScale > 0.0f)
+        {
+            float scaleFac = maxAbsScale;
+            sprintf(buffer, "%.3f##scale_xyz-%s", scaleFac, uiId);
+            if (DuskGui_floatInputField((DuskGuiParams){
+                .text = buffer, .rayCastTarget = 1, .bounds = (Rectangle){70, *posY, 60, 20},
+            }, &scaleFac, 0.0f, 50.0f, 0.025f))
+            {
+                scaleFac /= maxAbsScale;
+                scale->x *= scaleFac;
+                scale->y *= scaleFac;
+                scale->z *= scaleFac;
+                modified = 1;
+            }
+        }
+
+        *posY += 20.0f;
+    }
     
     return modified;
 }
@@ -406,4 +416,13 @@ float EaseInOutSine(float t, float from, float to)
     if (t < 0.0f) return from;
     if (t > 1.0f) return to;
     return sinf(t * PI * 0.5f) * (to - from) + from;
+}
+
+
+float LerpAngle(float a, float b, float t)
+{
+    float delta = b - a;
+    if (delta > PI) delta -= 2 * PI;
+    if (delta < -PI) delta += 2 * PI;
+    return a + delta * t;
 }

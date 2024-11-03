@@ -6,6 +6,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <memory.h>
 
 
 //# CameraFacingComponent
@@ -414,7 +417,7 @@ void MeshRendererComponent_onInspectorUi(Level *level, LevelEntityInstanceId own
 
     char buffer[128];
     sprintf(buffer, "MeshRendererTransform-%p", component);
-    if (SceneDrawUi_transformUi(ypos, buffer, &component->position, &component->eulerRotationDeg, &component->scale, (&(Vector3){0,0,0})))
+    if (SceneDrawUi_transformUi(ypos, buffer, &component->position, &component->eulerRotationDeg, &component->scale, (&(Vector3){0,0,0}), (Vector3){10,10,10}))
     {
         MeshRendererComponent_updateTransform(component);
     }
@@ -671,7 +674,7 @@ void SpriteRendererComponent_onInspectorUi(Level *level, LevelEntityInstanceId o
 
     char buffer[128];
     sprintf(buffer, "SpriteRendererTransform-%p", component);
-    if (SceneDrawUi_transformUi(ypos, buffer, &component->position, &component->eulerRotationDeg, &component->scale, (&(Vector3){0,0,0})))
+    if (SceneDrawUi_transformUi(ypos, buffer, &component->position, &component->eulerRotationDeg, &component->scale, (&(Vector3){0,0,0}), (Vector3){10,10,10}))
     {
         SpriteRendererComponent_updateTransform(component);
     }
@@ -1254,6 +1257,281 @@ void CollisionDetectorComponent_register(Level *level)
         }, sizeof(CollisionDetectorComponent));
 }
 
+//# DoorStateComponent
+typedef struct DoorStateComponent
+{
+    uint8_t isOpen;
+    float openTime;
+    float closeTime;
+    float time;
+    Vector3 closedPosition;
+    Vector3 closedRotation;
+    Vector3 openPosition;
+    Vector3 openRotation;
+    const char *toggleOpenTriggerId;
+    const char *toggleCloseTriggerId;
+} DoorStateComponent;
+
+void DoorStateComponent_onInit(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    LevelEntity *entity = Level_resolveEntity(level, ownerId);
+    DoorStateComponent *component = (DoorStateComponent*)componentInstanceData;
+    component->isOpen = 0;
+    component->openTime = 1.0f;
+    component->closeTime = 1.0f;
+    component->time = 0.0f;
+    component->closedPosition = entity->position;
+    component->closedRotation = entity->eulerRotationDeg;
+    component->openPosition = entity->position;
+    component->openRotation = Vector3Add(entity->eulerRotationDeg, (Vector3){0, 70, 0});
+    component->toggleOpenTriggerId = strdup("OpenDoorTrigger");
+    component->toggleCloseTriggerId = strdup("CloseDoorTrigger");
+}
+
+void DoorStateComponent_onInspectorUi(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, float *ypos, int isMouseOver)
+{
+    DoorStateComponent *component = (DoorStateComponent*)componentInstanceData;
+    float width = DuskGui_getAvailableSpace().x - 20;
+
+    char buffer[256];
+    sprintf(buffer, "Is Open: %s##door-is-open-%p", component->isOpen ? "True" : "False", component);
+    if (DuskGui_button((DuskGuiParams){
+        .text = buffer,
+        .bounds = (Rectangle){10, *ypos, width, 20},
+        .rayCastTarget = 1,
+    }))
+    {
+        component->isOpen = !component->isOpen;
+        component->time = level->renderTime;
+    }
+
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, width, 20},
+        .text = TextFormat("Open T: %.2f##door-open-time-%p", component->openTime, component),
+        .rayCastTarget = 1,
+    }, &component->openTime, 0.01f, 100.0f, 0.01f);
+    *ypos += 20.0f;
+
+    DuskGui_floatInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, width, 20},
+        .text = TextFormat("Close T: %.2f##door-close-time-%p", component->closeTime, component),
+        .rayCastTarget = 1,
+    }, &component->closeTime, 0.01f, 100.0f, 0.01f);
+    *ypos += 20.0f;
+
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Toggle Open Trigger Id",
+    });
+    *ypos += 20.0f;
+
+    char *textEditBuffer = NULL;
+    
+    DuskGui_textInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, DuskGui_getAvailableSpace().x - 20, 20},
+        .text = TextFormat("%s##door-toggle-open-trigger-%p", component->toggleOpenTriggerId, component),
+        .isFocusable = 1,
+        .rayCastTarget = 1,
+    }, &textEditBuffer);
+    if (textEditBuffer)
+    {
+        free((void*)component->toggleOpenTriggerId);
+        component->toggleOpenTriggerId = strdup(textEditBuffer);
+    }
+    *ypos += 20.0f;
+
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Toggle Close Trigger Id",
+    });
+    *ypos += 20.0f;
+
+    textEditBuffer = NULL;
+    DuskGui_textInputField((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, DuskGui_getAvailableSpace().x - 20, 20},
+        .text = TextFormat("%s##door-toggle-close-trigger-%p", component->toggleCloseTriggerId, component),
+        .rayCastTarget = 1,
+        .isFocusable = 1,
+    }, &textEditBuffer);
+    if (textEditBuffer)
+    {
+        free((void*)component->toggleCloseTriggerId);
+        component->toggleCloseTriggerId = strdup(textEditBuffer);
+    }
+    *ypos += 20.0f;
+
+    
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Open Position/Rotation",
+    });
+    *ypos += 20.0f;
+
+    LevelEntity *entity = Level_resolveEntity(level, ownerId);
+
+    if (SceneDrawUi_transformUi(ypos, "DoorOpenTransform", &component->openPosition, &component->openRotation, NULL, &entity->position, (Vector3){10,10,10}))
+    {
+        if (component->isOpen)
+        {
+            entity->position = component->openPosition;
+            entity->eulerRotationDeg = component->openRotation;
+            Level_updateEntityTransform(entity);
+        }
+    }
+
+    DuskGui_label((DuskGuiParams){
+        .bounds = (Rectangle){10, *ypos, 180, 20},
+        .text = "Closed Position/Rotation",
+    });
+
+    *ypos += 20.0f;
+
+    if (SceneDrawUi_transformUi(ypos, "DoorClosedTransform", &component->closedPosition, &component->closedRotation, NULL, &entity->position, (Vector3){10,10,10}))
+    {
+        if (!component->isOpen)
+        {
+            entity->position = component->closedPosition;
+            entity->eulerRotationDeg = component->closedRotation;
+            Level_updateEntityTransform(entity);
+        }
+    }
+}
+
+void DoorStateComponent_onSerialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
+{
+    DoorStateComponent *component = (DoorStateComponent*)componentInstanceData;
+    cJSON_AddNumberToObject(json, "isOpen", component->isOpen);
+    cJSON_AddNumberToObject(json, "openTime", component->openTime);
+    cJSON_AddNumberToObject(json, "closeTime", component->closeTime);
+    cJSON_AddNumberToObject(json, "time", component->time);
+    cJSON* closedPosition = cJSON_CreateArray();
+    cJSON_AddItemToObject(json, "closedPosition", closedPosition);
+    cJSON_AddItemToArray(closedPosition, cJSON_CreateNumber(component->closedPosition.x));
+    cJSON_AddItemToArray(closedPosition, cJSON_CreateNumber(component->closedPosition.y));
+    cJSON_AddItemToArray(closedPosition, cJSON_CreateNumber(component->closedPosition.z));
+    cJSON* closedRotation = cJSON_CreateArray();
+    cJSON_AddItemToObject(json, "closedRotation", closedRotation);
+    cJSON_AddItemToArray(closedRotation, cJSON_CreateNumber(component->closedRotation.x));
+    cJSON_AddItemToArray(closedRotation, cJSON_CreateNumber(component->closedRotation.y));
+    cJSON_AddItemToArray(closedRotation, cJSON_CreateNumber(component->closedRotation.z));
+    cJSON* openPosition = cJSON_CreateArray();
+    cJSON_AddItemToObject(json, "openPosition", openPosition);
+    cJSON_AddItemToArray(openPosition, cJSON_CreateNumber(component->openPosition.x));
+    cJSON_AddItemToArray(openPosition, cJSON_CreateNumber(component->openPosition.y));
+    cJSON_AddItemToArray(openPosition, cJSON_CreateNumber(component->openPosition.z));
+    cJSON* openRotation = cJSON_CreateArray();
+    cJSON_AddItemToObject(json, "openRotation", openRotation);
+    cJSON_AddItemToArray(openRotation, cJSON_CreateNumber(component->openRotation.x));
+    cJSON_AddItemToArray(openRotation, cJSON_CreateNumber(component->openRotation.y));
+    cJSON_AddItemToArray(openRotation, cJSON_CreateNumber(component->openRotation.z));
+    cJSON_AddStringToObject(json, "toggleOpenTriggerId", component->toggleOpenTriggerId);
+    cJSON_AddStringToObject(json, "toggleCloseTriggerId", component->toggleCloseTriggerId);
+}
+
+void DoorStateComponent_onDeserialize(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData, cJSON *json)
+{
+    DoorStateComponent *component = (DoorStateComponent*)componentInstanceData;
+    component->isOpen = (uint8_t) cJSON_GetObjectItem(json, "isOpen")->valueint;
+    component->openTime = (float) cJSON_GetObjectItem(json, "openTime")->valuedouble;
+    component->closeTime = (float) cJSON_GetObjectItem(json, "closeTime")->valuedouble;
+    component->time = (float) cJSON_GetObjectItem(json, "time")->valuedouble;
+    cJSON* closedPosition = cJSON_GetObjectItem(json, "closedPosition");
+    component->closedPosition.x = (float) cJSON_GetArrayItem(closedPosition, 0)->valuedouble;
+    component->closedPosition.y = (float) cJSON_GetArrayItem(closedPosition, 1)->valuedouble;
+    component->closedPosition.z = (float) cJSON_GetArrayItem(closedPosition, 2)->valuedouble;
+    cJSON* closedRotation = cJSON_GetObjectItem(json, "closedRotation");
+    component->closedRotation.x = (float) cJSON_GetArrayItem(closedRotation, 0)->valuedouble;
+    component->closedRotation.y = (float) cJSON_GetArrayItem(closedRotation, 1)->valuedouble;
+    component->closedRotation.z = (float) cJSON_GetArrayItem(closedRotation, 2)->valuedouble;
+    cJSON* openPosition = cJSON_GetObjectItem(json, "openPosition");
+    component->openPosition.x = (float) cJSON_GetArrayItem(openPosition, 0)->valuedouble;
+    component->openPosition.y = (float) cJSON_GetArrayItem(openPosition, 1)->valuedouble;
+    component->openPosition.z = (float) cJSON_GetArrayItem(openPosition, 2)->valuedouble;
+    cJSON* openRotation = cJSON_GetObjectItem(json, "openRotation");
+    component->openRotation.x = (float) cJSON_GetArrayItem(openRotation, 0)->valuedouble;
+    component->openRotation.y = (float) cJSON_GetArrayItem(openRotation, 1)->valuedouble;
+    component->openRotation.z = (float) cJSON_GetArrayItem(openRotation, 2)->valuedouble;
+    component->toggleOpenTriggerId = strdup(cJSON_GetObjectItem(json, "toggleOpenTriggerId")->valuestring);
+    component->toggleCloseTriggerId = strdup(cJSON_GetObjectItem(json, "toggleCloseTriggerId")->valuestring);
+}
+
+void DoorStateComponent_onDraw(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    DoorStateComponent *component = (DoorStateComponent*)componentInstanceData;
+    LevelEntity *entity = Level_resolveEntity(level, ownerId);
+    if (!entity)
+    {
+        return;
+    }
+
+    if (component->isOpen && Level_isTriggeredOn(level, component->toggleCloseTriggerId))
+    {
+        component->isOpen = 0;
+        component->time = level->renderTime;
+    }
+    else if (!component->isOpen && Level_isTriggeredOn(level, component->toggleOpenTriggerId))
+    {
+        component->isOpen = 1;
+        component->time = level->renderTime;
+    }
+
+    float time = level->renderTime - component->time;
+    if (component->isOpen)
+    {
+        float transition = time / component->openTime;
+        float sinT = EaseInOutSine(transition, 0.0f, 1.0f);
+        entity->position = Vector3Lerp(component->closedPosition, component->openPosition, sinT);
+        entity->eulerRotationDeg = Vector3Lerp(component->closedRotation, component->openRotation, sinT);
+        Level_updateEntityTransform(entity);
+    }
+    else
+    {
+        float transition = time / component->closeTime;
+        float sinT = EaseInOutSine(transition, 0.0f, 1.0f);
+        entity->position = Vector3Lerp(component->openPosition, component->closedPosition, sinT);
+        entity->eulerRotationDeg = Vector3Lerp(component->openRotation, component->closedRotation, sinT);
+        Level_updateEntityTransform(entity);
+    }
+
+    Level_updateEntityTransform(entity);
+}
+
+void DoorStateComponent_onDestroy(Level *level, LevelEntityInstanceId ownerId, void *componentInstanceData)
+{
+    DoorStateComponent *component = (DoorStateComponent*)componentInstanceData;
+    if (component->toggleCloseTriggerId)
+    {
+        free((void*)component->toggleCloseTriggerId);
+    }
+    if (component->toggleOpenTriggerId)
+    {
+        free((void*)component->toggleOpenTriggerId);
+    }
+    component->toggleCloseTriggerId = NULL;
+    component->toggleOpenTriggerId = NULL;
+}
+
+void DoorStateComponent_register(Level *level)
+{
+    Level_registerEntityComponentClass(level, COMPONENT_TYPE_DOOR_STATE, "DoorState", 
+        (LevelEntityComponentClassMethods){
+            .onInitFn = DoorStateComponent_onInit,
+            .onDestroyFn = DoorStateComponent_onDestroy,
+            .onDisableFn = NULL,
+            .onEnableFn = NULL,
+            .onSerializeFn = DoorStateComponent_onSerialize,
+            .onDeserializeFn = DoorStateComponent_onDeserialize,
+            .onEditorInspectFn = DoorStateComponent_onInspectorUi,
+            .updateFn = NULL,
+            .drawFn = DoorStateComponent_onDraw,
+            .onEditorMenuFn = NULL,
+        }, sizeof(DoorStateComponent));
+}
+
+//# SwitchComponent
+
 //# Registration
 void LevelComponents_register(Level *level)
 {
@@ -1316,4 +1594,5 @@ void LevelComponents_register(Level *level)
     ColliderBoxComponent_register(level);
     RigidSphereComponent_register(level);
     CollisionDetectorComponent_register(level);
+    DoorStateComponent_register(level);
 }
