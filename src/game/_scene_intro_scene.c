@@ -14,11 +14,11 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     BeginMode3D(_camera.camera);
     _currentCamera = _camera.camera;
-    
+
     Level *level = Game_getLevel();
-    
+
     Level_draw(level);
-    
+
     EndMode3D();
 
     // if (IsMouseButtonDown(0) && _allowCameraMovement)
@@ -32,6 +32,12 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 #define TRIGGER_FISHERMEN_ZONE "TriggerFishermenZone"
 #define TRIGGER_BOXTARGET "BoxTarget"
 
+extern Sound waterSfx1;
+extern Sound waterSfx2;
+extern Sound talkSfx1;
+extern Sound talkSfx2;
+extern Sound talkSfx3;
+
 static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt)
 {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
@@ -39,10 +45,19 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
         DisableCursor();
     }
 
+    // water sfx
+    if (GetRandomValue (0, 150) == 0 && !IsSoundPlaying(waterSfx1) && !IsSoundPlaying(waterSfx2))
+    {
+        float pitch = (float)(GetRandomValue(9, 10)) / 10.0f;
+        SetSoundPitch(waterSfx1, pitch);
+        SetSoundPitch(waterSfx2, pitch);
+        GetRandomValue(0, 1) == 0 ? PlaySound(waterSfx1) : PlaySound(waterSfx2);
+    }
+
     dt = fminf(dt, 0.1f);
     Level *level = Game_getLevel();
     level->isEditor = 0;
-    
+
     Level_update(level, dt);
     FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
 }
@@ -59,7 +74,7 @@ static void ScriptAction_exitZoneMessage(Script *script, ScriptAction *action)
     Level *level = Game_getLevel();
     if (Level_isTriggerActive(level, TRIGGER_EXIT_ZONE))
     {
-        DrawNarrationBottomBox("You:", 
+        DrawNarrationBottomBox("You:",
             "My boss will fire me, if I don't get him the story about the haunted castle...", "Talk to the fishermen.");
     }
 }
@@ -67,7 +82,7 @@ static void ScriptAction_exitZoneMessage(Script *script, ScriptAction *action)
 static void ScriptAction_explorationMessageZone_1(Script *script, ScriptAction *action)
 {
     Level *level = Game_getLevel();
-    
+
     if (Level_isTriggerActive(level, TRIGGER_EXPLORATION_MESSAGE_ZONE_1))
     {
         DrawNarrationBottomBox("You:", "This place is giving me a chill... as if I am watched.", NULL);
@@ -83,7 +98,7 @@ static void ScriptAction_intro_firstStep(Script *script, ScriptAction *action)
         return;
     }
 
-    DrawNarrationBottomBox("You:", 
+    DrawNarrationBottomBox("You:",
         "The people said, if I wanted to visit the castle, I should ask the [color=red_]Fisher men[/color].\n"
         "(Use [color=red_]WASD/SPACE[/color] to move & jump, and the [color=red_]mouse[/color] to look around.)", NULL);
 }
@@ -130,7 +145,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     Level_load(Game_getLevel(), "resources/levels/docks.lvl");
     int step = 0;
-    
+
     Script_addAction((ScriptAction){
         .actionIdStart = step,
         .actionIdEnd = step + 2,
@@ -146,7 +161,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_onBoxInPlace, .actionData = Scene_alloc(sizeof(BoxInPlaceData), &(BoxInPlaceData){.timeInPlace = 0.0f}) });
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_FISHERMEN_ZONE });
     step += 1;
-    
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
     Script_addAction((ScriptAction){
         .actionIdStart = step,
@@ -201,7 +216,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     //     .actionIdStart = step,
     //     .action = ScriptAction_drawTextRect,
     //     .actionData = ScriptAction_DrawTextRectData_new("Dock Worker 1",  "As a matter of fact, I'll take you for free.", (Rectangle){10, 10, 200, 100})});
-        
+
     // Script_addAction((ScriptAction){
     //     .actionIdStart = step,
     //     .action = ScriptAction_setCameraMovementEnabled,
@@ -211,7 +226,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
     //     .action = ScriptAction_jumpStep,
     //     .actionData = ScriptAction_JumpStepData_new(-1, 1, 1)});
     // step++;
-    
+
     // Script_addAction((ScriptAction){
     //     .actionIdStart = step,
     //     .action = ScriptAction_setCameraMovementEnabled,

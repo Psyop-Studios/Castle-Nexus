@@ -21,6 +21,17 @@ static RenderTexture2D _finalTarget = {0};
 static Level _level = {0};
 static Texture2D _fogTex = {0};
 
+// TODO: maybe move this elsewere
+Sound walkSfx1;
+Sound walkSfx2;
+Sound jumpSfx;
+Sound waterSfx1;
+Sound waterSfx2;
+Sound pushSfx;
+Sound talkSfx1;
+Sound talkSfx2;
+Sound talkSfx3;
+
 Shader _modelDitherShader;
 Shader _modelTexturedShader;
 Font _fntMono = {0};
@@ -52,6 +63,18 @@ void Game_init(void** contextData)
     printf("Game_init\n");
 
     DuskGui_init();
+    InitAudioDevice();
+
+    // TODO: move this elsewere
+    walkSfx1 = LoadSound("resources/audio/WalkSand1.wav");
+    walkSfx2 = LoadSound("resources/audio/WalkSand2.wav");
+    jumpSfx = LoadSound("resources/audio/Jump.wav");
+    waterSfx1 = LoadSound("resources/audio/WaterSounds.wav");
+    waterSfx2 = LoadSound("resources/audio/WaterSounds2.wav");
+    pushSfx = LoadSound("resources/audio/CrateSound1.wav");
+    talkSfx1 = LoadSound("resources/audio/ATalk1.wav");
+    talkSfx2 = LoadSound("resources/audio/ATalk2.wav");
+    talkSfx3 = LoadSound("resources/audio/ATalk3.wav");
 
     if (*contextData == NULL)
     {
@@ -70,7 +93,7 @@ void Game_init(void** contextData)
     }
 
     printf("Game_init\n");
-    
+
 
     _modelDitherShader = LoadShader("resources/dither.vs", "resources/dither.fs");
     SetShaderValue(_modelDitherShader, GetShaderLocation(_modelDitherShader, "drawInnerOutlines"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
@@ -88,7 +111,7 @@ void Game_init(void** contextData)
     _outlineShader = LoadShader(0, "resources/outline.fs");
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "depthOutlineEnabled"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "uvOutlineEnabled"), (float[]){1.0f}, SHADER_UNIFORM_FLOAT);
-    
+
     _colorReduceShader = LoadShader(0, "resources/colorreduce.fs");
 
     _fntMedium = LoadFont("resources/fnt_medium.png");
@@ -99,7 +122,7 @@ void Game_init(void** contextData)
 
     Level_init(&_level);
     LevelComponents_register(&_level);
-    
+
     Level_loadAssets(&_level, "resources/level_assets");
 
     _fogTex = Level_getTexture(&_level, "db8-dither.png", (Texture2D){0});
@@ -134,12 +157,23 @@ void Game_deinit()
 {
     printf("Game_deinit\n");
 
+    UnloadSound(walkSfx1);
+    UnloadSound(walkSfx2);
+    UnloadSound(jumpSfx);
+    UnloadSound(waterSfx1);
+    UnloadSound(waterSfx2);
+    UnloadSound(pushSfx);
+    UnloadSound(talkSfx1);
+    UnloadSound(talkSfx2);
+    UnloadSound(talkSfx3);
+
     SceneConfig *config = Scene_getConfig(_contextData->currentSceneId);
     if (config && config->deinitFn)
     {
         config->deinitFn(_contextData, config);
     }
 
+    CloseAudioDevice();
     UnloadShader(_modelDitherShader);
     UnloadShader(_outlineShader);
     UnloadRenderTexture(_target);
@@ -212,7 +246,7 @@ void Game_update()
     BeginTextureMode(_target);
     ClearBackground(DB8_BG_DEEPPURPLE);
     DrawScene();
-    
+
     EndTextureMode();
 
     BeginTextureMode(_finalTarget);
@@ -220,11 +254,11 @@ void Game_update()
     rlEnableColorBlend();
     // BeginDrawing();
     BeginShaderMode(_outlineShader);
-   
+
     SetShaderValue(_outlineShader, GetShaderLocation(_outlineShader, "resolution"), (float[2]){(float)_target.texture.width, (float)_target.texture.height}, SHADER_UNIFORM_VEC2);
-    DrawTexturePro(_target.texture, 
-        (Rectangle){0.0f, 0.0f, (float)_target.texture.width, (float)-_target.texture.height}, 
-        (Rectangle){0.0f, 0.0f, (float)screenWidth, (float)screenHeight}, 
+    DrawTexturePro(_target.texture,
+        (Rectangle){0.0f, 0.0f, (float)_target.texture.width, (float)-_target.texture.height},
+        (Rectangle){0.0f, 0.0f, (float)screenWidth, (float)screenHeight},
         (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
     EndShaderMode();
 
@@ -238,15 +272,15 @@ void Game_update()
     Script_update(_contextData, dt);
     Script_draw(_contextData);
     DuskGui_finalize();
-    
+
     // EndDrawing();
     EndTextureMode();
 
     BeginDrawing();
     BeginShaderMode(_colorReduceShader);
-    DrawTexturePro(_finalTarget.texture, 
-        (Rectangle){0.0f, 0.0f, (float)_finalTarget.texture.width, (float)-_finalTarget.texture.height}, 
-        (Rectangle){0.0f, 0.0f, (float)screenWidth, (float)screenHeight}, 
+    DrawTexturePro(_finalTarget.texture,
+        (Rectangle){0.0f, 0.0f, (float)_finalTarget.texture.width, (float)-_finalTarget.texture.height},
+        (Rectangle){0.0f, 0.0f, (float)screenWidth, (float)screenHeight},
         (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
     EndShaderMode();
     EndDrawing();
@@ -287,6 +321,9 @@ void Game_setNextScene(int sceneId)
 // handles collision detection and movement for a first person camera
 void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement, float dt)
 {
+
+    static float distanceTraveled = 0.0f;
+
     if (allowCameraMovement)
     {
         Vector3 move = {0};
@@ -307,9 +344,22 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
             move.x = 1;
         }
 
+        distanceTraveled += Vector3Length(move) * dt;
+
+        if (distanceTraveled > 0.65f)
+        {
+            float pitch = (float)(GetRandomValue(7, 11)) / 10.0f;
+            SetSoundPitch(walkSfx1, pitch);
+            SetSoundPitch(walkSfx2, pitch);
+
+            GetRandomValue(0, 1) == 0 ? PlaySound(walkSfx1) : PlaySound(walkSfx2);
+            distanceTraveled = 0.0f;
+        }
+
         if (IsKeyDown(KEY_SPACE) && camera->hasGroundContact)
         {
             camera->velocity.y = 8.0f;
+            PlaySound(jumpSfx);
         }
 
         Vector3 forwardXZ = Vector3Normalize((Vector3){camera->camera.target.x - camera->camera.position.x, 0, camera->camera.target.z - camera->camera.position.z});
@@ -351,16 +401,16 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
 
 #define COLLIDE_RESULT_COUNT 16
     LevelCollisionResult results[COLLIDE_RESULT_COUNT] = {0};
-    int resultCount = Level_findCollisions(level, 
+    int resultCount = Level_findCollisions(level,
         Vector3Add(camera->camera.position, (Vector3){0,-1.25f,0}), 0.5f, 1, 1, results, COLLIDE_RESULT_COUNT);
-    
+
     // gravity
     camera->velocity = Vector3Add(camera->velocity, (Vector3) {0, -24.0f * dt, 0});
-    
+
     Vector3 totalShift = {0};
     camera->hasGroundContact = 0;
 
-    
+
     for (int i = 0; i < resultCount; i++)
     {
         if (results[i].triggerId)
@@ -415,6 +465,9 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
                 Vector3 normal = results[i].normal;
                 normal.y = 0;
                 entity->position = Vector3Add(entity->position, Vector3Scale(normal, -camVel * 0.5f * results[i].depth));
+                if (!IsSoundPlaying(pushSfx)) {
+                    PlaySound(pushSfx);
+                }
                 break;
 
             }
@@ -425,5 +478,5 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
 
     camera->camera.position = Vector3Add(camera->camera.position, totalShift);
     camera->camera.target = Vector3Add(camera->camera.target, totalShift);
-        
+
 }
