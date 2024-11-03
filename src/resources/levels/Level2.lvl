@@ -442,7 +442,7 @@
 			"instancesSX":	[1, 1, 1],
 			"instancesSY":	[1, 1, 1],
 			"instancesSZ":	[1, 1, 1],
-			"instancesTexId":	[12, -1, -1]
+			"instancesTexId":	[13, -1, -1]
 		}, {
 			"filename":	"resources/level_assets/wall-half-b.glb",
 			"instancesPX":	[-2, 0, 4],
@@ -551,6 +551,54 @@
 			"instancesSY":	[],
 			"instancesSZ":	[],
 			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-wooden-pole.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/ground-mud-block.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/ground-wooden-planks.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
+		}, {
+			"filename":	"resources/level_assets/decoration-wave-circle.glb",
+			"instancesPX":	[],
+			"instancesPY":	[],
+			"instancesPZ":	[],
+			"instancesRX":	[],
+			"instancesRY":	[],
+			"instancesRZ":	[],
+			"instancesSX":	[],
+			"instancesSY":	[],
+			"instancesSZ":	[],
+			"instancesTexId":	[]
 		}],
 	"entityNames":	["Candle", "Candle", "Candle", "Candle", null, null, null, null, "Candle", "Candle", "Candle", "Candle", null, "Painting-Castle-1", "Painting-Tree-1", null],
 	"entityTRS":	[6, -1.1920928955078125e-06, 5, 0, 0, 0, 1, 1, 1, -2, -1.1920928955078125e-06, 5, 0, -180, 0, 1, 1, 1, -1, -1.1920928955078125e-06, 13, 0, -90, 0, 1, 1, 1, 5, -1.1920928955078125e-06, 13, 0, -90, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, 2, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, -3, 3.9999997615814209, 2, 0, -90, 0, 1, 1, 1, -6, 3.9999997615814209, -2, 0, 180, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4.0000009536743164, 2, 0, 180, 0, 0.772363245487213, 0.772363245487213, 0.772363245487213, -1, 3.5866208076477051, 2, 0, -180, 0, 1.0750001668930054, 1.3328126668930054, 0.60937517881393433, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -563,8 +611,8 @@
 		}, {
 			"name":	"Wobbler",
 			"componentId":	1,
-			"ownerEntityIds":	[],
-			"entityData":	[]
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"MeshRenderer",
 			"componentId":	2,
@@ -613,7 +661,7 @@
 		}, {
 			"name":	"SpriteRenderer",
 			"componentId":	3,
-			"ownerEntityIds":	[0, 1, 2, 3, 0, 0, 0, 0, 8, 9, 10, 11, 0, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"ownerEntityIds":	[0, 1, 2, 3, 0, 0, 0, 0, 8, 9, 10, 11, 0, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"entityData":	[{
 					"texture":	"resources/level_assets/anim_flame.png",
 					"sprite":	"resources/level_assets/anim_flame.png",
@@ -662,11 +710,21 @@
 					"texture":	"resources/level_assets/portraitTrees.png",
 					"sprite":	"resources/level_assets/portraitTrees.png",
 					"trs":	[0, 2.1024410724639893, 0.11816415190696716, 0, 0, 0, 0.98076164722442627, 0.85654282569885254, 0.82763653993606567]
-				}, null, null, null, null, null, null, null, null, null]
+				}, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 		}, {
 			"name":	"ColliderBox",
 			"componentId":	4,
-			"ownerEntityIds":	[],
-			"entityData":	[]
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+		}, {
+			"name":	"RigidSphere",
+			"componentId":	5,
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null]
+		}, {
+			"name":	"CollisionDetector",
+			"componentId":	6,
+			"ownerEntityIds":	[0, 0, 0, 0, 0, 0, 0, 0],
+			"entityData":	[null, null, null, null, null, null, null, null]
 		}]
 }

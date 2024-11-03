@@ -31,9 +31,9 @@ static void SceneUpdate(GameContext *gameCtx, SceneConfig *SceneConfig, float dt
     dt = fminf(dt, 0.1f);
     Level *level = Game_getLevel();
     level->isEditor = 0;
-    
-    FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
     Level_update(level, dt);
+    FPSCamera_update(&_camera, level, _allowCameraMovement, dt);
+ 
 }
 
 static void ScriptAction_setCameraMovementEnabled(Script *script, ScriptAction *action)
@@ -52,8 +52,8 @@ static void ScriptAction_island_firstStep(Script *script, ScriptAction *action)
         return;
     }
     DrawNarrationBottomBox("Chapter 2:", 
-        "After a short ride, the dock workers dropped you off onto the [color=blue_]islane[/color].\n"
-        "(Use [color=red_]WASD/SPACE[/color] to move & jump, and the [color=red_]mouse[/color]", NULL);
+        "After a short ride, the dock workers dropped you off onto the [color=blue_] island[/color].\n"
+        "Somehow, the dock workers were [color=red_] already gone.[/color]", NULL);
 }
 
 static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
@@ -79,10 +79,18 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 
     // Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_exitZoneMessage });
     // Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_explorationMessageZone_1 });
+
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_progressNextOnTriggeredOn, .actionData = (char*)TRIGGER_DOOR_ZONE });
     step += 1;
     
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_setCameraMovementEnabled, .actionInt = 0});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+            "* knocks on door *", 1)});
+    Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
+        .actionData = ScriptAction_DrawNarrationBottomBoxData_new("You:",
+            "Hello, is anyone there?", 1)});
+    step += 1;
     Script_addAction((ScriptAction){ .actionIdStart = step, .action = ScriptAction_drawNarrationBottomBox,
         .actionData = ScriptAction_DrawNarrationBottomBoxData_new("Spooky voice:",
             "Who goes there?", 1)});
