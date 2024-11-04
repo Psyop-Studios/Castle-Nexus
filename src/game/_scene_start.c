@@ -55,8 +55,8 @@ static void StepDrawTitle(Script *script, ScriptAction *action)
     LevelTexture* introCastle = Level_getLevelTexture(level, "intro-castle.png");
     LevelTexture* miniGhost = Level_getLevelTexture(level, "mini-ghost-sprite.png");
     LevelTexture* rowboat = Level_getLevelTexture(level, "rowboat-sprite.png");
-    int screenWidth = GetScreenWidth();
-    int screenHeight = GetScreenHeight();
+    int screenWidth = Game_getWidth();
+    int screenHeight = Game_getHeight();
     float waterHeight = screenHeight * .6f;
     if (tex && texNexus && waterGradient && skyGradient && horizont && introCastle && miniGhost && rowboat)
     {

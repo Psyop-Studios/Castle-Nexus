@@ -49,8 +49,8 @@ Camera _currentCamera;
 
 void UpdateRenderTexture()
 {
-    int screenWidth = GetScreenWidth();
-    int screenHeight = GetScreenHeight();
+    int screenWidth = Game_getWidth();
+    int screenHeight = Game_getHeight();
     int downScaleFac = 1;
     if ((screenWidth >> downScaleFac) != _target.texture.width || (screenHeight >> downScaleFac) != _target.texture.height)
     {
@@ -233,8 +233,73 @@ void DrawUi()
     }
 }
 
+#ifdef PLATFORM_WEB
+#include <emscripten/emscripten.h>
+int emscripten_get_element_css_size(const char * target, double * width, double * height);
+int emscripten_set_canvas_element_size(const char * target, int width, int height);
+void fixCanvasSize()
+{
+    
+    const int screenWidth = 640;
+    const int screenHeight = 480;
+    
+    static double currentScreenWidth, currentScreenHeight;
+    double newScreenWidth, newScreenHeight;
+    emscripten_get_element_css_size("canvas", &newScreenWidth, &newScreenHeight);
+    if (newScreenWidth != currentScreenWidth || newScreenHeight != currentScreenHeight)
+    {
+        currentScreenWidth = newScreenWidth;
+        currentScreenHeight = newScreenHeight;
+        emscripten_set_canvas_element_size("canvas", screenWidth, screenHeight);
+        SetWindowSize((int)currentScreenWidth, (int)currentScreenHeight);
+    }
+}
+#else
+void fixCanvasSize() {}
+#endif
+int Game_getWidth()
+{
+    return GetScreenWidth();
+}
+
+int Game_getHeight()
+{
+    return GetScreenHeight();
+}
+
+static void CheckGameKeys()
+{
+    if (IsKeyReleased(KEY_Q) && IsKeyDown(KEY_LEFT_SHIFT))
+    {
+        _contextData->nextSceneId = _contextData->currentSceneId - 1;
+    }
+    if (IsKeyReleased(KEY_E) && IsKeyDown(KEY_LEFT_SHIFT))
+    {
+        _contextData->nextSceneId = _contextData->currentSceneId + 1;
+    }
+    if (IsKeyReleased(KEY_T))
+    {
+        static uint32_t prevScene;
+        if (_contextData->currentSceneId != SCENE_ID_EDITOR)
+        {
+            prevScene = _contextData->currentSceneId;
+            _contextData->nextSceneId = SCENE_ID_EDITOR;
+        }
+        else
+        {
+            _contextData->nextSceneId = prevScene;
+        }
+    }
+    if (IsKeyReleased(KEY_U) && IsKeyDown(KEY_LEFT_CONTROL))
+    {
+        Level_reloadAssets(&_level);
+    }
+}
+
 void Game_update()
 {
+    fixCanvasSize();
+
     _contextData->currentGameTime += GetFrameTime();
 
     if (_contextData->nextSceneId != SCENE_ID_INVALID)
@@ -261,8 +326,8 @@ void Game_update()
         _contextData->nextSceneId = SCENE_ID_INVALID;
     }
 
-    int screenWidth = GetScreenWidth();
-    int screenHeight = GetScreenHeight();
+    int screenWidth = Game_getWidth();
+    int screenHeight = Game_getHeight();
 
     UpdateRenderTexture();
 
@@ -271,7 +336,7 @@ void Game_update()
     BeginTextureMode(_target);
     ClearBackground(DB8_BG_DEEPPURPLE);
     DrawScene();
-
+    CheckGameKeys();
     EndTextureMode();
 
     BeginTextureMode(_finalTarget);
@@ -311,31 +376,6 @@ void Game_update()
     EndDrawing();
 
 
-    if (IsKeyReleased(KEY_Q) && IsKeyDown(KEY_LEFT_CONTROL))
-    {
-        _contextData->nextSceneId = _contextData->currentSceneId - 1;
-    }
-    if (IsKeyReleased(KEY_E) && IsKeyDown(KEY_LEFT_CONTROL))
-    {
-        _contextData->nextSceneId = _contextData->currentSceneId + 1;
-    }
-    if (IsKeyReleased(KEY_T) && IsKeyDown(KEY_LEFT_CONTROL))
-    {
-        static uint32_t prevScene;
-        if (_contextData->currentSceneId != SCENE_ID_EDITOR)
-        {
-            prevScene = _contextData->currentSceneId;
-            _contextData->nextSceneId = SCENE_ID_EDITOR;
-        }
-        else
-        {
-            _contextData->nextSceneId = prevScene;
-        }
-    }
-    if (IsKeyReleased(KEY_U) && IsKeyDown(KEY_LEFT_CONTROL))
-    {
-        Level_reloadAssets(&_level);
-    }
 }
 
 void Game_setNextScene(int sceneId)
@@ -404,7 +444,7 @@ void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement,
         }
 
         Vector2 mouseDelta = GetMouseDelta();
-        // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
+        // SetMousePosition(Game_getWidth() / 2, Game_getHeight() / 2);
         camera->rotation.y -= mouseDelta.x * 0.002f;
         camera->rotation.x += mouseDelta.y * 0.002f;
         if (camera->rotation.x > PI / 2 * .9f)

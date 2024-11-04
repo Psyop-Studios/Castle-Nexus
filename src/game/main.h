@@ -86,4 +86,7 @@ void Game_setFogTextures(Material *mtl);
 void FPSCamera_update(FPSCameraZ *camera, Level *level, int allowCameraMovement, float dt);
 void Game_setNextScene(int sceneId);
 
+int Game_getWidth();
+int Game_getHeight();
+
 #endif

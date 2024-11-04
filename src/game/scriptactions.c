@@ -65,8 +65,8 @@ void ScriptAction_drawMagnifiedTexture(Script *script, ScriptAction *action)
     srcRect.x *= texture.width;
     srcRect.y = (1.0f - srcRect.y - srcRect.height) * texture.height;
     Rectangle srcRectScreen = data->srcRect;
-    float screenWidth = GetScreenWidth();
-    float screenHeight = GetScreenHeight();
+    float screenWidth = Game_getWidth();
+    float screenHeight = Game_getHeight();
     // float scale = screenWidth / texture.width;
     srcRectScreen.x *= screenWidth;
     srcRectScreen.y *= screenHeight;
@@ -122,8 +122,8 @@ void* ScriptAction_JumpStepData_new(int prevStep, int nextStep, int isRelative)
 void ScriptAction_jumpStep(Script *script, ScriptAction *action)
 {
     ScriptAction_JumpStepData *data = action->actionData;
-    int h = GetScreenHeight();
-    int w = GetScreenWidth();
+    int h = Game_getHeight();
+    int w = Game_getWidth();
     int x = w - 64, y = h - 64, sx = 40, sy = 40;
     int mx = GetMouseX();
     int my = GetMouseY();
@@ -287,7 +287,7 @@ void* ScriptAction_LookCameraAtData_new(FPSCameraZ *camera, float transitionTime
 
 void DrawNarrationBottomBox(const char *narrator, const char *text, const char *proceedText)
 {
-    Rectangle rect = {30, GetScreenHeight() - 120, GetScreenWidth() - 60, 78};
+    Rectangle rect = {30, Game_getHeight() - 120, Game_getWidth() - 60, 78};
 
     DrawRectangleRec(rect, DB8_WHITE);
     DrawRectangleLinesEx(rect, 2, DB8_BLACK);
@@ -414,21 +414,21 @@ void ScriptAction_fadingCut(Script *script, ScriptAction *action)
     }
     if (data->fadeType == FADE_TYPE_VERTICAL_CLOSE)
     {
-        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight() * t * .5f, data->color);
-        DrawRectangle(0, GetScreenHeight() * (1.0f - t * .5f), GetScreenWidth(), GetScreenHeight(), data->color);
+        DrawRectangle(0, 0, Game_getWidth(), Game_getHeight() * t * .5f, data->color);
+        DrawRectangle(0, Game_getHeight() * (1.0f - t * .5f), Game_getWidth(), Game_getHeight(), data->color);
     }
     else if (data->fadeType == FADE_TYPE_TOP_DOWN_CLOSE)
     {
-        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight() * t, data->color);
+        DrawRectangle(0, 0, Game_getWidth(), Game_getHeight() * t, data->color);
     }
     else if (data->fadeType == FADE_TYPE_BOTTOM_UP_CLOSE)
     {
-        DrawRectangle(0, GetScreenHeight() * (1.0f - t), GetScreenWidth(), GetScreenHeight(), data->color);
+        DrawRectangle(0, Game_getHeight() * (1.0f - t), Game_getWidth(), Game_getHeight(), data->color);
     }
     else
     {
-        DrawRectangle(0, 0, GetScreenWidth() * t * .5f, GetScreenHeight(), data->color);
-        DrawRectangle(GetScreenWidth() * (1.0f - t) * .5f, 0, GetScreenWidth() * t, GetScreenHeight(), data->color);
+        DrawRectangle(0, 0, Game_getWidth() * t * .5f, Game_getHeight(), data->color);
+        DrawRectangle(Game_getWidth() * (1.0f - t) * .5f, 0, Game_getWidth() * t, Game_getHeight(), data->color);
     }
     if (level->gameTime - data->actionStartTime - data->transitionTime > data->nextStepDelay &&
         action->actionIdStart == script->currentActionId)

@@ -202,7 +202,7 @@ static void SceneDraw(GameContext *gameCtx, SceneConfig *SceneConfig)
 static void SceneDrawUi_mainBar(GameContext *gameCtx, SceneConfig *sceneConfig)
 {
     DuskGuiParamsEntryId panel = DuskGui_beginPanel((DuskGuiParams) {
-        .bounds = (Rectangle) { -5, -5, GetScreenWidth() + 10, 30 },
+        .bounds = (Rectangle) { -5, -5, Game_getWidth() + 10, 30 },
         .rayCastTarget = 1,
     });
 
@@ -215,7 +215,7 @@ static void SceneDrawUi_mainBar(GameContext *gameCtx, SceneConfig *sceneConfig)
 
     DuskGui_label((DuskGuiParams) {
         .text = "Level name:",
-        .bounds = (Rectangle) { 300-190, 7, 180, 20 },
+        .bounds = (Rectangle) { 180-190, 7, 180, 20 },
         .styleGroup = DuskGui_getStyleGroup(DUSKGUI_STYLE_LABEL_ALIGNRIGHT)
     });
     char *resultBuffer = NULL;
@@ -223,7 +223,7 @@ static void SceneDrawUi_mainBar(GameContext *gameCtx, SceneConfig *sceneConfig)
         .text = TextFormat("%s##levelFileNameTextField", _levelFileNameBuffer),
         .isFocusable = 1,
         .rayCastTarget = 1,
-        .bounds = (Rectangle) { 300, 7, 180, 20 },
+        .bounds = (Rectangle) { 180, 7, 180, 20 },
     }, &resultBuffer);
     if (resultBuffer)
     {
@@ -234,7 +234,7 @@ static void SceneDrawUi_mainBar(GameContext *gameCtx, SceneConfig *sceneConfig)
     if (DuskGui_button((DuskGuiParams) {
         .text = "Save",
         .rayCastTarget = 1,
-        .bounds = (Rectangle) { 480, 7, 50, 20 },
+        .bounds = (Rectangle) { 360, 7, 50, 20 },
     }))
 
     {
@@ -245,7 +245,7 @@ static void SceneDrawUi_mainBar(GameContext *gameCtx, SceneConfig *sceneConfig)
     if (DuskGui_button((DuskGuiParams) {
         .text = "Load",
         .rayCastTarget = 1,
-        .bounds = (Rectangle) { 530, 7, 50, 20 },
+        .bounds = (Rectangle) { 410, 7, 50, 20 },
     }))
     {
         DuskGui_openMenu("LoadMenu");
@@ -254,28 +254,132 @@ static void SceneDrawUi_mainBar(GameContext *gameCtx, SceneConfig *sceneConfig)
     if (DuskGui_button((DuskGuiParams) {
         .text = "New",
         .rayCastTarget = 1,
-        .bounds = (Rectangle) { 580, 7, 50, 20 },
+        .bounds = (Rectangle) { 460, 7, 50, 20 },
     }))
     {
         Level_clearInstances(Game_getLevel());
     }
 
+    if (DuskGui_button((DuskGuiParams) {
+        .text = "Play scene",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 510, 7, 80, 20 },
+    }))
+    {
+        DuskGui_openMenu("PlaySceneMenu");
+    }
+
+    int switchScene = -1;
+    static const char *playableScenes[] = {
+        "Intro",
+        "Docks",
+        "Island",
+        "Puzzle 1",
+        "Puzzle 2",
+        "Puzzle 3",
+        "Finish",
+        NULL,
+    };
+    if (DuskGui_contextMenuItemsPopup((DuskGuiParams) {
+        .text = "PlaySceneMenu",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 510, 7, 80, 20 },
+    }, 0, playableScenes, &switchScene))
+    {
+        Game_setNextScene(switchScene + 1);
+    }
+
+    static int showHelp = 0;
+    if (DuskGui_button((DuskGuiParams) {
+        .text = "HELP",
+        .rayCastTarget = 1,
+        .bounds = (Rectangle) { 600, 7, 80, 20 },
+    }))
+    {
+        showHelp = 1;
+    }
+
+    float posX = Game_getWidth() - 105;
+
     const char* toggleModeName = _editorMode == EDITOR_MODE_EDITGEOMETRY ? "Geometry mode##mode_selection" : "Entity mode##mode_selection";
     if (DuskGui_button((DuskGuiParams) {
         .text = toggleModeName,
         .rayCastTarget = 1,
-        .bounds = (Rectangle) { DuskGui_getAvailableSpace().x - 105, 7, 100, 20 },
+        .bounds = (Rectangle) { posX, 7, 100, 20 },
     }) || IsKeyPressed(KEY_TAB))
     {
         _editorMode = _editorMode == EDITOR_MODE_EDITGEOMETRY ? EDITOR_MODE_EDITENTITIES : EDITOR_MODE_EDITGEOMETRY;
     }
+
+    posX -= 80;
+
     DuskGui_endPanel(panel);
+
+    if (showHelp)
+    {
+        int helpWidth = 500;
+        int helpHeight = 380;
+        DuskGuiParamsEntryId helpPanel = DuskGui_beginPanel((DuskGuiParams) {
+            .bounds = (Rectangle) { 
+                (Game_getWidth() - helpWidth) * 0.5f, 
+                (Game_getHeight() - helpHeight) * 0.5f, 
+                helpWidth, helpHeight },
+            .rayCastTarget = 1,
+        });
+
+        if (DuskGui_button((DuskGuiParams){
+            .text = "X##closeHelp",
+            .isFocusable = 1,
+            .rayCastTarget = 1,
+            .bounds = (Rectangle) { helpWidth - 20, 5, 20, 20 },
+        }))
+        {
+            showHelp = 0;
+        }
+
+        static DuskGuiStyleGroup _helpStyleGroup = {0};
+        static DuskGuiFontStyle _fontStyle = {0};
+
+        _helpStyleGroup = *DuskGui_getStyleGroup(DUSKGUI_STYLE_LABEL);
+        _fontStyle = *_helpStyleGroup.fallbackStyle.fontStyle;
+        _fontStyle.fontSize = _fntMedium.baseSize * 1.0f;
+        _helpStyleGroup.fallbackStyle.textOverflowType = DUSKGUI_OVERFLOW_CLIP;
+        _helpStyleGroup.fallbackStyle.textAlignment.x = 0.0f;
+        _helpStyleGroup.fallbackStyle.textAlignment.y = 0.0f;
+        _helpStyleGroup.fallbackStyle.fontStyle = &_fontStyle;
+
+
+        DuskGui_label((DuskGuiParams) {
+            .text = "This is the editor developed during the game jam (we assumed the topic to be called 'editor', it seems).\n"
+                "When you EDIT a textbox, press ENTER to confirm the change. Otherwise, it doesn't register.\n"
+                "The various unnamed text boxes (like on the left) are search filters.\n"
+                "\n"
+                "Space: Place cursor on grid at the current mouse position\n"
+                "1: Set camera to default height (1.7m)\n"
+                "2: Move camera up\n"
+                "X: Move camera down\n"
+                "Tab: Switch between geometry and entity editing mode\n"
+                "\n"
+                "Geometry are the static objects in the scene, like walls, floors, etc.\n"
+                "Some geometry models have a configured collider (not all XD).\n"
+                "Entities are the dynamic objects in the scene, like the crates.\n"
+                "Entities can have components that define their appearance and behavior\n"
+            ,
+            .bounds = (Rectangle) { 10, 30, helpWidth - 20, helpHeight - 40 },
+            .styleGroup = &_helpStyleGroup, 
+        });
+
+
+
+        DuskGui_endPanel(helpPanel);
+
+    }
 }
 
 static void SceneDrawUi_meshCreationBar(GameContext *gameCtx, SceneConfig *sceneConfig)
 {
     DuskGuiParamsEntryId objectCreatePanel = DuskGui_beginPanel((DuskGuiParams) {
-        .bounds = (Rectangle) { -2, 22, 200, GetScreenHeight() - 20},
+        .bounds = (Rectangle) { -2, 22, 200, Game_getHeight() - 20},
         .rayCastTarget = 1,
     });
 
@@ -329,7 +433,7 @@ static void SceneDrawUi_meshInspector(GameContext *gameCtx, SceneConfig *SceneCo
     Level *level = Game_getLevel();
 
     DuskGuiParamsEntryId objectEditPanel = DuskGui_beginPanel((DuskGuiParams) {
-        .bounds = (Rectangle) { GetScreenWidth() - 198, 22, 200, GetScreenHeight() - 20},
+        .bounds = (Rectangle) { Game_getWidth() - 198, 22, 200, Game_getHeight() - 20},
         .rayCastTarget = 1,
     });
 
@@ -571,7 +675,7 @@ static void SceneDrawUi_drawEntityUi(Level *level, float *posY, LevelEntity* ent
 static void SceneDrawUi_entitySelection(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     DuskGuiParamsEntryId panel = DuskGui_beginPanel((DuskGuiParams) {
-        .bounds = (Rectangle) { -2, 20, 200, GetScreenHeight() - 15 },
+        .bounds = (Rectangle) { -2, 20, 200, Game_getHeight() - 15 },
         .rayCastTarget = 1,
     });
     Level *level = Game_getLevel();
@@ -653,7 +757,7 @@ static void SceneDrawUi_entityInspector(GameContext *gameCtx, SceneConfig *scene
     Level *level = Game_getLevel();
 
     DuskGuiParamsEntryId objectEditPanel = DuskGui_beginPanel((DuskGuiParams) {
-        .bounds = (Rectangle) { GetScreenWidth() - 198, 22, 200, GetScreenHeight() - 20},
+        .bounds = (Rectangle) { Game_getWidth() - 198, 22, 200, Game_getHeight() - 20},
         .rayCastTarget = 1,
         .text = "##entityInspector",
     });
@@ -701,7 +805,7 @@ static void SceneDrawUi(GameContext *gameCtx, SceneConfig *sceneConfig)
 
     _updateCamera = DuskGui_dragArea((DuskGuiParams) {
         .text = "Camera",
-        .bounds = (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() },
+        .bounds = (Rectangle) { 0, 0, Game_getWidth(), Game_getHeight() },
         .rayCastTarget = 1,
     });
     _viewIsHovered = DuskGui_getLastEntry()->isHovered;

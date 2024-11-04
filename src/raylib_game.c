@@ -181,7 +181,7 @@ static void build_game()
 #endif
 
 
-    if (lastModTime > GetFileModTime(dllName))
+    if (lastModTime > GetFileModTime(dllName) && FileExists("raylib_game.c"))
     {
         sprintf(buildCommand, "gcc -g -Wall -I../../raylib/src -L../../raylib/src -o %s -shared -fPIC %s -lraylib -DCJSON_HIDE_SYMBOLS",
                 dllName, cfilelist);
@@ -267,7 +267,7 @@ void UpdateDrawFrame(void)
     {
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawText("PAUSED", GetScreenWidth() / 2 - MeasureText("PAUSED", 40) / 2, GetScreenHeight() / 2 - 40, 40, GRAY);
+        DrawText("PAUSED", Game_getWidth() / 2 - MeasureText("PAUSED", 40) / 2, Game_getHeight() / 2 - 40, 40, GRAY);
         EndDrawing();
         return;
     }

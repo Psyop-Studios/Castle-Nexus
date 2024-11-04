@@ -56,7 +56,7 @@ static void SceneInit(GameContext *gameCtx, SceneConfig *SceneConfig)
 {
     Game_setFogGradient(174.0/512.0, 104.0/512.0, 0.55f, 0.26f);
     DisableCursor();
-    // SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
+    // SetMousePosition(Game_getWidth() / 2, Game_getHeight() / 2);
     _camera.camera = (Camera){0};
     _camera.camera.position = (Vector3){ 1.5f, 1.70f, 0.0f };
     _camera.camera.target = (Vector3){ 90.0f, 100.0f, 180.0f };

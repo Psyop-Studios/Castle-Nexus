@@ -479,7 +479,7 @@ void DuskGui_init()
     _defaultStyles.groups[DUSKGUI_STYLE_MENU_ITEM].name = "DUSKGUI_STYLE_MENU_ITEM";
 
     DuskGui_setDefaultFont(GetFontDefault(), 10, 1);
-    _duskGuiState.root.params.bounds = (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() };
+    _duskGuiState.root.params.bounds = (Rectangle) { 0, 0, Game_getWidth(), Game_getHeight() };
     _duskGuiState.root.params.text = "root";
     _duskGuiState.root.txId = "root";
     _duskGuiState.root.parentIndex = 0;
@@ -1131,7 +1131,7 @@ void DuskGui_finalize()
     _duskGuiState.lastEntry = NULL;
     _duskGuiState.menuStackCount = 0;
     _duskGuiState.currentPanelIndex = 0;
-    _duskGuiState.root.params.bounds = (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() };
+    _duskGuiState.root.params.bounds = (Rectangle) { 0, 0, Game_getWidth(), Game_getHeight() };
 }
 
 static DuskGuiParamsEntry* DuskGui_addParams(DuskGuiParamsList* paramsList, DuskGuiParamsEntry* params);
@@ -1308,7 +1308,7 @@ DuskGuiParamsEntryId DuskGui_beginScrollArea(DuskGuiParams params)
 
     DuskGui_drawStyle(entry, &_duskGuiState, &_defaultStyles.groups[DUSKGUI_STYLE_PANEL]);
 
-    // printf("beg sci: %f %f %f %f %d %d\n", entry.params.bounds.x, entry.params.bounds.y, entry.params.bounds.width, entry.params.bounds.height, GetScreenWidth(), GetScreenHeight());
+    // printf("beg sci: %f %f %f %f %d %d\n", entry.params.bounds.x, entry.params.bounds.y, entry.params.bounds.width, entry.params.bounds.height, Game_getWidth(), Game_getHeight());
     BeginScissorMode((int)entry->params.bounds.x, (int)entry->params.bounds.y, (int)entry->params.bounds.width, (int)entry->params.bounds.height);
     return (DuskGuiParamsEntryId) entry->id;
 }
@@ -1433,7 +1433,7 @@ int DuskGui_fullScreenBlocker()
     char id[64];
     sprintf(id, "blocker_%i", _duskGuiState.idCounter);
     DuskGuiParamsEntry* entry = DuskGui_makeEntry((DuskGuiParams) { .text = Dusk_strdup(id) }, NULL);
-    entry->params.bounds = (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() };
+    entry->params.bounds = (Rectangle) { 0, 0, Game_getWidth(), Game_getHeight() };
     entry->params.rayCastTarget = 1;
     entry->drawFn = DuskGui_drawStyleNop;
     return entry->isTriggered;
